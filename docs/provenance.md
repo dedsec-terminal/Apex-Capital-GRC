@@ -2,7 +2,7 @@
 
 ## Inputs
 
-This edition is an editorially curated derivative of the Markdown source files in the parent Apex-Capital-GRC folder, including architecture, requirements, risk register, policy drafts, framework mappings and test scenarios. The source folder is preserved unchanged. No `.obsidian` configuration is included.
+This edition organizes all 29 original Markdown chapters into 13 numbered sections, retaining their substantive architecture, requirements, policies, technical procedures and testing detail while correcting unsupported claims and inconsistencies. Three additional chapters provide a capability evaluation, an incident response plan and a proposed tabletop exercise. The original working folder is preserved unchanged. No `.obsidian` configuration is included.
 
 The summarized risk and test records displayed on the static site are also available in `data/register.json` for machine-readable review. They reflect the curated values in this edition and mark every test as planned, not executed.
 

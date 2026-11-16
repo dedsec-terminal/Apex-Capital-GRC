@@ -1,0 +1,1169 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Evidence Register | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link active" href="evidence-summary.html">Evidence Register</a><a class="chapter-link" href="detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Evidence</div><article class="article"><h1>Evidence Register</h1><p class="crumb">Evidence · <a class="raw-link" href="../../../10-Evidence/evidence-summary.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> evidence requested; artifacts not present</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#1-overview">1. Overview</a></li>
+<li><a href="#2-evidence-by-vm">2. Evidence by VM</a><ul>
+<li><a href="#21-vm-1-windows-enterprise-evidence">2.1 VM 1 - Windows Enterprise Evidence</a></li>
+<li><a href="#22-vm-2-ubuntu-web-server-evidence">2.2 VM 2 - Ubuntu Web Server Evidence</a></li>
+<li><a href="#23-vm-3-pfsense-evidence">2.3 VM 3 - pfSense Evidence</a></li>
+<li><a href="#24-vm-4-wazuh-evidence">2.4 VM 4 - Wazuh Evidence</a></li>
+</ul>
+</li>
+<li><a href="#3-evidence-by-framework-mapping">3. Evidence by Framework Mapping</a><ul>
+<li><a href="#31-nist-csf-20">3.1 NIST CSF 2.0</a></li>
+<li><a href="#32-iso-270012022">3.2 ISO 27001:2022</a></li>
+<li><a href="#33-historical-pci-dss-321-inspired-learning-reference-not-current-compliance">3.3 Historical PCI DSS 3.2.1-inspired learning reference (not current compliance)</a></li>
+</ul>
+</li>
+<li><a href="#4-evidence-by-control-test">4. Evidence by Control Test</a></li>
+<li><a href="#5-evidence-collection-checklist">5. Evidence Collection Checklist</a><ul>
+<li><a href="#51-vm-1-windows-enterprise-13-items">5.1 VM 1 (Windows Enterprise) - 13 items</a></li>
+<li><a href="#52-vm-2-ubuntu-13-items">5.2 VM 2 (Ubuntu) - 13 items</a></li>
+<li><a href="#53-vm-3-pfsense-10-items">5.3 VM 3 (pfSense) - 10 items</a></li>
+<li><a href="#54-vm-4-wazuh-12-items">5.4 VM 4 (Wazuh) - 12 items</a></li>
+</ul>
+</li>
+<li><a href="#6-evidence-directory-structure">6. Evidence Directory Structure</a></li>
+<li><a href="#7-related-documents">7. Related Documents</a></li>
+<li><a href="#8-version-history">8. Version History</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Evidence status:</strong> Referenced screenshots and logs are planned artifacts and are not present in this public edition. Entries are evidence requests, not completed evidence.</p>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="evidence-summary">Evidence Summary<a class="headerlink" href="#evidence-summary" title="Permanent link">&para;</a></h1>
+<p><strong>Last Updated:</strong> May 2026
+<strong>Version:</strong> 1.0
+<strong>Classification:</strong> Internal
+<strong>Owner:</strong> GRC Lead</p>
+<hr />
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
+<p>This document catalogs all evidence collected during the security control implementation and validation phase. Each evidence item includes a description, source VM, framework mapping, and collection status.</p>
+<p><strong>Evidence Repository Location:</strong> <code>10-Evidence/screenshots/</code></p>
+<p><strong>Total Evidence Items:</strong> 25
+<strong>Status:</strong> All pending collection</p>
+<hr />
+<h2 id="2-evidence-by-vm">2. Evidence by VM<a class="headerlink" href="#2-evidence-by-vm" title="Permanent link">&para;</a></h2>
+<h3 id="21-vm-1-windows-enterprise-evidence">2.1 VM 1 - Windows Enterprise Evidence<a class="headerlink" href="#21-vm-1-windows-enterprise-evidence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Evidence ID</th>
+<th>Description</th>
+<th>File Path</th>
+<th>Framework Mapping</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EV-WIN-001</td>
+<td>Password policy output - net accounts</td>
+<td>screenshots/windows/net-accounts.png</td>
+<td>NIST PR.AA-05, ISO A.5.17, PCI Req 8</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-002</td>
+<td>Weak password rejection error</td>
+<td>screenshots/windows/weak-password-reject.png</td>
+<td>NIST PR.AA-05, ISO A.5.17</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-003</td>
+<td>Account lockout message</td>
+<td>screenshots/windows/account-lockout.png</td>
+<td>NIST PR.AA-03, PCI Req 8.1.4</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-004</td>
+<td>Event ID 4740 - Account locked out</td>
+<td>screenshots/windows/event-4740.png</td>
+<td>NIST PR.AA-03</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-005</td>
+<td>Windows Defender status (Get-MpComputerStatus)</td>
+<td>screenshots/windows/defender-status.png</td>
+<td>NIST DE.CM-09, ISO A.8.7, PCI Req 5</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-006</td>
+<td>EICAR test file blocked by Defender</td>
+<td>screenshots/windows/eicar-block.png</td>
+<td>NIST DE.CM-09, ISO A.8.7, PCI Req 5</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-007</td>
+<td>Controlled Folder Access blocked event (Event ID 1123)</td>
+<td>screenshots/windows/cfa-block.png</td>
+<td>NIST DE.CM-09, ISO A.8.7</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-008</td>
+<td>Windows Firewall profile status</td>
+<td>screenshots/windows/firewall-profiles.png</td>
+<td>NIST PR.IR-01, ISO A.8.20</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-009</td>
+<td>Windows Firewall RDP block rule</td>
+<td>screenshots/windows/firewall-rdp-block.png</td>
+<td>NIST PR.IR-01, ISO A.8.22</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-010</td>
+<td>Local user accounts (standard vs admin)</td>
+<td>screenshots/windows/local-users.png</td>
+<td>NIST PR.AA-05, ISO A.8.2</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-011</td>
+<td>Administrator account renamed</td>
+<td>screenshots/windows/admin-renamed.png</td>
+<td>NIST PR.AA-05</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-012</td>
+<td>Audit policy configuration</td>
+<td>screenshots/windows/audit-policy.png</td>
+<td>ISO A.8.15, PCI Req 10</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WIN-013</td>
+<td>Wazuh agent service status</td>
+<td>screenshots/windows/wazuh-service.png</td>
+<td>NIST DE.CM-7</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-vm-2-ubuntu-web-server-evidence">2.2 VM 2 - Ubuntu Web Server Evidence<a class="headerlink" href="#22-vm-2-ubuntu-web-server-evidence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Evidence ID</th>
+<th>Description</th>
+<th>File Path</th>
+<th>Framework Mapping</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EV-UBU-001</td>
+<td>OS version and kernel information</td>
+<td>screenshots/ubuntu/os-version.png</td>
+<td>NIST ID.AM-1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-002</td>
+<td>UFW firewall status (sudo ufw status verbose)</td>
+<td>screenshots/ubuntu/ufw-status.png</td>
+<td>NIST PR.IR-01, ISO A.8.20</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-003</td>
+<td>UFW rules listing (allow 80,443, SSH from mgmt)</td>
+<td>screenshots/ubuntu/ufw-rules.png</td>
+<td>NIST PR.IR-01</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-004</td>
+<td>SSH configuration - PasswordAuthentication no</td>
+<td>screenshots/ubuntu/ssh-password-auth.png</td>
+<td>NIST PR.AA-03, PCI Req 2</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-005</td>
+<td>SSH configuration - PermitRootLogin no</td>
+<td>screenshots/ubuntu/ssh-root-login.png</td>
+<td>NIST PR.AA-03</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-006</td>
+<td>SSH configuration - MaxAuthTries 3</td>
+<td>screenshots/ubuntu/ssh-max-auth-tries.png</td>
+<td>NIST PR.AA-03</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-007</td>
+<td>fail2ban status (active)</td>
+<td>screenshots/ubuntu/fail2ban-status.png</td>
+<td>NIST PR.AA-03</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-008</td>
+<td>Nginx security headers (curl -I output)</td>
+<td>screenshots/ubuntu/nginx-security-headers.png</td>
+<td>NIST PR.DS-2, PCI Req 4</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-009</td>
+<td>HTTPS/TLS configuration (SSL Labs or nmap)</td>
+<td>screenshots/ubuntu/tls-config.png</td>
+<td>PCI Req 4</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-010</td>
+<td>Nginx server tokens off</td>
+<td>screenshots/ubuntu/nginx-server-tokens.png</td>
+<td>NIST PR.PS-01</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-011</td>
+<td>Automatic security updates enabled</td>
+<td>screenshots/ubuntu/auto-updates.png</td>
+<td>NIST PR.PS-02</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-012</td>
+<td>Wazuh agent status (systemctl status wazuh-agent)</td>
+<td>screenshots/ubuntu/wazuh-agent-status.png</td>
+<td>NIST DE.CM-7</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-UBU-013</td>
+<td>Auditd rules configured</td>
+<td>screenshots/ubuntu/auditd-rules.png</td>
+<td>ISO A.8.15</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-vm-3-pfsense-evidence">2.3 VM 3 - pfSense Evidence<a class="headerlink" href="#23-vm-3-pfsense-evidence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Evidence ID</th>
+<th>Description</th>
+<th>File Path</th>
+<th>Framework Mapping</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EV-PFS-001</td>
+<td>pfSense dashboard (interfaces overview)</td>
+<td>screenshots/pfsense/dashboard.png</td>
+<td>NIST ID.AM-1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-002</td>
+<td>WAN firewall rules (including default deny)</td>
+<td>screenshots/pfsense/wan-rules.png</td>
+<td>NIST PR.IR-01, PCI Req 1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-003</td>
+<td>LAN firewall rules (including block from DMZ)</td>
+<td>screenshots/pfsense/lan-rules.png</td>
+<td>NIST PR.IR-01, ISO A.8.22</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-004</td>
+<td>Lateral movement block rule (Rule 3 detail)</td>
+<td>screenshots/pfsense/block-rule-detail.png</td>
+<td>NIST PR.IR-01</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-005</td>
+<td>Management subnet (OPT1) rules</td>
+<td>screenshots/pfsense/opt1-rules.png</td>
+<td>NIST PR.IR-01</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-006</td>
+<td>NAT outbound rules configuration</td>
+<td>screenshots/pfsense/nat-rules.png</td>
+<td>PCI Req 1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-007</td>
+<td>pfSense firewall log showing blocked connections</td>
+<td>screenshots/pfsense/firewall-log.png</td>
+<td>NIST DE.CM-1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-008</td>
+<td>Syslog forwarding to Wazuh (10.0.3.10:514)</td>
+<td>screenshots/pfsense/syslog-forward.png</td>
+<td>NIST DE.CM-7</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-009</td>
+<td>WebGUI HTTPS configuration</td>
+<td>screenshots/pfsense/webgui-https.png</td>
+<td>PCI Req 4</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-PFS-010</td>
+<td>pfSense version and update status</td>
+<td>screenshots/pfsense/version.png</td>
+<td>NIST PR.PS-02</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24-vm-4-wazuh-evidence">2.4 VM 4 - Wazuh Evidence<a class="headerlink" href="#24-vm-4-wazuh-evidence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Evidence ID</th>
+<th>Description</th>
+<th>File Path</th>
+<th>Framework Mapping</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EV-WAZ-001</td>
+<td>Wazuh dashboard overview</td>
+<td>screenshots/wazuh/dashboard.png</td>
+<td>NIST DE.AE-1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-002</td>
+<td>Agents list showing all 3 agents connected</td>
+<td>screenshots/wazuh/agents-list.png</td>
+<td>NIST DE.CM-7</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-003</td>
+<td>Agent details for Windows (logs received)</td>
+<td>screenshots/wazuh/agent-windows.png</td>
+<td>NIST DE.CM-7</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-004</td>
+<td>Agent details for Ubuntu (logs received)</td>
+<td>screenshots/wazuh/agent-ubuntu.png</td>
+<td>NIST DE.CM-7</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-005</td>
+<td>Failed login alert (Event ID 4625)</td>
+<td>screenshots/wazuh/failed-login-alert.png</td>
+<td>NIST DE.AE-1, PCI Req 10</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-006</td>
+<td>EICAR malware detection alert (Level 15)</td>
+<td>screenshots/wazuh/eicar-alert.png</td>
+<td>NIST DE.CM-3, PCI Req 5</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-007</td>
+<td>pfSense firewall block alert</td>
+<td>screenshots/wazuh/pfsense-block-alert.png</td>
+<td>NIST DE.CM-1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-008</td>
+<td>SSH failed login alert (Ubuntu)</td>
+<td>screenshots/wazuh/ssh-failed-alert.png</td>
+<td>NIST DE.AE-1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-009</td>
+<td>Wazuh rule configuration (local_rules.xml)</td>
+<td>screenshots/wazuh/local-rules.png</td>
+<td>NIST DE.AE-1</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-010</td>
+<td>Compliance dashboard (NIST CSF)</td>
+<td>screenshots/wazuh/compliance-nist.png</td>
+<td>NIST All</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-011</td>
+<td>Compliance dashboard (PCI DSS)</td>
+<td>screenshots/wazuh/compliance-pci.png</td>
+<td>PCI Req 10</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-WAZ-012</td>
+<td>Security events timeline</td>
+<td>screenshots/wazuh/events-timeline.png</td>
+<td>NIST DE.AE-1</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-evidence-by-framework-mapping">3. Evidence by Framework Mapping<a class="headerlink" href="#3-evidence-by-framework-mapping" title="Permanent link">&para;</a></h2>
+<h3 id="31-nist-csf-20">3.1 NIST CSF 2.0<a class="headerlink" href="#31-nist-csf-20" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>NIST Function</th>
+<th>Subcategory</th>
+<th>Evidence ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identify (ID)</td>
+<td>ID.AM-1</td>
+<td>EV-UBU-001, EV-PFS-001</td>
+<td>OS version, interfaces</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>PR.AA-05</td>
+<td>EV-WIN-001, EV-WIN-002, EV-WIN-011</td>
+<td>Password policy, admin renamed</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>PR.AA-05</td>
+<td>EV-WIN-010</td>
+<td>Local user roles</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>PR.IR-01</td>
+<td>EV-WIN-008, EV-WIN-009, EV-PFS-002, EV-PFS-003, EV-PFS-004, EV-PFS-005</td>
+<td>Firewall rules, segmentation</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>PR.AA-03</td>
+<td>EV-WIN-003, EV-WIN-004, EV-UBU-004, EV-UBU-005, EV-UBU-006</td>
+<td>Account lockout, SSH hardening</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>PR.DS-2</td>
+<td>EV-UBU-008, EV-PFS-009</td>
+<td>HTTPS, TLS</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>DE.CM-09</td>
+<td>EV-WIN-005, EV-WIN-006, EV-WIN-007</td>
+<td>Defender, EICAR, CFA</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>PR.PS-01</td>
+<td>EV-UBU-010</td>
+<td>Server tokens off</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>PR.PS-02</td>
+<td>EV-UBU-011, EV-PFS-010</td>
+<td>Auto updates</td>
+</tr>
+<tr>
+<td>Detect (DE)</td>
+<td>DE.AE-1</td>
+<td>EV-WAZ-001, EV-WAZ-005, EV-WAZ-008, EV-WAZ-009, EV-WAZ-012</td>
+<td>Alerts, events</td>
+</tr>
+<tr>
+<td>Detect (DE)</td>
+<td>DE.CM-1</td>
+<td>EV-PFS-007, EV-WAZ-007</td>
+<td>Firewall logs</td>
+</tr>
+<tr>
+<td>Detect (DE)</td>
+<td>DE.CM-3</td>
+<td>EV-WAZ-006</td>
+<td>Malware detection</td>
+</tr>
+<tr>
+<td>Detect (DE)</td>
+<td>DE.CM-7</td>
+<td>EV-WIN-013, EV-UBU-012, EV-PFS-008, EV-WAZ-002, EV-WAZ-003, EV-WAZ-004</td>
+<td>Agent connectivity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-iso-270012022">3.2 ISO 27001:2022<a class="headerlink" href="#32-iso-270012022" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Annex A Control</th>
+<th>Evidence ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A.8.2 (Privileged access rights)</td>
+<td>EV-WIN-010</td>
+<td>Local user roles</td>
+</tr>
+<tr>
+<td>A.8.7 (Protection against malware)</td>
+<td>EV-WIN-005, EV-WIN-006, EV-WIN-007</td>
+<td>Defender, EICAR, CFA</td>
+</tr>
+<tr>
+<td>A.8.15 (Logging and monitoring)</td>
+<td>EV-WIN-012, EV-UBU-013, EV-WAZ-001 to EV-WAZ-012</td>
+<td>Audit policy, Wazuh</td>
+</tr>
+<tr>
+<td>A.8.16 (Monitoring activities)</td>
+<td>EV-WAZ-005, EV-WAZ-006, EV-WAZ-007</td>
+<td>Alerts</td>
+</tr>
+<tr>
+<td>A.8.20 (Networks security)</td>
+<td>EV-WIN-008, EV-UBU-002</td>
+<td>Firewall</td>
+</tr>
+<tr>
+<td>A.8.21 (Security of network services)</td>
+<td>EV-PFS-002 to EV-PFS-006</td>
+<td>pfSense rules</td>
+</tr>
+<tr>
+<td>A.8.22 (Segregation of networks)</td>
+<td>EV-WIN-009, EV-PFS-003, EV-PFS-004</td>
+<td>Segmentation</td>
+</tr>
+<tr>
+<td>A.5.17 (Password management)</td>
+<td>EV-WIN-001, EV-WIN-002</td>
+<td>Password policy</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-historical-pci-dss-321-inspired-learning-reference-not-current-compliance">3.3 Historical PCI DSS 3.2.1-inspired learning reference (not current compliance)<a class="headerlink" href="#33-historical-pci-dss-321-inspired-learning-reference-not-current-compliance" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>PCI Requirement</th>
+<th>Evidence ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Req 1 (Firewall)</td>
+<td>EV-PFS-002, EV-PFS-003, EV-PFS-006</td>
+<td>pfSense rules, NAT</td>
+</tr>
+<tr>
+<td>Req 2 (Defaults)</td>
+<td>EV-UBU-004, EV-UBU-005</td>
+<td>SSH hardening</td>
+</tr>
+<tr>
+<td>Req 4 (Encryption)</td>
+<td>EV-UBU-008, EV-UBU-009, EV-PFS-009</td>
+<td>HTTPS, TLS</td>
+</tr>
+<tr>
+<td>Req 5 (Malware)</td>
+<td>EV-WIN-005, EV-WIN-006, EV-WAZ-006</td>
+<td>Defender, EICAR</td>
+</tr>
+<tr>
+<td>Req 8 (Authentication)</td>
+<td>EV-WIN-001, EV-WIN-003</td>
+<td>Password policy, lockout</td>
+</tr>
+<tr>
+<td>Req 10 (Logging)</td>
+<td>EV-WIN-012, EV-WAZ-005, EV-WAZ-011</td>
+<td>Audit logs, Wazuh alerts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-evidence-by-control-test">4. Evidence by Control Test<a class="headerlink" href="#4-evidence-by-control-test" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Test ID</th>
+<th>Test Name</th>
+<th>Evidence ID</th>
+<th>Evidence Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T-001</td>
+<td>Password Policy Enforcement</td>
+<td>EV-WIN-001</td>
+<td>net accounts output</td>
+</tr>
+<tr>
+<td>T-002</td>
+<td>Account Lockout</td>
+<td>EV-WIN-003, EV-WIN-004</td>
+<td>Lockout message, Event 4740</td>
+</tr>
+<tr>
+<td>T-003</td>
+<td>Weak Password Rejection</td>
+<td>EV-WIN-002</td>
+<td>Weak password error</td>
+</tr>
+<tr>
+<td>T-004</td>
+<td>Windows Defender Status</td>
+<td>EV-WIN-005</td>
+<td>Get-MpComputerStatus</td>
+</tr>
+<tr>
+<td>T-005</td>
+<td>EICAR Malware Detection</td>
+<td>EV-WIN-006, EV-WAZ-006</td>
+<td>EICAR block, Wazuh alert</td>
+</tr>
+<tr>
+<td>T-006</td>
+<td>Controlled Folder Access</td>
+<td>EV-WIN-007</td>
+<td>CFA block event</td>
+</tr>
+<tr>
+<td>T-007</td>
+<td>Windows Firewall</td>
+<td>EV-WIN-008, EV-WIN-009</td>
+<td>Firewall profiles, RDP rule</td>
+</tr>
+<tr>
+<td>T-008</td>
+<td>RDP Restriction</td>
+<td>EV-WIN-009</td>
+<td>RDP block rule</td>
+</tr>
+<tr>
+<td>T-009</td>
+<td>Lateral Movement Prevention</td>
+<td>EV-PFS-004, EV-PFS-007</td>
+<td>Block rule, firewall log</td>
+</tr>
+<tr>
+<td>T-010</td>
+<td>pfSense Default Deny</td>
+<td>EV-PFS-002</td>
+<td>WAN rules default deny</td>
+</tr>
+<tr>
+<td>T-011</td>
+<td>pfSense Segmentation</td>
+<td>EV-PFS-003, EV-PFS-004</td>
+<td>LAN block rule</td>
+</tr>
+<tr>
+<td>T-012</td>
+<td>Ubuntu UFW Firewall</td>
+<td>EV-UBU-002, EV-UBU-003</td>
+<td>UFW status, rules</td>
+</tr>
+<tr>
+<td>T-013</td>
+<td>Ubuntu SSH Hardening</td>
+<td>EV-UBU-004, EV-UBU-005, EV-UBU-006</td>
+<td>SSH config</td>
+</tr>
+<tr>
+<td>T-014</td>
+<td>Ubuntu HTTPS</td>
+<td>EV-UBU-008, EV-UBU-009</td>
+<td>Security headers, TLS</td>
+</tr>
+<tr>
+<td>T-015</td>
+<td>Wazuh Failed Login Alert</td>
+<td>EV-WAZ-005</td>
+<td>Failed login alert</td>
+</tr>
+<tr>
+<td>T-016</td>
+<td>Wazuh EICAR Alert</td>
+<td>EV-WAZ-006</td>
+<td>EICAR alert</td>
+</tr>
+<tr>
+<td>T-017</td>
+<td>Wazuh Agent Connectivity</td>
+<td>EV-WAZ-002, EV-WAZ-003, EV-WAZ-004</td>
+<td>Agents list</td>
+</tr>
+<tr>
+<td>T-018</td>
+<td>pfSense Log Forwarding</td>
+<td>EV-PFS-008, EV-WAZ-007</td>
+<td>Syslog config, alert</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-evidence-collection-checklist">5. Evidence Collection Checklist<a class="headerlink" href="#5-evidence-collection-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="51-vm-1-windows-enterprise-13-items">5.1 VM 1 (Windows Enterprise) - 13 items<a class="headerlink" href="#51-vm-1-windows-enterprise-13-items" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Checked</th>
+<th>Evidence ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-001</td>
+<td>net accounts output</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-002</td>
+<td>Weak password rejection</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-003</td>
+<td>Account lockout message</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-004</td>
+<td>Event ID 4740</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-005</td>
+<td>Defender status</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-006</td>
+<td>EICAR block</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-007</td>
+<td>CFA block</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-008</td>
+<td>Firewall profiles</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-009</td>
+<td>RDP block rule</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-010</td>
+<td>Local users</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-011</td>
+<td>Admin renamed</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-012</td>
+<td>Audit policy</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WIN-013</td>
+<td>Wazuh service</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-vm-2-ubuntu-13-items">5.2 VM 2 (Ubuntu) - 13 items<a class="headerlink" href="#52-vm-2-ubuntu-13-items" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Checked</th>
+<th>Evidence ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-001</td>
+<td>OS version</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-002</td>
+<td>UFW status</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-003</td>
+<td>UFW rules</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-004</td>
+<td>SSH password auth</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-005</td>
+<td>SSH root login</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-006</td>
+<td>SSH MaxAuthTries</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-007</td>
+<td>fail2ban status</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-008</td>
+<td>Nginx headers</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-009</td>
+<td>TLS config</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-010</td>
+<td>Server tokens</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-011</td>
+<td>Auto updates</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-012</td>
+<td>Wazuh agent</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-UBU-013</td>
+<td>Auditd rules</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-vm-3-pfsense-10-items">5.3 VM 3 (pfSense) - 10 items<a class="headerlink" href="#53-vm-3-pfsense-10-items" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Checked</th>
+<th>Evidence ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-001</td>
+<td>Dashboard</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-002</td>
+<td>WAN rules</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-003</td>
+<td>LAN rules</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-004</td>
+<td>Block rule detail</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-005</td>
+<td>OPT1 rules</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-006</td>
+<td>NAT rules</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-007</td>
+<td>Firewall log</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-008</td>
+<td>Syslog forward</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-009</td>
+<td>WebGUI HTTPS</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-PFS-010</td>
+<td>Version info</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-vm-4-wazuh-12-items">5.4 VM 4 (Wazuh) - 12 items<a class="headerlink" href="#54-vm-4-wazuh-12-items" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Checked</th>
+<th>Evidence ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-001</td>
+<td>Dashboard</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-002</td>
+<td>Agents list</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-003</td>
+<td>Windows agent</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-004</td>
+<td>Ubuntu agent</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-005</td>
+<td>Failed login alert</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-006</td>
+<td>EICAR alert</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-007</td>
+<td>pfSense block alert</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-008</td>
+<td>SSH failed alert</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-009</td>
+<td>Local rules</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-010</td>
+<td>NIST dashboard</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-011</td>
+<td>PCI dashboard</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>EV-WAZ-012</td>
+<td>Events timeline</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-evidence-directory-structure">6. Evidence Directory Structure<a class="headerlink" href="#6-evidence-directory-structure" title="Permanent link">&para;</a></h2>
+<p>The evidence screenshots are organized in the following directory structure:</p>
+<ul>
+<li>10-Evidence/</li>
+<li>evidence-summary.md</li>
+<li>screenshots/<ul>
+<li>windows/</li>
+<li>net-accounts.png</li>
+<li>weak-password-reject.png</li>
+<li>account-lockout.png</li>
+<li>event-4740.png</li>
+<li>defender-status.png</li>
+<li>eicar-block.png</li>
+<li>cfa-block.png</li>
+<li>firewall-profiles.png</li>
+<li>firewall-rdp-block.png</li>
+<li>local-users.png</li>
+<li>admin-renamed.png</li>
+<li>audit-policy.png</li>
+<li>wazuh-service.png</li>
+<li>ubuntu/</li>
+<li>os-version.png</li>
+<li>ufw-status.png</li>
+<li>ufw-rules.png</li>
+<li>ssh-password-auth.png</li>
+<li>ssh-root-login.png</li>
+<li>ssh-max-auth-tries.png</li>
+<li>fail2ban-status.png</li>
+<li>nginx-security-headers.png</li>
+<li>tls-config.png</li>
+<li>nginx-server-tokens.png</li>
+<li>auto-updates.png</li>
+<li>wazuh-agent-status.png</li>
+<li>auditd-rules.png</li>
+<li>pfsense/</li>
+<li>dashboard.png</li>
+<li>wan-rules.png</li>
+<li>lan-rules.png</li>
+<li>block-rule-detail.png</li>
+<li>opt1-rules.png</li>
+<li>nat-rules.png</li>
+<li>firewall-log.png</li>
+<li>syslog-forward.png</li>
+<li>webgui-https.png</li>
+<li>version.png</li>
+<li>wazuh/</li>
+<li>dashboard.png</li>
+<li>agents-list.png</li>
+<li>agent-windows.png</li>
+<li>agent-ubuntu.png</li>
+<li>failed-login-alert.png</li>
+<li>eicar-alert.png</li>
+<li>pfsense-block-alert.png</li>
+<li>ssh-failed-alert.png</li>
+<li>local-rules.png</li>
+<li>compliance-nist.png</li>
+<li>compliance-pci.png</li>
+<li>events-timeline.png</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="7-related-documents">7. Related Documents<a class="headerlink" href="#7-related-documents" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Scenarios</td>
+<td>09-Testing-and-Validation/test-scenarios.md</td>
+</tr>
+<tr>
+<td>Testing Results</td>
+<td>09-Testing-and-Validation/results.md</td>
+</tr>
+<tr>
+<td>pfSense Network Security</td>
+<td>08-Technical-Controls/pfsense-network.md</td>
+</tr>
+<tr>
+<td>Windows Hardening Guide</td>
+<td>08-Technical-Controls/windows-hardening.md</td>
+</tr>
+<tr>
+<td>Ubuntu Web Server Hardening</td>
+<td>08-Technical-Controls/ubuntu-web-server.md</td>
+</tr>
+<tr>
+<td>Wazuh Monitoring</td>
+<td>08-Technical-Controls/wazuh-monitoring.md</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-version-history">8. Version History<a class="headerlink" href="#8-version-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>April 2026</td>
+<td>S. Singh</td>
+<td>Initial draft</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Added framework mappings</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Draft learning edition</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Evidence Summary</strong></p></article><nav class="navrow"><a href="../09-Testing-and-Validation/capability-evaluation.html">← Security Capability Evaluation</a><a href="detailed-logs.html">Detailed Log Examples →</a></nav><p class="footer-note">Chapter 29 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

@@ -1,0 +1,278 @@
+{
+  "source_count": 29,
+  "sections": [
+    {
+      "id": "00-Front-Matter",
+      "title": "Front Matter",
+      "chapters": [
+        {
+          "source_file": "00-cover.md",
+          "path": "00-Front-Matter/00-cover.md",
+          "title": "Cover and Document Status",
+          "status": "fictional public lab edition"
+        },
+        {
+          "source_file": "02-table-of-contents.md",
+          "path": "00-Front-Matter/02-table-of-contents.md",
+          "title": "Table of Contents",
+          "status": "organized navigation"
+        },
+        {
+          "source_file": "Index.md",
+          "path": "00-Front-Matter/Index.md",
+          "title": "Source Index",
+          "status": "source chapter; publication caveat applies"
+        }
+      ]
+    },
+    {
+      "id": "01-Executive-Summary",
+      "title": "Executive Summary",
+      "chapters": [
+        {
+          "source_file": "executive-summary.md",
+          "path": "01-Executive-Summary/executive-summary.md",
+          "title": "Executive Summary",
+          "status": "fictional design; not an engagement result"
+        }
+      ]
+    },
+    {
+      "id": "02-Company-Profile",
+      "title": "Company Profile",
+      "chapters": [
+        {
+          "source_file": "company-profile.md",
+          "path": "02-Company-Profile/company-profile.md",
+          "title": "Scenario Profile",
+          "status": "fictional assumptions"
+        }
+      ]
+    },
+    {
+      "id": "03-Business-Requirements",
+      "title": "Business Requirements",
+      "chapters": [
+        {
+          "source_file": "business-requirements.md",
+          "path": "03-Business-Requirements/business-requirements.md",
+          "title": "Business and Security Requirements",
+          "status": "proposed scenario requirements"
+        }
+      ]
+    },
+    {
+      "id": "04-Risk-Assessment",
+      "title": "Risk Assessment",
+      "chapters": [
+        {
+          "source_file": "risk-assessment.md",
+          "path": "04-Risk-Assessment/risk-assessment.md",
+          "title": "Risk Assessment",
+          "status": "illustrative scoring and proposed treatments"
+        },
+        {
+          "source_file": "risk-heatmap.md",
+          "path": "04-Risk-Assessment/risk-heatmap.md",
+          "title": "Risk Heatmap",
+          "status": "illustrative only; not measured residual risk"
+        },
+        {
+          "source_file": "risk-register.md",
+          "path": "04-Risk-Assessment/risk-register.md",
+          "title": "Risk Register",
+          "status": "scenario risks; control status planned"
+        }
+      ]
+    },
+    {
+      "id": "05-Security-Architecture",
+      "title": "Security Architecture",
+      "chapters": [
+        {
+          "source_file": "architecture-overview.md",
+          "path": "05-Security-Architecture/architecture-overview.md",
+          "title": "Security Architecture Overview",
+          "status": "proposed design"
+        },
+        {
+          "source_file": "network-architecture.md",
+          "path": "05-Security-Architecture/network-architecture.md",
+          "title": "Network Architecture",
+          "status": "proposed design"
+        }
+      ]
+    },
+    {
+      "id": "06-Framework-Mapping",
+      "title": "Framework Mapping",
+      "chapters": [
+        {
+          "source_file": "iso27001-mapping.md",
+          "path": "06-Framework-Mapping/iso27001-mapping.md",
+          "title": "ISO/IEC 27001 Mapping",
+          "status": "proposed crosswalk; not compliance evidence"
+        },
+        {
+          "source_file": "nist-csf-mapping.md",
+          "path": "06-Framework-Mapping/nist-csf-mapping.md",
+          "title": "NIST CSF Mapping",
+          "status": "proposed crosswalk; updated to CSF 2.0"
+        },
+        {
+          "source_file": "pci-inspired-mapping.md",
+          "path": "06-Framework-Mapping/pci-inspired-mapping.md",
+          "title": "Historical PCI DSS 3.2.1-Inspired Learning Appendix",
+          "status": "historical learning material only; not current PCI compliance"
+        }
+      ]
+    },
+    {
+      "id": "07-Policies-and-Standards",
+      "title": "Policies and Standards",
+      "chapters": [
+        {
+          "source_file": "acceptable-use-policy.md",
+          "path": "07-Policies-and-Standards/acceptable-use-policy.md",
+          "title": "Acceptable Use Policy",
+          "status": "draft template; not approved"
+        },
+        {
+          "source_file": "access-control-policy.md",
+          "path": "07-Policies-and-Standards/access-control-policy.md",
+          "title": "Access Control Policy",
+          "status": "draft template; not approved"
+        },
+        {
+          "source_file": "data-classification-policy.md",
+          "path": "07-Policies-and-Standards/data-classification-policy.md",
+          "title": "Data Classification Policy",
+          "status": "draft template; not approved"
+        },
+        {
+          "source_file": "incident-response-policy.md",
+          "path": "07-Policies-and-Standards/incident-response-policy.md",
+          "title": "Incident Response Policy",
+          "status": "draft template; not approved"
+        },
+        {
+          "source_file": "incident-response-plan.md",
+          "path": "07-Policies-and-Standards/incident-response-plan.md",
+          "title": "Cyber Incident Response Plan",
+          "status": "proposed learning artifact; not approved or exercised",
+          "source_kind": "supplemental"
+        },
+        {
+          "source_file": "password-policy.md",
+          "path": "07-Policies-and-Standards/password-policy.md",
+          "title": "Authentication and Password Policy",
+          "status": "draft template; not approved"
+        }
+      ]
+    },
+    {
+      "id": "08-Technical-Controls",
+      "title": "Technical Controls",
+      "chapters": [
+        {
+          "source_file": "pfsense-network.md",
+          "path": "08-Technical-Controls/pfsense-network.md",
+          "title": "pfSense Network Controls",
+          "status": "proposed configuration and tests"
+        },
+        {
+          "source_file": "ubuntu-web-server.md",
+          "path": "08-Technical-Controls/ubuntu-web-server.md",
+          "title": "Ubuntu Web Server Hardening",
+          "status": "proposed configuration and tests"
+        },
+        {
+          "source_file": "wazuh-monitoring.md",
+          "path": "08-Technical-Controls/wazuh-monitoring.md",
+          "title": "Wazuh Monitoring",
+          "status": "proposed configuration and tests"
+        },
+        {
+          "source_file": "windows-hardening.md",
+          "path": "08-Technical-Controls/windows-hardening.md",
+          "title": "Windows Hardening",
+          "status": "proposed configuration and tests"
+        }
+      ]
+    },
+    {
+      "id": "09-Testing-and-Validation",
+      "title": "Testing and Validation",
+      "chapters": [
+        {
+          "source_file": "results.md",
+          "path": "09-Testing-and-Validation/results.md",
+          "title": "Test Results Register",
+          "status": "planned; not executed; expected outcomes only"
+        },
+        {
+          "source_file": "test-scenarios.md",
+          "path": "09-Testing-and-Validation/test-scenarios.md",
+          "title": "Test Scenarios",
+          "status": "planned; not executed"
+        },
+        {
+          "source_file": "tabletop-exercise.md",
+          "path": "09-Testing-and-Validation/tabletop-exercise.md",
+          "title": "Incident Response Tabletop Exercise",
+          "status": "proposed scenario; not conducted",
+          "source_kind": "supplemental"
+        },
+        {
+          "source_file": "capability-evaluation.md",
+          "path": "09-Testing-and-Validation/capability-evaluation.md",
+          "title": "Security Capability Evaluation",
+          "status": "design reasoning and proposed evaluation; not executed",
+          "source_kind": "supplemental"
+        }
+      ]
+    },
+    {
+      "id": "10-Evidence",
+      "title": "Evidence",
+      "chapters": [
+        {
+          "source_file": "evidence-summary.md",
+          "path": "10-Evidence/evidence-summary.md",
+          "title": "Evidence Register",
+          "status": "evidence requested; artifacts not present"
+        },
+        {
+          "source_file": "detailed-logs.md",
+          "path": "10-Evidence/detailed-logs.md",
+          "title": "Detailed Log Examples",
+          "status": "illustrative placeholders; not observed logs"
+        }
+      ]
+    },
+    {
+      "id": "11-Residual-Risk",
+      "title": "Residual Risk",
+      "chapters": [
+        {
+          "source_file": "residual-risk-recommendations.md",
+          "path": "11-Residual-Risk/residual-risk-recommendations.md",
+          "title": "Proposed Risk Treatment and Recommendations",
+          "status": "proposed targets; no accepted residual risk"
+        }
+      ]
+    },
+    {
+      "id": "12-Appendices",
+      "title": "Appendices",
+      "chapters": [
+        {
+          "source_file": "references.md",
+          "path": "12-Appendices/references.md",
+          "title": "References",
+          "status": "reference material"
+        }
+      ]
+    }
+  ]
+}

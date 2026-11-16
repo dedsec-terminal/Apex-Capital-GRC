@@ -1,0 +1,1215 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Proposed Risk Treatment and Recommendations | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link active" href="residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Residual Risk</div><article class="article"><h1>Proposed Risk Treatment and Recommendations</h1><p class="crumb">Residual Risk · <a class="raw-link" href="../../../11-Residual-Risk/residual-risk-recommendations.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> proposed targets; no accepted residual risk</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#1-overview">1. Overview</a></li>
+<li><a href="#2-proposed-target-risk-summary">2. Proposed Target Risk Summary</a><ul>
+<li><a href="#r-001-lateral-movement-web-server-to-internal-network">R-001: Lateral Movement (Web Server to Internal Network)</a></li>
+<li><a href="#r-002-credential-theft-brute-force-phishing">R-002: Credential Theft (Brute Force / Phishing)</a></li>
+<li><a href="#r-003-ransomware-endpoint-malware">R-003: Ransomware (Endpoint Malware)</a></li>
+<li><a href="#r-004-audit-failure-missing-evidence">R-004: Audit Failure (Missing Evidence)</a></li>
+<li><a href="#r-005-web-server-breach-vulnerable-ubuntu">R-005: Web Server Breach (Vulnerable Ubuntu)</a></li>
+<li><a href="#r-006-insider-threat-data-exfiltration">R-006: Insider Threat (Data Exfiltration)</a></li>
+<li><a href="#r-007-third-party-vendor-breach">R-007: Third-Party Vendor Breach</a></li>
+<li><a href="#r-008-firewall-misconfiguration">R-008: Firewall Misconfiguration</a></li>
+</ul>
+</li>
+<li><a href="#4-residual-risk-heatmap">4. Residual Risk Heatmap</a></li>
+<li><a href="#5-recommendations">5. Recommendations</a><ul>
+<li><a href="#51-high-priority-recommendations">5.1 High Priority Recommendations</a><ul>
+<li><a href="#rec-001-implement-multi-factor-authentication-mfa">REC-001: Implement Multi-Factor Authentication (MFA)</a></li>
+<li><a href="#rec-002-expand-wazuh-siem-to-remaining-endpoints">REC-002: Expand Wazuh SIEM to Remaining Endpoints</a></li>
+</ul>
+</li>
+<li><a href="#52-medium-priority-recommendations">5.2 Medium Priority Recommendations</a><ul>
+<li><a href="#rec-003-establish-vendor-risk-assessment-program">REC-003: Establish Vendor Risk Assessment Program</a></li>
+<li><a href="#rec-004-conduct-annual-penetration-testing">REC-004: Conduct Annual Penetration Testing</a></li>
+<li><a href="#rec-005-implement-data-loss-prevention-dlp">REC-005: Implement Data Loss Prevention (DLP)</a></li>
+</ul>
+</li>
+<li><a href="#53-low-priority-recommendations">5.3 Low Priority Recommendations</a><ul>
+<li><a href="#rec-006-conduct-tabletop-incident-response-exercises">REC-006: Conduct Tabletop Incident Response Exercises</a></li>
+<li><a href="#rec-007-implement-just-in-time-jit-privileged-access">REC-007: Implement Just-in-Time (JIT) Privileged Access</a></li>
+<li><a href="#rec-008-establish-security-awareness-training-program">REC-008: Establish Security Awareness Training Program</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#6-security-roadmap">6. Security Roadmap</a></li>
+<li><a href="#7-proposed-risk-treatment-review">7. Proposed risk treatment review</a></li>
+<li><a href="#8-proposed-risk-review-schedule">8. Proposed risk review schedule</a></li>
+<li><a href="#9-related-documents">9. Related Documents</a></li>
+<li><a href="#10-version-history">10. Version History</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Risk status:</strong> Likelihood/impact values and target residual scores are illustrative scenario judgments. Target scores are proposals only; controls were not executed, effectiveness was not tested, and no residual risk was accepted.</p>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="residual-risk-and-recommendations">Residual Risk and Recommendations<a class="headerlink" href="#residual-risk-and-recommendations" title="Permanent link">&para;</a></h1>
+<p><strong>Last Updated:</strong> May 2026
+<strong>Version:</strong> 1.0
+<strong>Classification:</strong> Internal
+<strong>Owner:</strong> GRC Lead</p>
+<hr />
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
+<p>This document records proposed risk-treatment targets for a fictional lab scenario. No controls were implemented or tested, so residual risk has not been assessed. Each target is a discussion hypothesis, not an accepted risk level.</p>
+<p><strong>Assessment Period:</strong> May 2026
+<strong>Risk Appetite:</strong> Low for client data confidentiality and regulatory compliance; Medium for operational disruption</p>
+<hr />
+<h2 id="2-proposed-target-risk-summary">2. Proposed Target Risk Summary<a class="headerlink" href="#2-proposed-target-risk-summary" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>Target scores are hypotheses for discussion, not calculated residual risk or risk acceptance.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Risk ID</th>
+<th>Risk Description</th>
+<th style="text-align: right;">Inherent Score</th>
+<th style="text-align: right;">Proposed Target Residual Score (Unvalidated)</th>
+<th>Target Rating</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-001</td>
+<td>Lateral movement from DMZ to internal network</td>
+<td style="text-align: right;">15 (High)</td>
+<td style="text-align: right;">4 (Low)</td>
+<td>Proposed target only</td>
+<td>Not accepted</td>
+</tr>
+<tr>
+<td>R-002</td>
+<td>Credential theft via brute force or phishing</td>
+<td style="text-align: right;">20 (Critical)</td>
+<td style="text-align: right;">8 (Medium)</td>
+<td>Proposed target only</td>
+<td>Not accepted</td>
+</tr>
+<tr>
+<td>R-003</td>
+<td>Ransomware disrupts systems or data</td>
+<td style="text-align: right;">20 (Critical)</td>
+<td style="text-align: right;">5 (Low)</td>
+<td>Proposed target only</td>
+<td>Not accepted</td>
+</tr>
+<tr>
+<td>R-004</td>
+<td>Incomplete logging or evidence</td>
+<td style="text-align: right;">12 (Medium)</td>
+<td style="text-align: right;">3 (Low)</td>
+<td>Proposed target only</td>
+<td>Not accepted</td>
+</tr>
+<tr>
+<td>R-005</td>
+<td>Public web host compromise</td>
+<td style="text-align: right;">15 (High)</td>
+<td style="text-align: right;">4 (Low)</td>
+<td>Proposed target only</td>
+<td>Not accepted</td>
+</tr>
+<tr>
+<td>R-006</td>
+<td>Insider misuse of access</td>
+<td style="text-align: right;">10 (Medium)</td>
+<td style="text-align: right;">4 (Low)</td>
+<td>Proposed target only</td>
+<td>Not accepted</td>
+</tr>
+<tr>
+<td>R-007</td>
+<td>Supplier weakness</td>
+<td style="text-align: right;">15 (High)</td>
+<td style="text-align: right;">8 (Medium)</td>
+<td>Proposed target only</td>
+<td>Not accepted</td>
+</tr>
+<tr>
+<td>R-008</td>
+<td>Firewall configuration drift</td>
+<td style="text-align: right;">12 (Medium)</td>
+<td style="text-align: right;">2 (Low)</td>
+<td>Proposed target only</td>
+<td>Not accepted</td>
+</tr>
+<tr>
+<td>## 3. Residual Risk Details</td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-001-lateral-movement-web-server-to-internal-network">R-001: Lateral Movement (Web Server to Internal Network)<a class="headerlink" href="#r-001-lateral-movement-web-server-to-internal-network" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Description</td>
+<td>Attacker compromises Ubuntu web server and attempts lateral movement to internal Windows systems</td>
+</tr>
+<tr>
+<td>Inherent Score (scenario register)</td>
+<td>15 (High)</td>
+</tr>
+<tr>
+<td>Proposed Target Residual Score (Unvalidated)</td>
+<td>4 (Low)</td>
+</tr>
+<tr>
+<td>Residual Risk Level</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Proposed Control Intent</td>
+<td>pfSense firewall rule blocking 10.0.1.0/24 to 10.0.2.0/24</td>
+</tr>
+<tr>
+<td>Proposed Treatment Rationale (Unvalidated)</td>
+<td>Indicative rationale only; no effectiveness evidence or risk-owner acceptance exists</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Proposed treatment only; not accepted</td>
+</tr>
+<tr>
+<td>Review Frequency</td>
+<td>Quarterly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-002-credential-theft-brute-force-phishing">R-002: Credential Theft (Brute Force / Phishing)<a class="headerlink" href="#r-002-credential-theft-brute-force-phishing" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Description</td>
+<td>Attacker uses brute force or phishing to obtain advisor credentials</td>
+</tr>
+<tr>
+<td>Inherent Score (scenario register)</td>
+<td>20 (Critical)</td>
+</tr>
+<tr>
+<td>Proposed Target Residual Score (Unvalidated)</td>
+<td>8 (Medium)</td>
+</tr>
+<tr>
+<td>Residual Risk Level</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Proposed Control Intent</td>
+<td>Password policy (14 char, lockout), Wazuh failed login alerts</td>
+</tr>
+<tr>
+<td>Proposed Treatment Rationale (Unvalidated)</td>
+<td>Indicative rationale only; no effectiveness evidence or risk-owner acceptance exists</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Proposed treatment only; not accepted</td>
+</tr>
+<tr>
+<td>Recommended Action</td>
+<td>Implement MFA for all remote access and administrative accounts</td>
+</tr>
+<tr>
+<td>Review Frequency</td>
+<td>Monthly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-003-ransomware-endpoint-malware">R-003: Ransomware (Endpoint Malware)<a class="headerlink" href="#r-003-ransomware-endpoint-malware" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Description</td>
+<td>Employee downloads ransomware via email or website, encrypting data</td>
+</tr>
+<tr>
+<td>Inherent Score (scenario register)</td>
+<td>20 (Critical)</td>
+</tr>
+<tr>
+<td>Proposed Target Residual Score (Unvalidated)</td>
+<td>5 (Low)</td>
+</tr>
+<tr>
+<td>Residual Risk Level</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Proposed Control Intent</td>
+<td>Microsoft Defender, EICAR validation, Controlled Folder Access</td>
+</tr>
+<tr>
+<td>Proposed Treatment Rationale (Unvalidated)</td>
+<td>Indicative rationale only; no effectiveness evidence or risk-owner acceptance exists</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Proposed treatment only; not accepted</td>
+</tr>
+<tr>
+<td>Review Frequency</td>
+<td>Monthly (EICAR test)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-004-audit-failure-missing-evidence">R-004: Audit Failure (Missing Evidence)<a class="headerlink" href="#r-004-audit-failure-missing-evidence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Description</td>
+<td>Unable to produce evidence for SEBI/SEC/client audits</td>
+</tr>
+<tr>
+<td>Inherent Score (scenario register)</td>
+<td>12 (Medium)</td>
+</tr>
+<tr>
+<td>Proposed Target Residual Score (Unvalidated)</td>
+<td>3 (Low)</td>
+</tr>
+<tr>
+<td>Residual Risk Level</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Proposed Control Intent</td>
+<td>Wazuh centralized logging, evidence repository, documented policies</td>
+</tr>
+<tr>
+<td>Proposed Treatment Rationale (Unvalidated)</td>
+<td>Indicative rationale only; no effectiveness evidence or risk-owner acceptance exists</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Proposed treatment only; not accepted</td>
+</tr>
+<tr>
+<td>Review Frequency</td>
+<td>Quarterly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-005-web-server-breach-vulnerable-ubuntu">R-005: Web Server Breach (Vulnerable Ubuntu)<a class="headerlink" href="#r-005-web-server-breach-vulnerable-ubuntu" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Description</td>
+<td>Ubuntu web server has unpatched vulnerability leading to compromise</td>
+</tr>
+<tr>
+<td>Inherent Score (scenario register)</td>
+<td>15 (High)</td>
+</tr>
+<tr>
+<td>Proposed Target Residual Score (Unvalidated)</td>
+<td>4 (Low)</td>
+</tr>
+<tr>
+<td>Residual Risk Level</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Proposed Control Intent</td>
+<td>SSH hardening, UFW firewall, service minimization, automatic updates</td>
+</tr>
+<tr>
+<td>Proposed Treatment Rationale (Unvalidated)</td>
+<td>Indicative rationale only; no effectiveness evidence or risk-owner acceptance exists</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Proposed treatment only; not accepted</td>
+</tr>
+<tr>
+<td>Review Frequency</td>
+<td>Monthly (patch review)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-006-insider-threat-data-exfiltration">R-006: Insider Threat (Data Exfiltration)<a class="headerlink" href="#r-006-insider-threat-data-exfiltration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Description</td>
+<td>Disgruntled employee exports client list to competitor</td>
+</tr>
+<tr>
+<td>Inherent Score (scenario register)</td>
+<td>10 (Medium)</td>
+</tr>
+<tr>
+<td>Proposed Target Residual Score (Unvalidated)</td>
+<td>4 (Low)</td>
+</tr>
+<tr>
+<td>Residual Risk Level</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Proposed Control Intent</td>
+<td>Access control (least privilege), user behavior logging</td>
+</tr>
+<tr>
+<td>Proposed Treatment Rationale (Unvalidated)</td>
+<td>Indicative rationale only; no effectiveness evidence or risk-owner acceptance exists</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Proposed treatment only; not accepted</td>
+</tr>
+<tr>
+<td>Review Frequency</td>
+<td>Quarterly (access reviews)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-007-third-party-vendor-breach">R-007: Third-Party Vendor Breach<a class="headerlink" href="#r-007-third-party-vendor-breach" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Description</td>
+<td>Cloud vendor (Salesforce, Microsoft 365) breach exposes client data</td>
+</tr>
+<tr>
+<td>Inherent Score (scenario register)</td>
+<td>15 (High)</td>
+</tr>
+<tr>
+<td>Proposed Target Residual Score (Unvalidated)</td>
+<td>8 (Medium)</td>
+</tr>
+<tr>
+<td>Residual Risk Level</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Proposed Control Intent</td>
+<td>None Proposed in Phase 1</td>
+</tr>
+<tr>
+<td>Proposed Treatment Rationale (Unvalidated)</td>
+<td>Indicative rationale only; no effectiveness evidence or risk-owner acceptance exists</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Proposed treatment only; not accepted</td>
+</tr>
+<tr>
+<td>Recommended Action</td>
+<td>Establish quarterly vendor risk assessment program</td>
+</tr>
+<tr>
+<td>Review Frequency</td>
+<td>Quarterly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-008-firewall-misconfiguration">R-008: Firewall Misconfiguration<a class="headerlink" href="#r-008-firewall-misconfiguration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Description</td>
+<td>pfSense firewall misconfigured exposing internal network</td>
+</tr>
+<tr>
+<td>Inherent Score (scenario register)</td>
+<td>12 (Medium)</td>
+</tr>
+<tr>
+<td>Proposed Target Residual Score (Unvalidated)</td>
+<td>2 (Low)</td>
+</tr>
+<tr>
+<td>Residual Risk Level</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Proposed Control Intent</td>
+<td>Change management process, quarterly firewall rule audit</td>
+</tr>
+<tr>
+<td>Proposed Treatment Rationale (Unvalidated)</td>
+<td>Indicative rationale only; no effectiveness evidence or risk-owner acceptance exists</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Proposed treatment only; not accepted</td>
+</tr>
+<tr>
+<td>Review Frequency</td>
+<td>Quarterly</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-residual-risk-heatmap">4. Residual Risk Heatmap<a class="headerlink" href="#4-residual-risk-heatmap" title="Permanent link">&para;</a></h2>
+<p>Likelihood (X-axis): 1 = Rare, 2 = Unlikely, 3 = Possible, 4 = Likely, 5 = Almost Certain</p>
+<p>Impact (Y-axis): 1 = Negligible, 2 = Low, 3 = Medium, 4 = High, 5 = Critical</p>
+<p><strong>Illustrative target grid:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Impact / Likelihood</th>
+<th>1 Rare</th>
+<th>2 Unlikely</th>
+<th>3 Possible</th>
+<th>4 Likely</th>
+<th>5 Almost certain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 Critical</td>
+<td>R-003</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>4 High</td>
+<td>-</td>
+<td>R-002, R-007</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>3 Medium</td>
+<td>R-004</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2 Low</td>
+<td>R-008</td>
+<td>R-001, R-005, R-006</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>1 Negligible</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Target band</th>
+<th style="text-align: right;">Count</th>
+<th>Risks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Critical</td>
+<td style="text-align: right;">0</td>
+<td>None proposed</td>
+</tr>
+<tr>
+<td>High</td>
+<td style="text-align: right;">0</td>
+<td>None proposed</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td style="text-align: right;">2</td>
+<td>R-002, R-007</td>
+</tr>
+<tr>
+<td>Low</td>
+<td style="text-align: right;">6</td>
+<td>R-001, R-003, R-004, R-005, R-006, R-008</td>
+</tr>
+</tbody>
+</table>
+<p>The grid is a planning example only. Every actual residual-risk rating remains <strong>not assessed</strong>. The absence of critical or high target values is not evidence that these risks have been reduced.</p>
+<hr />
+<h2 id="5-recommendations">5. Recommendations<a class="headerlink" href="#5-recommendations" title="Permanent link">&para;</a></h2>
+<h3 id="51-high-priority-recommendations">5.1 High Priority Recommendations<a class="headerlink" href="#51-high-priority-recommendations" title="Permanent link">&para;</a></h3>
+<h4 id="rec-001-implement-multi-factor-authentication-mfa">REC-001: Implement Multi-Factor Authentication (MFA)<a class="headerlink" href="#rec-001-implement-multi-factor-authentication-mfa" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Addressed</td>
+<td>R-002 (Credential Theft)</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Estimated Effort</td>
+<td>2-4 weeks</td>
+</tr>
+<tr>
+<td>Estimated Cost</td>
+<td>$3,000-5,000 (Microsoft 365 MFA or DUO)</td>
+</tr>
+<tr>
+<td>Implementation Steps</td>
+<td>1. Select MFA solution (Microsoft Authenticator or DUO)</td>
+</tr>
+<tr>
+<td></td>
+<td>2. Enroll all 150 remote employees</td>
+</tr>
+<tr>
+<td></td>
+<td>3. Enforce MFA for all remote access</td>
+</tr>
+<tr>
+<td></td>
+<td>4. Enforce MFA for all administrative accounts</td>
+</tr>
+<tr>
+<td>Success Metric</td>
+<td>100% of remote users have MFA enabled</td>
+</tr>
+<tr>
+<td>Target Completion</td>
+<td>Phase 2 (Q3 2026)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="rec-002-expand-wazuh-siem-to-remaining-endpoints">REC-002: Expand Wazuh SIEM to Remaining Endpoints<a class="headerlink" href="#rec-002-expand-wazuh-siem-to-remaining-endpoints" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Addressed</td>
+<td>R-004 (Audit Failure), R-003 (Malware Detection)</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Estimated Effort</td>
+<td>4-6 weeks</td>
+</tr>
+<tr>
+<td>Estimated Cost</td>
+<td>$0 (open source) + 40 staff hours</td>
+</tr>
+<tr>
+<td>Implementation Steps</td>
+<td>1. Deploy Wazuh agents to remaining 150 remote endpoints</td>
+</tr>
+<tr>
+<td></td>
+<td>2. Configure log collection for all endpoints</td>
+</tr>
+<tr>
+<td></td>
+<td>3. Establish alerting rules for remote endpoints</td>
+</tr>
+<tr>
+<td></td>
+<td>4. Train security staff on SIEM operations</td>
+</tr>
+<tr>
+<td>Success Metric</td>
+<td>100% endpoint coverage with active agents</td>
+</tr>
+<tr>
+<td>Target Completion</td>
+<td>Phase 2 (Q3 2026)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="52-medium-priority-recommendations">5.2 Medium Priority Recommendations<a class="headerlink" href="#52-medium-priority-recommendations" title="Permanent link">&para;</a></h3>
+<h4 id="rec-003-establish-vendor-risk-assessment-program">REC-003: Establish Vendor Risk Assessment Program<a class="headerlink" href="#rec-003-establish-vendor-risk-assessment-program" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Addressed</td>
+<td>R-007 (Third-Party Vendor Breach)</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Estimated Effort</td>
+<td>Ongoing process</td>
+</tr>
+<tr>
+<td>Estimated Cost</td>
+<td>$0 (internal process)</td>
+</tr>
+<tr>
+<td>Implementation Steps</td>
+<td>1. Create vendor risk assessment template</td>
+</tr>
+<tr>
+<td></td>
+<td>2. Identify top 10 vendors by data sensitivity</td>
+</tr>
+<tr>
+<td></td>
+<td>3. Assess vendors annually</td>
+</tr>
+<tr>
+<td></td>
+<td>4. Document vendor security posture</td>
+</tr>
+<tr>
+<td>Success Metric</td>
+<td>Top 10 vendors assessed within 12 months</td>
+</tr>
+<tr>
+<td>Target Completion</td>
+<td>Phase 2 (Q4 2026)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="rec-004-conduct-annual-penetration-testing">REC-004: Conduct Annual Penetration Testing<a class="headerlink" href="#rec-004-conduct-annual-penetration-testing" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Addressed</td>
+<td>R-001, R-002, R-003, R-005</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Estimated Effort</td>
+<td>2-3 weeks</td>
+</tr>
+<tr>
+<td>Estimated Cost</td>
+<td>$10,000-20,000 (external vendor)</td>
+</tr>
+<tr>
+<td>Implementation Steps</td>
+<td>1. Engage qualified penetration testing firm</td>
+</tr>
+<tr>
+<td></td>
+<td>2. Test external-facing assets (web server, remote access)</td>
+</tr>
+<tr>
+<td></td>
+<td>3. Test internal network segmentation</td>
+</tr>
+<tr>
+<td></td>
+<td>4. Remediate identified vulnerabilities</td>
+</tr>
+<tr>
+<td>Success Metric</td>
+<td>No critical or high findings in pen test report</td>
+</tr>
+<tr>
+<td>Target Completion</td>
+<td>Phase 3 (Q1 2027)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="rec-005-implement-data-loss-prevention-dlp">REC-005: Implement Data Loss Prevention (DLP)<a class="headerlink" href="#rec-005-implement-data-loss-prevention-dlp" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Addressed</td>
+<td>R-006 (Insider Threat)</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Estimated Effort</td>
+<td>4-6 weeks</td>
+</tr>
+<tr>
+<td>Estimated Cost</td>
+<td>$5,000-10,000 (Microsoft Purview DLP)</td>
+</tr>
+<tr>
+<td>Implementation Steps</td>
+<td>1. Define sensitive data types (PAN, SSN, financial data)</td>
+</tr>
+<tr>
+<td></td>
+<td>2. Create DLP policies for email and endpoints</td>
+</tr>
+<tr>
+<td></td>
+<td>3. Monitor and refine policies</td>
+</tr>
+<tr>
+<td>Success Metric</td>
+<td>Unauthorized data transfers blocked or alerted</td>
+</tr>
+<tr>
+<td>Target Completion</td>
+<td>Phase 3 (Q1 2027)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="53-low-priority-recommendations">5.3 Low Priority Recommendations<a class="headerlink" href="#53-low-priority-recommendations" title="Permanent link">&para;</a></h3>
+<h4 id="rec-006-conduct-tabletop-incident-response-exercises">REC-006: Conduct Tabletop Incident Response Exercises<a class="headerlink" href="#rec-006-conduct-tabletop-incident-response-exercises" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Addressed</td>
+<td>R-004 (Audit Failure), Incident Response</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Estimated Effort</td>
+<td>2 days</td>
+</tr>
+<tr>
+<td>Estimated Cost</td>
+<td>$0 (internal)</td>
+</tr>
+<tr>
+<td>Implementation Steps</td>
+<td>1. Develop ransomware tabletop scenario</td>
+</tr>
+<tr>
+<td></td>
+<td>2. Conduct exercise with IRT members</td>
+</tr>
+<tr>
+<td></td>
+<td>3. Document lessons learned</td>
+</tr>
+<tr>
+<td></td>
+<td>4. Update IR policy based on findings</td>
+</tr>
+<tr>
+<td>Success Metric</td>
+<td>IR plan tested and updated annually</td>
+</tr>
+<tr>
+<td>Target Completion</td>
+<td>Phase 3 (Q4 2026)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="rec-007-implement-just-in-time-jit-privileged-access">REC-007: Implement Just-in-Time (JIT) Privileged Access<a class="headerlink" href="#rec-007-implement-just-in-time-jit-privileged-access" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Addressed</td>
+<td>R-002, R-006</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Estimated Effort</td>
+<td>4-8 weeks</td>
+</tr>
+<tr>
+<td>Estimated Cost</td>
+<td>$0-5,000 (Microsoft PIM)</td>
+</tr>
+<tr>
+<td>Implementation Steps</td>
+<td>1. Deploy Privileged Identity Management (PIM)</td>
+</tr>
+<tr>
+<td></td>
+<td>2. Require approval for admin access</td>
+</tr>
+<tr>
+<td></td>
+<td>3. Enforce time-limited access</td>
+</tr>
+<tr>
+<td>Success Metric</td>
+<td>All admin access requests approved and logged</td>
+</tr>
+<tr>
+<td>Target Completion</td>
+<td>Phase 3 (Q2 2027)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="rec-008-establish-security-awareness-training-program">REC-008: Establish Security Awareness Training Program<a class="headerlink" href="#rec-008-establish-security-awareness-training-program" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Addressed</td>
+<td>R-002, R-003</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Estimated Effort</td>
+<td>Ongoing</td>
+</tr>
+<tr>
+<td>Estimated Cost</td>
+<td>$2,000-5,000 per year</td>
+</tr>
+<tr>
+<td>Implementation Steps</td>
+<td>1. Deploy security awareness training platform</td>
+</tr>
+<tr>
+<td></td>
+<td>2. Conduct quarterly phishing simulations</td>
+</tr>
+<tr>
+<td></td>
+<td>3. Track completion rates and click rates</td>
+</tr>
+<tr>
+<td>Success Metric</td>
+<td>95% completion rate, &lt;10% phishing click rate</td>
+</tr>
+<tr>
+<td>Target Completion</td>
+<td>Phase 3 (Q4 2026)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-security-roadmap">6. Security Roadmap<a class="headerlink" href="#6-security-roadmap" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Timeline</th>
+<th>Activities</th>
+<th>Success Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase 1 (Design Draft; Not Executed)</td>
+<td>Months 1-3</td>
+<td>Risk assessment, policies, technical controls (Windows, Ubuntu, pfSense, Wazuh), testing, evidence collection</td>
+<td>All Phase 1 controls implemented, tested, evidenced and reviewed (future target; not achieved)</td>
+</tr>
+<tr>
+<td>Phase 2 (Next)</td>
+<td>Months 4-6</td>
+<td>MFA rollout, Wazuh expansion to 150 endpoints, vendor risk assessment program</td>
+<td>MFA enabled for all remote users; 100% endpoint coverage</td>
+</tr>
+<tr>
+<td>Phase 3 (Future)</td>
+<td>Months 7-12</td>
+<td>Penetration testing, DLP implementation, IR tabletop exercises, security awareness training</td>
+<td>No critical findings; DLP policies active</td>
+</tr>
+<tr>
+<td>Phase 4 (Long-term)</td>
+<td>Months 13-18</td>
+<td>JIT privileged access, SOAR integration, threat hunting</td>
+<td>Automated response; proactive threat detection</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-proposed-risk-treatment-review">7. Proposed risk treatment review<a class="headerlink" href="#7-proposed-risk-treatment-review" title="Permanent link">&para;</a></h2>
+<p>No residual risk has been approved or accepted. Reviewers should evaluate the following evidence before making an acceptance decision.</p>
+<table>
+<thead>
+<tr>
+<th>Risk ID</th>
+<th>Proposed treatment rationale</th>
+<th>Acceptance evidence still required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-001</td>
+<td>Segmentation is intended to restrict lateral movement</td>
+<td>Reviewed rule export and paired allowed/denied tests</td>
+</tr>
+<tr>
+<td>R-002</td>
+<td>Authentication and least privilege are intended to limit credential abuse</td>
+<td>Effective policy, MFA scope and access-test evidence</td>
+</tr>
+<tr>
+<td>R-003</td>
+<td>Endpoint controls and protected backups are intended to support containment and recovery</td>
+<td>Safe control test, isolated restore, recovery checks and owner review</td>
+</tr>
+<tr>
+<td>R-004</td>
+<td>Logging and evidence handling are intended to support investigation</td>
+<td>Source coverage, time consistency, retention and retrieval tests</td>
+</tr>
+<tr>
+<td>R-005</td>
+<td>Hardening is intended to reduce unnecessary exposure</td>
+<td>Verified baseline, patch assessment and service exposure checks</td>
+</tr>
+<tr>
+<td>R-006</td>
+<td>Least privilege and logging are proposed safeguards; effectiveness is untested</td>
+<td>Role review, access tests and proportionate monitoring evidence</td>
+</tr>
+<tr>
+<td>R-007</td>
+<td>Supplier due diligence is intended to identify evidence gaps and dependencies</td>
+<td>Scoped review, unresolved findings and accountable business decision</td>
+</tr>
+<tr>
+<td>R-008</td>
+<td>Change review and regression testing are intended to detect configuration errors</td>
+<td>Approved change, rollback record and regression results</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Approval record:</strong> No sign-off recorded. A future decision must identify the risk owner, rationale, conditions, evidence and review date.</p>
+<hr />
+<h2 id="8-proposed-risk-review-schedule">8. Proposed risk review schedule<a class="headerlink" href="#8-proposed-risk-review-schedule" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Risk ID</th>
+<th>Proposed frequency</th>
+<th>Next review date</th>
+<th>Responsible role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-001</td>
+<td>Quarterly and after a network change</td>
+<td>To be agreed</td>
+<td>Network security owner</td>
+</tr>
+<tr>
+<td>R-002</td>
+<td>Monthly and after an access incident</td>
+<td>To be agreed</td>
+<td>IAM owner</td>
+</tr>
+<tr>
+<td>R-003</td>
+<td>Monthly and after an endpoint or recovery change</td>
+<td>To be agreed</td>
+<td>Endpoint and resilience owner</td>
+</tr>
+<tr>
+<td>R-004</td>
+<td>Quarterly and after a logging gap</td>
+<td>To be agreed</td>
+<td>Security operations owner</td>
+</tr>
+<tr>
+<td>R-005</td>
+<td>Monthly and after a material service change</td>
+<td>To be agreed</td>
+<td>Application / infrastructure owner</td>
+</tr>
+<tr>
+<td>R-006</td>
+<td>Quarterly and after role or data-scope changes</td>
+<td>To be agreed</td>
+<td>Data and IAM owners</td>
+</tr>
+<tr>
+<td>R-007</td>
+<td>Quarterly and after a supplier/service change</td>
+<td>To be agreed</td>
+<td>Third-party risk owner</td>
+</tr>
+<tr>
+<td>R-008</td>
+<td>Quarterly and after firewall changes</td>
+<td>To be agreed</td>
+<td>Network security owner</td>
+</tr>
+</tbody>
+</table>
+<p>Frequencies are lab planning choices, not prescribed framework intervals or approved organizational commitments.</p>
+<hr />
+<h2 id="9-related-documents">9. Related Documents<a class="headerlink" href="#9-related-documents" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk Assessment</td>
+<td>04-Risk-Assessment/risk-assessment.md</td>
+</tr>
+<tr>
+<td>Risk Register</td>
+<td>04-Risk-Assessment/risk-register.md</td>
+</tr>
+<tr>
+<td>Risk Heatmap</td>
+<td>04-Risk-Assessment/risk-heatmap.md</td>
+</tr>
+<tr>
+<td>Testing Results</td>
+<td>09-Testing-and-Validation/results.md</td>
+</tr>
+<tr>
+<td>Evidence Summary</td>
+<td>10-Evidence/evidence-summary.md</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-version-history">10. Version History<a class="headerlink" href="#10-version-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>April 2026</td>
+<td>S. Singh</td>
+<td>Initial draft</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Added recommendations and roadmap</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Draft learning edition</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Residual Risk and Recommendations</strong></p></article><nav class="navrow"><a href="../10-Evidence/detailed-logs.html">← Detailed Log Examples</a><a href="../12-Appendices/references.html">References →</a></nav><p class="footer-note">Chapter 31 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

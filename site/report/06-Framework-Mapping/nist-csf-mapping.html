@@ -1,0 +1,790 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>NIST CSF Mapping | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link active" href="nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Framework Mapping</div><article class="article"><h1>NIST CSF Mapping</h1><p class="crumb">Framework Mapping · <a class="raw-link" href="../../../06-Framework-Mapping/nist-csf-mapping.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> proposed crosswalk; updated to CSF 2.0</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#4-vm-architecture">4-VM Architecture</a></li>
+<li><a href="#govern-gv">Govern (GV)</a></li>
+<li><a href="#identify-id">Identify (ID)</a><ul>
+<li><a href="#asset-inventory-4-vm">Asset Inventory (4-VM)</a></li>
+</ul>
+</li>
+<li><a href="#protect-pr">Protect (PR)</a></li>
+<li><a href="#detect-de">Detect (DE)</a><ul>
+<li><a href="#detection-sources-by-vm">Detection Sources by VM</a></li>
+</ul>
+</li>
+<li><a href="#respond-rs">Respond (RS)</a><ul>
+<li><a href="#incident-response-workflow">Incident Response Workflow</a></li>
+</ul>
+</li>
+<li><a href="#detection-wazuh-alert-analysis-vm-4-containment-pfsense-block-eradication-vm-12-recovery-backup">Detection (Wazuh Alert) → Analysis (VM 4) → Containment (pfSense Block) → Eradication (VM 1,2) → Recovery (Backup)</a></li>
+<li><a href="#recover-rc">Recover (RC)</a></li>
+<li><a href="#reference-mapping-counts-not-an-implementation-assessment">Reference Mapping Counts (Not an Implementation Assessment)</a></li>
+<li><a href="#nist-csf-tiers-not-assessed">NIST CSF Tiers Not Assessed</a></li>
+<li><a href="#evidence-index-by-nist-category-4-vm">Evidence Index by NIST Category (4-VM)</a></li>
+<li><a href="#control-to-vm-mapping-matrix">Control to VM Mapping Matrix</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="nist-csf-20-mapping">NIST CSF 2.0 Mapping<a class="headerlink" href="#nist-csf-20-mapping" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The NIST Cybersecurity Framework (CSF) 2.0 is organized into six core functions: <strong>Govern (GV), Identify (ID), Protect (PR), Detect (DE), Respond (RS), and Recover (RC)</strong>.</p>
+<p>This document maps Apex Capital's Proposed security controls across four virtual machines to each NIST function and category.</p>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>Role</th>
+<th>Primary NIST Functions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VM 1 - Windows 11 Enterprise</td>
+<td>Internal workstation/server</td>
+<td>Protect (PR), Detect (DE)</td>
+</tr>
+<tr>
+<td>VM 2 - Ubuntu Server</td>
+<td>Public-facing web server</td>
+<td>Protect (PR), Identify (ID)</td>
+</tr>
+<tr>
+<td>VM 3 - pfSense</td>
+<td>Firewall and segmentation</td>
+<td>Protect (PR), Detect (DE)</td>
+</tr>
+<tr>
+<td>VM 4 - Wazuh</td>
+<td>SIEM and monitoring</td>
+<td>Detect (DE), Respond (RS)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-vm-architecture">4-VM Architecture<a class="headerlink" href="#4-vm-architecture" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Primary VM</th>
+<th>Supporting VM</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Govern (GV)</strong></td>
+<td>All VMs (design-level)</td>
+<td>VM 1-4</td>
+<td>Proposed roles, policies, risk approach, and oversight apply across the lab; none are approved or assessed.</td>
+</tr>
+<tr>
+<td><strong>Identify (ID)</strong></td>
+<td>VM 1-4</td>
+<td>VM 3</td>
+<td>Inventory, classification, and scenario risk records describe the proposed lab scope.</td>
+</tr>
+<tr>
+<td><strong>Protect (PR)</strong></td>
+<td>VM 3 (pfSense)</td>
+<td>VM 1-2</td>
+<td>Segmentation and host hardening are proposed for the internal, DMZ, and management zones.</td>
+</tr>
+<tr>
+<td><strong>Detect (DE)</strong></td>
+<td>VM 4 (Wazuh)</td>
+<td>VM 1-3</td>
+<td>Central monitoring is designed to receive endpoint, server, and network events.</td>
+</tr>
+<tr>
+<td><strong>Respond (RS)</strong></td>
+<td>VM 4 (Wazuh)</td>
+<td>VM 1, VM 3</td>
+<td>Alert triage and containment workflows are proposed; no incident exercise has been run.</td>
+</tr>
+<tr>
+<td><strong>Recover (RC)</strong></td>
+<td>VM 1-2</td>
+<td>VM 4</td>
+<td>Recovery planning is proposed for affected hosts and logging; backup restoration has not been validated.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="govern-gv">Govern (GV)<a class="headerlink" href="#govern-gv" title="Permanent link">&para;</a></h2>
+<p>The Govern function establishes organizational context, risk management strategy, and security policies.</p>
+<table>
+<thead>
+<tr>
+<th>Subcategory</th>
+<th>Description</th>
+<th>Proposed Control</th>
+<th>Evidence Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GV.OC-01</td>
+<td>Organizational context is established</td>
+<td>Company profile, business requirements</td>
+<td><code>02-Company-Profile/</code>, <code>03-Business-Requirements/</code></td>
+</tr>
+<tr>
+<td>GV.OC-03</td>
+<td>Legal, regulatory, and contractual requirements are understood and managed</td>
+<td>Identify obligations only after jurisdiction and entity applicability review; no regulatory applicability is established here</td>
+<td><code>03-Business-Requirements/business-requirements.md</code></td>
+</tr>
+<tr>
+<td>GV.RR-02</td>
+<td>Cybersecurity roles, responsibilities, and authorities are established and communicated</td>
+<td>Fictional role assignments are proposed for the lab scenario</td>
+<td><code>02-Company-Profile/</code> Section 4</td>
+</tr>
+<tr>
+<td>GV.RM-02</td>
+<td>Risk appetite statement is established</td>
+<td>Risk appetite documented</td>
+<td><code>04-Risk-Assessment/risk-assessment.md</code></td>
+</tr>
+<tr>
+<td>ID.RA-05</td>
+<td>Threats, vulnerabilities, likelihoods, and impacts are used to understand inherent risk</td>
+<td>Illustrative risk register; values are unvalidated scenario judgments</td>
+<td><code>04-Risk-Assessment/risk-register.md</code></td>
+</tr>
+<tr>
+<td>GV.PO-01</td>
+<td>Policies are established</td>
+<td>6 security policies documented</td>
+<td><code>07-Policies-and-Standards/</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="identify-id">Identify (ID)<a class="headerlink" href="#identify-id" title="Permanent link">&para;</a></h2>
+<p>The Identify function develops understanding of assets, risks, and business environment.</p>
+<table>
+<thead>
+<tr>
+<th>Subcategory</th>
+<th>Description</th>
+<th>Proposed Control</th>
+<th>Evidence Location</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID.AM-01</td>
+<td>Hardware assets are inventoried</td>
+<td>4-VM asset inventory</td>
+<td>Below table</td>
+<td>All</td>
+</tr>
+<tr>
+<td>ID.AM-02</td>
+<td>Software assets are inventoried</td>
+<td>OS and applications documented</td>
+<td><code>02-Company-Profile/</code> Section 3</td>
+<td>All</td>
+</tr>
+<tr>
+<td>ID.AM-07</td>
+<td>Inventories of data and corresponding metadata are maintained</td>
+<td>Proposed data inventory and classification workflow</td>
+<td><code>07-Policies-and-Standards/data-classification-policy.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>ID.RA-01</td>
+<td>Vulnerabilities are identified</td>
+<td>Risk assessment methodology</td>
+<td><code>04-Risk-Assessment/risk-assessment.md</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>ID.RA-03</td>
+<td>Internal and external threats to the organization are identified and recorded</td>
+<td>Illustrative threat scenarios for the fictional lab</td>
+<td><code>04-Risk-Assessment/risk-assessment.md</code> Section 3</td>
+<td>All</td>
+</tr>
+<tr>
+<td>ID.RA-06</td>
+<td>Risk responses are chosen, prioritized, planned, tracked, and communicated</td>
+<td>Proposed treatment options; owners and acceptance decisions remain pending</td>
+<td><code>04-Risk-Assessment/risk-register.md</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>ID.RA-05 / ID.RA-06</td>
+<td>Inherent risk is analyzed and responses are prioritized</td>
+<td>Illustrative scoring and proposed responses; no assessed treatment status</td>
+<td><code>04-Risk-Assessment/risk-heatmap.md</code></td>
+<td>All</td>
+</tr>
+</tbody>
+</table>
+<h3 id="asset-inventory-4-vm">Asset Inventory (4-VM)<a class="headerlink" href="#asset-inventory-4-vm" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Asset ID</th>
+<th>VM</th>
+<th>Hostname</th>
+<th>IP Address</th>
+<th>Subnet</th>
+<th>Classification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-001</td>
+<td>VM 1</td>
+<td>Windows-Enterprise</td>
+<td>10.0.2.10</td>
+<td>Internal</td>
+<td>High</td>
+</tr>
+<tr>
+<td>A-002</td>
+<td>VM 2</td>
+<td>Ubuntu-Web</td>
+<td>10.0.1.10</td>
+<td>Public (DMZ)</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>A-003</td>
+<td>VM 3</td>
+<td>pfSense</td>
+<td>10.0.1.1, 10.0.2.1, 10.0.3.1</td>
+<td>All</td>
+<td>High</td>
+</tr>
+<tr>
+<td>A-004</td>
+<td>VM 4</td>
+<td>Wazuh-SIEM</td>
+<td>10.0.3.10</td>
+<td>Management</td>
+<td>Medium</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="protect-pr">Protect (PR)<a class="headerlink" href="#protect-pr" title="Permanent link">&para;</a></h2>
+<p>The Protect function describes cybersecurity safeguards. The entries below are proposed cross-references only; none are implementation findings.</p>
+<table>
+<thead>
+<tr>
+<th>Subcategory</th>
+<th>Description</th>
+<th>Proposed Control</th>
+<th>Evidence Location</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PR.AA-01</td>
+<td>Identity and credential management</td>
+<td>Password policy (14 char, lockout, history)</td>
+<td><code>07-Policies-and-Standards/password-policy.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>PR.IR-01</td>
+<td>Networks and environments protected from unauthorized logical access</td>
+<td>No direct RDP from WAN, pfSense rules</td>
+<td><code>08-Technical-Controls/pfsense-network.md</code></td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>PR.AA-05</td>
+<td>Access permissions managed with least privilege and separation of duties</td>
+<td>Separate admin accounts, user roles</td>
+<td><code>07-Policies-and-Standards/access-control-policy.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>PR.IR-01</td>
+<td>Networks and environments protected from unauthorized logical access</td>
+<td>pfSense firewall, public vs private subnets</td>
+<td><code>08-Technical-Controls/pfsense-network.md</code></td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>PR.AA-05</td>
+<td>Access reviews are conducted</td>
+<td>Quarterly access review recommended</td>
+<td><code>11-Residual-Risk/residual-risk-recommendations.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>PR.DS-01</td>
+<td>Data at rest is protected</td>
+<td>NTFS permissions, BitLocker (optional)</td>
+<td><code>08-Technical-Controls/windows-hardening.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>PR.DS-02</td>
+<td>Data in transit is protected</td>
+<td>HTTPS, SSH encryption</td>
+<td><code>08-Technical-Controls/ubuntu-web-server.md</code></td>
+<td>VM 2</td>
+</tr>
+<tr>
+<td>ID.AM-07</td>
+<td>Data inventories and metadata are maintained</td>
+<td>Data inventory/classification workflow is proposed</td>
+<td><code>07-Policies-and-Standards/data-classification-policy.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>PR.DS-11</td>
+<td>Data backups are performed</td>
+<td>Backup procedures documented</td>
+<td><code>08-Technical-Controls/windows-hardening.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>DE.CM-09</td>
+<td>Malware protection is Proposed</td>
+<td>Microsoft Defender, real-time scanning</td>
+<td><code>08-Technical-Controls/windows-hardening.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>ID.RA-01</td>
+<td>Vulnerability management is Proposed</td>
+<td>OS hardening, patch management policy</td>
+<td><code>08-Technical-Controls/windows-hardening.md</code></td>
+<td>VM 1, VM 2</td>
+</tr>
+<tr>
+<td>PR.PS-01</td>
+<td>Configuration management practices are established and applied (outcome reference only)</td>
+<td>CIS benchmarks, hardening guides</td>
+<td><code>08-Technical-Controls/windows-hardening.md</code></td>
+<td>VM 1, VM 2</td>
+</tr>
+<tr>
+<td>PR.PS-02</td>
+<td>Software is updated regularly</td>
+<td>Patch management policy</td>
+<td><code>07-Policies-and-Standards/password-policy.md</code></td>
+<td>VM 1, VM 2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="detect-de">Detect (DE)<a class="headerlink" href="#detect-de" title="Permanent link">&para;</a></h2>
+<p>The Detect function covers outcomes for monitoring and analysis. The entries below are proposed cross-references only; none are implementation findings.</p>
+<table>
+<thead>
+<tr>
+<th>Subcategory</th>
+<th>Description</th>
+<th>Proposed Control</th>
+<th>Evidence Location</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DE.CM-01</td>
+<td>Network is monitored</td>
+<td>pfSense logs, firewall events</td>
+<td><code>08-Technical-Controls/pfsense-network.md</code></td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>DE.CM-09</td>
+<td>Computing hardware and software are monitored for adverse events</td>
+<td>Microsoft Defender, EICAR testing</td>
+<td><code>08-Technical-Controls/windows-hardening.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>DE.CM-09</td>
+<td>Computing hardware and software are monitored for adverse events</td>
+<td>Wazuh failed login alerts (Event ID 4625)</td>
+<td><code>08-Technical-Controls/wazuh-monitoring.md</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>PR.PS-04</td>
+<td>Log records are generated and made available for continuous monitoring</td>
+<td>Wazuh centralized logging</td>
+<td><code>08-Technical-Controls/wazuh-monitoring.md</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>DE.AE-02</td>
+<td>Security events are analyzed</td>
+<td>Wazuh SIEM event correlation</td>
+<td><code>08-Technical-Controls/wazuh-monitoring.md</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>DE.AE-06</td>
+<td>Adverse-event information is provided to authorized people and tools</td>
+<td>Wazuh alert rules (failed login, malware)</td>
+<td><code>08-Technical-Controls/wazuh-monitoring.md</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>ID.IM-02</td>
+<td>Improvements are identified from security tests and exercises</td>
+<td>EICAR test, failed login test</td>
+<td><code>09-Testing-and-Validation/test-scenarios.md</code></td>
+<td>VM 1, VM 4</td>
+</tr>
+</tbody>
+</table>
+<h3 id="detection-sources-by-vm">Detection Sources by VM<a class="headerlink" href="#detection-sources-by-vm" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>Detection Capability</th>
+<th>Logs Sent to Wazuh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="respond-rs">Respond (RS)<a class="headerlink" href="#respond-rs" title="Permanent link">&para;</a></h2>
+<p>The Respond function contains and mitigates security incidents.</p>
+<table>
+<thead>
+<tr>
+<th>Subcategory</th>
+<th>Description</th>
+<th>Proposed Control</th>
+<th>Evidence Location</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID.IM-04</td>
+<td>Incident response plans are established, communicated, maintained, and improved</td>
+<td>Incident response policy documented</td>
+<td><code>07-Policies-and-Standards/incident-response-policy.md</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>GV.RR-02</td>
+<td>Cybersecurity roles, responsibilities, and authorities are established</td>
+<td>CISO, GRC Lead, IT teams roles defined</td>
+<td><code>07-Policies-and-Standards/incident-response-policy.md</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>RS.AN-03</td>
+<td>Incident investigations are performed</td>
+<td>Alert triage process defined</td>
+<td><code>07-Policies-and-Standards/incident-response-policy.md</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>RS.AN-07</td>
+<td>Incident data and metadata are collected with integrity and provenance</td>
+<td>Wazuh logs, evidence repository</td>
+<td><code>10-Evidence/</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>RS.MI-01</td>
+<td>Incidents are contained</td>
+<td>Containment procedures documented</td>
+<td><code>07-Policies-and-Standards/incident-response-policy.md</code></td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>RS.MI-02</td>
+<td>Incidents are eradicated</td>
+<td>Eradication procedures documented</td>
+<td><code>07-Policies-and-Standards/incident-response-policy.md</code></td>
+<td>VM 1, VM 2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="incident-response-workflow">Incident Response Workflow<a class="headerlink" href="#incident-response-workflow" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="detection-wazuh-alert-analysis-vm-4-containment-pfsense-block-eradication-vm-12-recovery-backup">Detection (Wazuh Alert) → Analysis (VM 4) → Containment (pfSense Block) → Eradication (VM 1,2) → Recovery (Backup)<a class="headerlink" href="#detection-wazuh-alert-analysis-vm-4-containment-pfsense-block-eradication-vm-12-recovery-backup" title="Permanent link">&para;</a></h2>
+<hr />
+<h2 id="recover-rc">Recover (RC)<a class="headerlink" href="#recover-rc" title="Permanent link">&para;</a></h2>
+<p>The Recover function restores operations after an incident.</p>
+<table>
+<thead>
+<tr>
+<th>Subcategory</th>
+<th>Description</th>
+<th>Proposed Control</th>
+<th>Evidence Location</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RC.RP-01</td>
+<td>Recovery portion of the incident response plan is executed</td>
+<td>Backup and recovery procedures</td>
+<td><code>08-Technical-Controls/windows-hardening.md</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>ID.IM-03</td>
+<td>Post-incident lessons are learned</td>
+<td>Post-incident review process</td>
+<td><code>07-Policies-and-Standards/incident-response-policy.md</code></td>
+<td>All</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="reference-mapping-counts-not-an-implementation-assessment">Reference Mapping Counts (Not an Implementation Assessment)<a class="headerlink" href="#reference-mapping-counts-not-an-implementation-assessment" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>NIST CSF 2.0 function</th>
+<th>Mapping rows in this draft</th>
+<th>Assessment status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Govern (GV)</td>
+<td>6</td>
+<td>Proposed references; not independently assessed</td>
+</tr>
+<tr>
+<td>Identify (ID)</td>
+<td>7</td>
+<td>Proposed references; not independently assessed</td>
+</tr>
+<tr>
+<td>Protect (PR)</td>
+<td>13</td>
+<td>Proposed references; not independently assessed</td>
+</tr>
+<tr>
+<td>Detect (DE)</td>
+<td>7</td>
+<td>Proposed references; not independently assessed</td>
+</tr>
+<tr>
+<td>Respond (RS)</td>
+<td>6</td>
+<td>Proposed references; not independently assessed</td>
+</tr>
+<tr>
+<td>Recover (RC)</td>
+<td>2</td>
+<td>Proposed references; not independently assessed</td>
+</tr>
+</tbody>
+</table>
+<p>Counts are the number of rows shown under each function in this draft. They are not implementation, evidence, effectiveness, or compliance counts. No VM tests have been run.</p>
+<hr />
+<h2 id="nist-csf-tiers-not-assessed">NIST CSF Tiers Not Assessed<a class="headerlink" href="#nist-csf-tiers-not-assessed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tier Level</th>
+<th>Description</th>
+<th>Apex Capital Rating</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tier 1 (Partial)</td>
+<td>Ad hoc, reactive processes</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Tier 2 (Risk Informed)</td>
+<td>Risk-aware, but not organization-wide</td>
+<td><strong>Not rated</strong></td>
+</tr>
+<tr>
+<td>Tier 3 (Repeatable)</td>
+<td>Repeatable governance and risk-management practices</td>
+<td>Not assessed</td>
+</tr>
+<tr>
+<td>Tier 4 (Adaptive)</td>
+<td>Practices adapt using risk and performance information</td>
+<td>Not assessed</td>
+</tr>
+</tbody>
+</table>
+<p>CSF Tiers characterize the rigor of cybersecurity risk governance and management practices; they are not a simple maturity score or a percentage of controls implemented. No Tier is assigned to this fictional lab. An organizational assessment would require evidence of operating practices and business context.</p>
+<hr />
+<h2 id="evidence-index-by-nist-category-4-vm">Evidence Index by NIST Category (4-VM)<a class="headerlink" href="#evidence-index-by-nist-category-4-vm" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>NIST Category</th>
+<th>Control</th>
+<th>Evidence File</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID.RA-05</td>
+<td>Illustrative inherent risk analysis</td>
+<td><code>04-Risk-Assessment/risk-register.md</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>GV.PO-01</td>
+<td>Proposed security policy framework</td>
+<td><code>07-Policies-and-Standards/</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>PR.AA-01</td>
+<td>Password policy</td>
+<td><code>evidence/weak-password-rejected.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>PR.IR-01</td>
+<td>Networks and environments protected from unauthorized logical access</td>
+<td><code>evidence/segmentation-test.png</code></td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>PR.DS-02</td>
+<td>Data in transit</td>
+<td><code>evidence/https-padlock.png</code></td>
+<td>VM 2</td>
+</tr>
+<tr>
+<td>DE.CM-09</td>
+<td>Malware protection</td>
+<td><code>evidence/eicar-block.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>PR.PS-04</td>
+<td>Centralized logging</td>
+<td><code>evidence/wazuh-dashboard.png</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>DE.AE-02</td>
+<td>Failed login alerts</td>
+<td><code>evidence/wazuh-failed-login-alert.png</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>RS.MA-01</td>
+<td>Incident response</td>
+<td><code>07-Policies/incident-response-policy.md</code></td>
+<td>All</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="control-to-vm-mapping-matrix">Control to VM Mapping Matrix<a class="headerlink" href="#control-to-vm-mapping-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Proposed control area</th>
+<th>VM 1 - Windows</th>
+<th>VM 2 - Ubuntu</th>
+<th>VM 3 - pfSense</th>
+<th>VM 4 - Wazuh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Password policy</td>
+<td>Proposed</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Microsoft Defender</td>
+<td>Proposed</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>EICAR detection scenario</td>
+<td>Proposed</td>
+<td>-</td>
+<td>-</td>
+<td>VM 4 receives alert (planned)</td>
+</tr>
+<tr>
+<td>SSH hardening</td>
+<td>-</td>
+<td>Proposed</td>
+<td>-</td>
+<td>VM 4 receives logs (planned)</td>
+</tr>
+<tr>
+<td>UFW firewall</td>
+<td>-</td>
+<td>Proposed</td>
+<td>-</td>
+<td>VM 4 receives logs (planned)</td>
+</tr>
+<tr>
+<td>Network segmentation</td>
+<td>-</td>
+<td>-</td>
+<td>Proposed</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Firewall rules</td>
+<td>-</td>
+<td>-</td>
+<td>Proposed</td>
+<td>VM 4 receives logs (planned)</td>
+</tr>
+<tr>
+<td>Lateral movement block</td>
+<td>VM 1 target</td>
+<td>VM 2 source</td>
+<td>Proposed enforcement</td>
+<td>VM 4 receives logs (planned)</td>
+</tr>
+<tr>
+<td>Wazuh agent / syslog</td>
+<td>Proposed agent</td>
+<td>Proposed agent</td>
+<td>Proposed syslog</td>
+<td>Central monitor (planned)</td>
+</tr>
+<tr>
+<td>SIEM alert scenarios</td>
+<td>Event source (planned)</td>
+<td>Event source (planned)</td>
+<td>Event source (planned)</td>
+<td>Proposed analysis</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of NIST CSF 2.0 Mapping</strong></p></article><nav class="navrow"><a href="iso27001-mapping.html">← ISO/IEC 27001 Mapping</a><a href="pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix →</a></nav><p class="footer-note">Chapter 13 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

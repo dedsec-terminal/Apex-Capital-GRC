@@ -1,0 +1,862 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Risk Register | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="risk-heatmap.html">Risk Heatmap</a><a class="chapter-link active" href="risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Risk Assessment</div><article class="article"><h1>Risk Register</h1><p class="crumb">Risk Assessment · <a class="raw-link" href="../../../04-Risk-Assessment/risk-register.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> scenario risks; control status planned</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#risk-scoring-matrix">Risk Scoring Matrix</a></li>
+<li><a href="#master-risk-register">Master Risk Register</a><ul>
+<li><a href="#r-001-lateral-movement-web-server-to-internal-network">R-001: Lateral Movement (Web Server to Internal Network)</a></li>
+<li><a href="#r-002-credential-theft-brute-force-phishing">R-002: Credential Theft (Brute Force / Phishing)</a></li>
+<li><a href="#r-003-ransomware-endpoint-malware">R-003: Ransomware (Endpoint Malware)</a></li>
+<li><a href="#r-004-audit-failure-missing-evidence">R-004: Audit Failure (Missing Evidence)</a></li>
+<li><a href="#r-005-web-server-breach-vulnerable-ubuntu">R-005: Web Server Breach (Vulnerable Ubuntu)</a></li>
+<li><a href="#r-006-insider-threat-data-exfiltration">R-006: Insider Threat (Data Exfiltration)</a></li>
+<li><a href="#r-007-third-party-vendor-breach">R-007: Third-Party Vendor Breach</a></li>
+<li><a href="#r-008-firewall-misconfiguration">R-008: Firewall Misconfiguration</a></li>
+</ul>
+</li>
+<li><a href="#risk-status-summary">Risk Status Summary</a></li>
+<li><a href="#risk-rating-distribution">Risk Rating Distribution</a><ul>
+<li><a href="#inherent-scenario-ratings">Inherent scenario ratings</a></li>
+<li><a href="#proposed-targets-only-and-not-assessed">Proposed targets only and not assessed</a></li>
+</ul>
+</li>
+<li><a href="#risk-register-change-log">Risk Register Change Log</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Risk status:</strong> Likelihood/impact values and target residual scores are illustrative scenario judgments. Target scores are proposals only; controls were not executed, effectiveness was not tested, and no residual risk was accepted.</p>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="risk-register">Risk Register<a class="headerlink" href="#risk-register" title="Permanent link">&para;</a></h1>
+<h2 id="risk-scoring-matrix">Risk Scoring Matrix<a class="headerlink" href="#risk-scoring-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Impact Score</th>
+<th>Likelihood Score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Critical</td>
+<td>5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>High</td>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Negligible</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk Score Calculation:</strong> Likelihood x Impact</p>
+<table>
+<thead>
+<tr>
+<th>Score Range</th>
+<th>Rating</th>
+<th>Required Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20-25</td>
+<td>Critical</td>
+<td>Immediate remediation</td>
+</tr>
+<tr>
+<td>13-19</td>
+<td>High</td>
+<td>Remediation within 30 days</td>
+</tr>
+<tr>
+<td>7-12</td>
+<td>Medium</td>
+<td>Remediation within 90 days</td>
+</tr>
+<tr>
+<td>1-6</td>
+<td>Low</td>
+<td>Accept or monitor</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="master-risk-register">Master Risk Register<a class="headerlink" href="#master-risk-register" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Risk ID</th>
+<th>Risk Description</th>
+<th style="text-align: right;">Likelihood</th>
+<th style="text-align: right;">Impact</th>
+<th style="text-align: right;">Score</th>
+<th>Rating</th>
+<th>Proposed Control Intent</th>
+<th>Status</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-001</td>
+<td>Lateral movement from compromised Ubuntu web server to internal Windows network</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">15</td>
+<td>High</td>
+<td>Proposed segmentation and firewall policy</td>
+<td>Planned / not executed</td>
+<td>Network security owner</td>
+</tr>
+<tr>
+<td>R-002</td>
+<td>Credential theft via brute force or phishing leading to unauthorized access</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">20</td>
+<td>Critical</td>
+<td>Proposed authentication, access and monitoring controls</td>
+<td>Planned / not executed</td>
+<td>IAM owner</td>
+</tr>
+<tr>
+<td>R-003</td>
+<td>Ransomware disrupts systems or damages data</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">20</td>
+<td>Critical</td>
+<td>Proposed endpoint protection and recovery controls</td>
+<td>Planned / not executed</td>
+<td>Endpoint and resilience owner</td>
+</tr>
+<tr>
+<td>R-004</td>
+<td>Incomplete logging or evidence impairs investigation</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">12</td>
+<td>Medium</td>
+<td>Proposed centralized logging and evidence process</td>
+<td>Planned / not executed</td>
+<td>Security operations owner</td>
+</tr>
+<tr>
+<td>R-005</td>
+<td>Public web host compromise exposes systems or data</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">15</td>
+<td>High</td>
+<td>Proposed host hardening and exposure controls</td>
+<td>Planned / not executed</td>
+<td>Application / infrastructure owner</td>
+</tr>
+<tr>
+<td>R-006</td>
+<td>Insider misuse of authorized access exposes sensitive data</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">10</td>
+<td>Medium</td>
+<td>Proposed access governance and monitoring</td>
+<td>Planned / not executed</td>
+<td>Data and IAM owners</td>
+</tr>
+<tr>
+<td>R-007</td>
+<td>Supplier weakness affects confidentiality or availability</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">15</td>
+<td>High</td>
+<td>Supplier due diligence workflow proposed; not built</td>
+<td>Planned / not executed</td>
+<td>Third-party risk owner</td>
+</tr>
+<tr>
+<td>R-008</td>
+<td>Firewall configuration drift exposes a protected path</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">12</td>
+<td>Medium</td>
+<td>Proposed change review and regression checks</td>
+<td>Planned / not executed</td>
+<td>Network security owner</td>
+</tr>
+<tr>
+<td>## Detailed Risk Register</td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-001-lateral-movement-web-server-to-internal-network">R-001: Lateral Movement (Web Server to Internal Network)<a class="headerlink" href="#r-001-lateral-movement-web-server-to-internal-network" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Description</strong></td>
+<td>An attacker compromises the public-facing Ubuntu web server (customer portal) and attempts to move laterally to internal Windows systems containing client portfolio data</td>
+</tr>
+<tr>
+<td><strong>Likelihood</strong></td>
+<td>3 (Possible)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>5 (Critical)</td>
+</tr>
+<tr>
+<td><strong>Risk Score</strong></td>
+<td>15 (High)</td>
+</tr>
+<tr>
+<td><strong>Affected Assets</strong></td>
+<td>Ubuntu Web Server, Windows Application Servers, Client Data</td>
+</tr>
+<tr>
+<td><strong>Threat Source</strong></td>
+<td>Cybercriminals, automated scanners</td>
+</tr>
+<tr>
+<td><strong>Existing Controls (Pre-Engagement)</strong></td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Proposed Control Intent</strong></td>
+<td>pfSense firewall rule blocking all traffic from Ubuntu subnet to Windows subnet; DMZ isolation</td>
+</tr>
+<tr>
+<td><strong>Planned Validation</strong></td>
+<td><code>nc -zv</code> from Ubuntu to Windows port 445 fails; pfSense logs show blocked attempts</td>
+</tr>
+<tr>
+<td><strong>Proposed Target Residual Score (Unvalidated)</strong></td>
+<td>4 (Low)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>Network Security</td>
+</tr>
+<tr>
+<td><strong>Review Date</strong></td>
+<td>Quarterly</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="r-002-credential-theft-brute-force-phishing">R-002: Credential Theft (Brute Force / Phishing)<a class="headerlink" href="#r-002-credential-theft-brute-force-phishing" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Description</strong></td>
+<td>Attacker uses brute force or phishing to obtain advisor credentials, then accesses client data and executes unauthorized trades</td>
+</tr>
+<tr>
+<td><strong>Likelihood</strong></td>
+<td>4 (Likely)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>5 (Critical)</td>
+</tr>
+<tr>
+<td><strong>Risk Score</strong></td>
+<td>20 (Critical)</td>
+</tr>
+<tr>
+<td><strong>Affected Assets</strong></td>
+<td>Windows Workstations, Application Servers, Client Data</td>
+</tr>
+<tr>
+<td><strong>Threat Source</strong></td>
+<td>Phishing campaigns, brute force tools</td>
+</tr>
+<tr>
+<td><strong>Existing Controls (Pre-Engagement)</strong></td>
+<td>Default Windows settings, no lockout policy</td>
+</tr>
+<tr>
+<td><strong>Proposed Control Intent</strong></td>
+<td>Password policy (14 characters, complexity, 5-attempt lockout); Wazuh failed login alerting</td>
+</tr>
+<tr>
+<td><strong>Planned Validation</strong></td>
+<td>Weak password "[SYNTHETIC-TEST-CREDENTIAL]" rejected; <code>net accounts</code> shows lockout threshold 5; Wazuh alerts on failed login</td>
+</tr>
+<tr>
+<td><strong>Proposed Target Residual Score (Unvalidated)</strong></td>
+<td>8 (Medium)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>Identity Management</td>
+</tr>
+<tr>
+<td><strong>Review Date</strong></td>
+<td>Quarterly</td>
+</tr>
+<tr>
+<td><strong>Further Reduction</strong></td>
+<td>MFA recommended for Phase 2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="r-003-ransomware-endpoint-malware">R-003: Ransomware (Endpoint Malware)<a class="headerlink" href="#r-003-ransomware-endpoint-malware" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Description</strong></td>
+<td>Employee downloads and executes ransomware via email attachment or malicious website, encrypting client portfolio data and demanding payment</td>
+</tr>
+<tr>
+<td><strong>Likelihood</strong></td>
+<td>4 (Likely)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>5 (Critical)</td>
+</tr>
+<tr>
+<td><strong>Risk Score</strong></td>
+<td>20 (Critical)</td>
+</tr>
+<tr>
+<td><strong>Affected Assets</strong></td>
+<td>Windows Workstations, Application Servers, File Servers</td>
+</tr>
+<tr>
+<td><strong>Threat Source</strong></td>
+<td>Ransomware gangs (LockBit, BlackCat), phishing emails</td>
+</tr>
+<tr>
+<td><strong>Existing Controls (Pre-Engagement)</strong></td>
+<td>Antivirus installed but not validated</td>
+</tr>
+<tr>
+<td><strong>Proposed Control Intent</strong></td>
+<td>Microsoft Defender real-time protection; Controlled Folder Access; EICAR test validation</td>
+</tr>
+<tr>
+<td><strong>Planned Validation</strong></td>
+<td>EICAR test file downloaded → blocked within a lab-defined observation window; Defender history shows detection</td>
+</tr>
+<tr>
+<td><strong>Proposed Target Residual Score (Unvalidated)</strong></td>
+<td>5 (Low)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>Endpoint Security</td>
+</tr>
+<tr>
+<td><strong>Review Date</strong></td>
+<td>Monthly (EICAR test)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="r-004-audit-failure-missing-evidence">R-004: Audit Failure (Missing Evidence)<a class="headerlink" href="#r-004-audit-failure-missing-evidence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Description</strong></td>
+<td>SEBI or client audit requests evidence of security controls; Apex Capital cannot produce logs, policies, or test results</td>
+</tr>
+<tr>
+<td><strong>Likelihood</strong></td>
+<td>3 (Possible)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>4 (High)</td>
+</tr>
+<tr>
+<td><strong>Risk Score</strong></td>
+<td>12 (Medium)</td>
+</tr>
+<tr>
+<td><strong>Affected Assets</strong></td>
+<td>Wazuh SIEM, policies, evidence repository</td>
+</tr>
+<tr>
+<td><strong>Threat Source</strong></td>
+<td>Regulatory examination, client due diligence</td>
+</tr>
+<tr>
+<td><strong>Existing Controls (Pre-Engagement)</strong></td>
+<td>Logs exist only on individual systems</td>
+</tr>
+<tr>
+<td><strong>Proposed Control Intent</strong></td>
+<td>Wazuh centralized logging; evidence repository with screenshots; documented policies</td>
+</tr>
+<tr>
+<td><strong>Planned Validation</strong></td>
+<td>Evidence folder contains 15+ screenshots with timestamps; policies version controlled</td>
+</tr>
+<tr>
+<td><strong>Proposed Target Residual Score (Unvalidated)</strong></td>
+<td>3 (Low)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>GRC Lead</td>
+</tr>
+<tr>
+<td><strong>Review Date</strong></td>
+<td>Quarterly</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="r-005-web-server-breach-vulnerable-ubuntu">R-005: Web Server Breach (Vulnerable Ubuntu)<a class="headerlink" href="#r-005-web-server-breach-vulnerable-ubuntu" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Description</strong></td>
+<td>Ubuntu web server has unpatched vulnerability or misconfiguration leading to unauthorized access, defacement, or data theft</td>
+</tr>
+<tr>
+<td><strong>Likelihood</strong></td>
+<td>3 (Possible)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>5 (Critical)</td>
+</tr>
+<tr>
+<td><strong>Risk Score</strong></td>
+<td>15 (High)</td>
+</tr>
+<tr>
+<td><strong>Affected Assets</strong></td>
+<td>Ubuntu Web Server, Client Data (if exposed)</td>
+</tr>
+<tr>
+<td><strong>Threat Source</strong></td>
+<td>Automated scanners, vulnerability exploit</td>
+</tr>
+<tr>
+<td><strong>Existing Controls (Pre-Engagement)</strong></td>
+<td>Default Ubuntu install</td>
+</tr>
+<tr>
+<td><strong>Proposed Control Intent</strong></td>
+<td>SSH hardening (key auth, restricted management source and hardened SSH configuration); UFW firewall; service minimization</td>
+</tr>
+<tr>
+<td><strong>Planned Validation</strong></td>
+<td><code>sshd_config</code> shows password auth disabled; <code>ufw status</code> shows deny incoming; <code>nmap</code> shows only required ports</td>
+</tr>
+<tr>
+<td><strong>Proposed Target Residual Score (Unvalidated)</strong></td>
+<td>4 (Low)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>Application Security</td>
+</tr>
+<tr>
+<td><strong>Review Date</strong></td>
+<td>Monthly (patch review)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="r-006-insider-threat-data-exfiltration">R-006: Insider Threat (Data Exfiltration)<a class="headerlink" href="#r-006-insider-threat-data-exfiltration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Description</strong></td>
+<td>Disgruntled employee exports client list (PII, financial data) to competitor or personal device</td>
+</tr>
+<tr>
+<td><strong>Likelihood</strong></td>
+<td>2 (Unlikely)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>5 (Critical)</td>
+</tr>
+<tr>
+<td><strong>Risk Score</strong></td>
+<td>10 (Medium)</td>
+</tr>
+<tr>
+<td><strong>Affected Assets</strong></td>
+<td>Client Data, Workstations</td>
+</tr>
+<tr>
+<td><strong>Threat Source</strong></td>
+<td>Insider (malicious)</td>
+</tr>
+<tr>
+<td><strong>Existing Controls (Pre-Engagement)</strong></td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Proposed Control Intent</strong></td>
+<td>Access control (least privilege); user behavior logging via Wazuh; data classification policy</td>
+</tr>
+<tr>
+<td><strong>Planned Validation</strong></td>
+<td>Standard user cannot install software; Wazuh logs user logins and file access</td>
+</tr>
+<tr>
+<td><strong>Proposed Target Residual Score (Unvalidated)</strong></td>
+<td>4 (Low)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>IAM Lead</td>
+</tr>
+<tr>
+<td><strong>Review Date</strong></td>
+<td>Quarterly (access reviews)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="r-007-third-party-vendor-breach">R-007: Third-Party Vendor Breach<a class="headerlink" href="#r-007-third-party-vendor-breach" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Description</strong></td>
+<td>Cloud vendor (Salesforce, Microsoft 365, file sharing) suffers breach exposing Apex Capital client data</td>
+</tr>
+<tr>
+<td><strong>Likelihood</strong></td>
+<td>3 (Possible)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>5 (Critical)</td>
+</tr>
+<tr>
+<td><strong>Risk Score</strong></td>
+<td>15 (High)</td>
+</tr>
+<tr>
+<td><strong>Affected Assets</strong></td>
+<td>Client Data stored in vendor systems</td>
+</tr>
+<tr>
+<td><strong>Threat Source</strong></td>
+<td>Vendor compromise</td>
+</tr>
+<tr>
+<td><strong>Existing Controls (Pre-Engagement)</strong></td>
+<td>None (no vendor risk assessments)</td>
+</tr>
+<tr>
+<td><strong>Proposed Control Intent</strong></td>
+<td>Vendor risk assessment program (Planned); contractual security clauses</td>
+</tr>
+<tr>
+<td><strong>Planned Validation</strong></td>
+<td>Vendor assessment template created; top 3 vendors identified for Phase 2</td>
+</tr>
+<tr>
+<td><strong>Proposed Target Residual Score (Unvalidated)</strong></td>
+<td>6 (Low-Medium)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>Procurement</td>
+</tr>
+<tr>
+<td><strong>Review Date</strong></td>
+<td>Quarterly</td>
+</tr>
+<tr>
+<td><strong>Target Completion</strong></td>
+<td>Phase 2 (Q3 2026)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="r-008-firewall-misconfiguration">R-008: Firewall Misconfiguration<a class="headerlink" href="#r-008-firewall-misconfiguration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Description</strong></td>
+<td>pfSense firewall misconfigured, accidentally exposing internal network to internet or allowing unauthorized traffic</td>
+</tr>
+<tr>
+<td><strong>Likelihood</strong></td>
+<td>3 (Possible)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>4 (High)</td>
+</tr>
+<tr>
+<td><strong>Risk Score</strong></td>
+<td>12 (Medium)</td>
+</tr>
+<tr>
+<td><strong>Affected Assets</strong></td>
+<td>All internal assets</td>
+</tr>
+<tr>
+<td><strong>Threat Source</strong></td>
+<td>Human error (administrator)</td>
+</tr>
+<tr>
+<td><strong>Existing Controls (Pre-Engagement)</strong></td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Proposed Control Intent</strong></td>
+<td>Change management process; quarterly firewall rule audit; rule comments documented</td>
+</tr>
+<tr>
+<td><strong>Planned Validation</strong></td>
+<td>Firewall rules have descriptions; change log maintained; quarterly audit scheduled</td>
+</tr>
+<tr>
+<td><strong>Proposed Target Residual Score (Unvalidated)</strong></td>
+<td>2 (Low)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>Network Security</td>
+</tr>
+<tr>
+<td><strong>Review Date</strong></td>
+<td>Quarterly</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="risk-status-summary">Risk Status Summary<a class="headerlink" href="#risk-status-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Count</th>
+<th>Risk IDs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Planned / not executed</td>
+<td>7</td>
+<td>R-001, R-002, R-003, R-004, R-005, R-006, R-008</td>
+</tr>
+<tr>
+<td>Planned / not executed</td>
+<td>1</td>
+<td>R-007</td>
+</tr>
+<tr>
+<td>Not Started</td>
+<td>0</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="risk-rating-distribution">Risk Rating Distribution<a class="headerlink" href="#risk-rating-distribution" title="Permanent link">&para;</a></h2>
+<h3 id="inherent-scenario-ratings">Inherent scenario ratings<a class="headerlink" href="#inherent-scenario-ratings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rating</th>
+<th style="text-align: right;">Count</th>
+<th style="text-align: right;">Percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Critical</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">25%</td>
+</tr>
+<tr>
+<td>High</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">37.5%</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">37.5%</td>
+</tr>
+<tr>
+<td>Low</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="proposed-targets-only-and-not-assessed">Proposed targets only and not assessed<a class="headerlink" href="#proposed-targets-only-and-not-assessed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rating</th>
+<th>Count</th>
+<th>Percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Critical</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>High</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>2</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>6</td>
+<td>75%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="risk-register-change-log">Risk Register Change Log<a class="headerlink" href="#risk-register-change-log" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>March 2026</td>
+<td>S. Singh</td>
+<td>Initial risk identification</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>April 2026</td>
+<td>S. Singh</td>
+<td>Added control mappings and validation methods</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Final risk register with status updates</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Risk Register</strong></p></article><nav class="navrow"><a href="risk-heatmap.html">← Risk Heatmap</a><a href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview →</a></nav><p class="footer-note">Chapter 9 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

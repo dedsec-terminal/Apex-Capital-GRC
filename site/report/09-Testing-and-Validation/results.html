@@ -1,0 +1,1184 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Test Results Register | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link active" href="results.html">Test Results Register</a><a class="chapter-link" href="test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Testing and Validation</div><article class="article"><h1>Test Results Register</h1><p class="crumb">Testing and Validation · <a class="raw-link" href="../../../09-Testing-and-Validation/results.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> planned; not executed; expected outcomes only</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#1-overview">1. Overview</a></li>
+<li><a href="#2-test-summary">2. Test Summary</a></li>
+<li><a href="#3-detailed-test-procedures-and-expected-outcomes">3. Detailed Test Procedures and Expected Outcomes</a><ul>
+<li><a href="#t-001-password-policy-enforcement">T-001: Password Policy Enforcement</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-002-account-lockout">T-002: Account Lockout</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_1">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-003-windows-defender-real-time-protection">T-003: Windows Defender Real-time Protection</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_2">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-004-eicar-malware-detection">T-004: EICAR Malware Detection</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_3">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-005-controlled-folder-access-cfa">T-005: Controlled Folder Access (CFA)</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_4">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-006-windows-firewall">T-006: Windows Firewall</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_5">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-007-lateral-movement-prevention">T-007: Lateral Movement Prevention</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_6">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-008-pfsense-firewall-rules">T-008: pfSense Firewall Rules</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_7">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-009-ubuntu-ufw-firewall">T-009: Ubuntu UFW Firewall</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_8">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-010-ubuntu-ssh-hardening">T-010: Ubuntu SSH Hardening</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_9">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-011-wazuh-failed-login-alert">T-011: Wazuh Failed Login Alert</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_10">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-012-wazuh-eicar-alert">T-012: Wazuh EICAR Alert</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_11">Execution status: Planned / not executed</a><ul>
+<li><a href="#t-013-wazuh-agent-connectivity">T-013: Wazuh Agent Connectivity</a></li>
+</ul>
+</li>
+<li><a href="#execution-status-planned-not-executed_12">Execution status: Planned / not executed</a></li>
+<li><a href="#4-planned-test-coverage-by-vm-none-executed">4. Planned Test Coverage by VM (None Executed)</a></li>
+<li><a href="#5-framework-references-in-planned-cases-not-tested">5. Framework References in Planned Cases (Not Tested)</a></li>
+<li><a href="#6-evidence-requested-not-collected">6. Evidence Requested (Not Collected)</a></li>
+<li><a href="#7-conclusion">7. Conclusion</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Execution status:</strong> No VM tests have been run. Every result/criteria below describes a plan or expected outcome, not a pass.</p>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="test-plan-and-expected-outcomes">Test Plan and Expected Outcomes<a class="headerlink" href="#test-plan-and-expected-outcomes" title="Permanent link">&para;</a></h1>
+<p><strong>Execution date:</strong> Not set; tests remain unrun.
+<strong>Version:</strong> 1.0
+<strong>Publication classification:</strong> Public fictional learning project
+<strong>Proposed owner role:</strong> GRC lead</p>
+<hr />
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
+<p>This document records a proposed validation plan and expected outcomes for the fictional Apex lab. None of the tests has been executed. The test scenarios are in <code>09-Testing-and-Validation/test-scenarios.md</code>.</p>
+<p><strong>Proposed lab environment:</strong> Four-VM design (Windows, Ubuntu, pfSense, Wazuh); no guests were registered at the readiness check.</p>
+<p><strong>Execution period:</strong> None; tests not run.</p>
+<hr />
+<h2 id="2-test-summary">2. Test Summary<a class="headerlink" href="#2-test-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Test ID</th>
+<th>Test Name</th>
+<th>Status</th>
+<th>Expected outcome (not observed)</th>
+<th>Planned evidence location (not collected)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T-001</td>
+<td>Password Policy Enforcement</td>
+<td>Planned / not executed</td>
+<td>Weak password rejected</td>
+<td>evidence/weak-password-rejected.png</td>
+</tr>
+<tr>
+<td>T-002</td>
+<td>Account Lockout</td>
+<td>Planned / not executed</td>
+<td>Account locked after 5 failures</td>
+<td>evidence/account-lockout.png</td>
+</tr>
+<tr>
+<td>T-003</td>
+<td>Windows Defender Real-time Protection</td>
+<td>Planned / not executed</td>
+<td>Defender active and blocking</td>
+<td>evidence/defender-status.png</td>
+</tr>
+<tr>
+<td>T-004</td>
+<td>EICAR Malware Detection</td>
+<td>Planned / not executed</td>
+<td>EICAR file blocked immediately</td>
+<td>evidence/eicar-block.png</td>
+</tr>
+<tr>
+<td>T-005</td>
+<td>Controlled Folder Access</td>
+<td>Planned / not executed</td>
+<td>Unauthorized app blocked</td>
+<td>evidence/cfa-block.png</td>
+</tr>
+<tr>
+<td>T-006</td>
+<td>Windows Firewall</td>
+<td>Planned / not executed</td>
+<td>Firewall enabled, RDP restricted</td>
+<td>evidence/firewall-rules.png</td>
+</tr>
+<tr>
+<td>T-007</td>
+<td>Lateral Movement Prevention</td>
+<td>Planned / not executed</td>
+<td>Ubuntu cannot reach Windows</td>
+<td>evidence/segmentation-test.png</td>
+</tr>
+<tr>
+<td>T-008</td>
+<td>pfSense Firewall Rules</td>
+<td>Planned / not executed</td>
+<td>Default deny, specific allows only</td>
+<td>evidence/pfsense-rules.png</td>
+</tr>
+<tr>
+<td>T-009</td>
+<td>Ubuntu UFW Firewall</td>
+<td>Planned / not executed</td>
+<td>Ports 80,443 only</td>
+<td>evidence/ubuntu-ufw-status.png</td>
+</tr>
+<tr>
+<td>T-010</td>
+<td>Ubuntu SSH Hardening</td>
+<td>Planned / not executed</td>
+<td>Password auth disabled</td>
+<td>evidence/ubuntu-ssh-config.png</td>
+</tr>
+<tr>
+<td>T-011</td>
+<td>Wazuh Failed Login Alert</td>
+<td>Planned / not executed</td>
+<td>Alert generated for failed RDP</td>
+<td>evidence/wazuh-failed-login-alert.png</td>
+</tr>
+<tr>
+<td>T-012</td>
+<td>Wazuh EICAR Alert</td>
+<td>Planned / not executed</td>
+<td>Alert level 15 generated</td>
+<td>evidence/wazuh-eicar-alert.png</td>
+</tr>
+<tr>
+<td>T-013</td>
+<td>Wazuh Agent Connectivity</td>
+<td>Planned / not executed</td>
+<td>All 3 agents connected</td>
+<td>evidence/wazuh-agents.png</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-detailed-test-procedures-and-expected-outcomes">3. Detailed Test Procedures and Expected Outcomes<a class="headerlink" href="#3-detailed-test-procedures-and-expected-outcomes" title="Permanent link">&para;</a></h2>
+<h3 id="t-001-password-policy-enforcement">T-001: Password Policy Enforcement<a class="headerlink" href="#t-001-password-policy-enforcement" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 1 (Windows Enterprise)</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>net accounts</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Minimum password length = 14, complexity enabled, lockout threshold = 5</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Minimum password length = 14, complexity enabled, lockout threshold = 5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Illustrative expected output format (not observed):</strong></p>
+<p>Minimum password age (days): 1
+Maximum password age (days): 90
+Minimum password length: 14
+Length of password history maintained: 24
+Lockout threshold: 5
+Lockout duration (minutes): 30
+Lockout observation window (minutes): 30</p>
+<p><strong>Weak Password Rejection Test:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Attempt</th>
+<th>Password</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>[SYNTHETIC-TEST-CREDENTIAL]</td>
+<td>Rejected - does not meet complexity</td>
+</tr>
+<tr>
+<td>2</td>
+<td>[SYNTHETIC-TEST-CREDENTIAL]</td>
+<td>Rejected - does not meet complexity</td>
+</tr>
+<tr>
+<td>3</td>
+<td>[SYNTHETIC-TEST-CREDENTIAL]</td>
+<td>Planned / not executed</td>
+</tr>
+</tbody>
+</table>
+<h2 id="execution-status-planned-not-executed"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed" title="Permanent link">&para;</a></h2>
+<h3 id="t-002-account-lockout">T-002: Account Lockout<a class="headerlink" href="#t-002-account-lockout" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 1 (Windows Enterprise)</td>
+</tr>
+<tr>
+<td>Test Procedure</td>
+<td>5 consecutive failed RDP login attempts</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Account locked after 5 failures</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Account locked after 5 failures, lockout duration 30 minutes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Illustrative event fields to collect if observed (no event captured):</strong></p>
+<p>Log Name: Security
+Source: Microsoft-Windows-Security-Auditing
+Event ID: 4740
+Description: A user account was locked out.
+Subject: Account Name: lab-user
+Target Account: lab-user
+Caller Computer: 10.0.3.10</p>
+<p><strong>Expected outcome:</strong> A configured detection rule generates an alert; timing and severity must be set and measured during testing.</p>
+<h2 id="execution-status-planned-not-executed_1"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_1" title="Permanent link">&para;</a></h2>
+<h3 id="t-003-windows-defender-real-time-protection">T-003: Windows Defender Real-time Protection<a class="headerlink" href="#t-003-windows-defender-real-time-protection" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 1 (Windows Enterprise)</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>Get-MpComputerStatus</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Real-time protection enabled</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Real-time protection enabled, cloud protection active</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Illustrative expected output format (not observed):</strong></p>
+<p>AntivirusEnabled              : True
+RealTimeProtectionEnabled     : True
+BehaviorMonitorEnabled        : True
+IoavProtectionEnabled         : True
+OnAccessProtectionEnabled     : True
+CloudProtectionEnabled        : True
+TamperProtectionEnabled       : True</p>
+<h2 id="execution-status-planned-not-executed_2"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_2" title="Permanent link">&para;</a></h2>
+<h3 id="t-004-eicar-malware-detection">T-004: EICAR Malware Detection<a class="headerlink" href="#t-004-eicar-malware-detection" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 1 (Windows Enterprise)</td>
+</tr>
+<tr>
+<td>Test Procedure</td>
+<td>Download EICAR test file from eicar.org</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>File blocked and quarantined</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>File blocked within a lab-defined observation window, quarantined</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Defender Detection:</strong></p>
+<p>Threat Name: EICAR Test File
+Detection Time: Execution date: not set 14:23:05
+Status: Removed (Quarantined)
+Action: Blocked
+Source: Download</p>
+<p><strong>Wazuh Alert:</strong> Alert level 15 generated.</p>
+<h2 id="execution-status-planned-not-executed_3"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_3" title="Permanent link">&para;</a></h2>
+<h3 id="t-005-controlled-folder-access-cfa">T-005: Controlled Folder Access (CFA)<a class="headerlink" href="#t-005-controlled-folder-access-cfa" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 1 (Windows Enterprise)</td>
+</tr>
+<tr>
+<td>Test Procedure</td>
+<td>Unauthorized script attempts to write to Documents folder</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Access blocked by CFA</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Access blocked, Event ID 1123 logged</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Event Log Entry (Event ID 1123):</strong></p>
+<p>Log Name: Microsoft-Windows-Windows Defender/Operational
+Event ID: 1123
+Description: Controlled Folder Access blocked an application.
+Application: C:\temp\test.exe
+Protected Folder: C:\Users\lab-user\Documents</p>
+<h2 id="execution-status-planned-not-executed_4"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_4" title="Permanent link">&para;</a></h2>
+<h3 id="t-006-windows-firewall">T-006: Windows Firewall<a class="headerlink" href="#t-006-windows-firewall" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 1 (Windows Enterprise)</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>Get-NetFirewallProfile</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Firewall enabled on all profiles</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Firewall enabled on Domain, Private, Public profiles</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Illustrative expected output format (not observed):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Enabled</th>
+<th>Default Inbound</th>
+<th>Default Outbound</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Domain</td>
+<td>True</td>
+<td>Block</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>Private</td>
+<td>True</td>
+<td>Block</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>Public</td>
+<td>True</td>
+<td>Block</td>
+<td>Allow</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RDP Restriction Rule Present:</strong> Yes - Block RDP from 10.0.1.0/24</p>
+<h2 id="execution-status-planned-not-executed_5"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_5" title="Permanent link">&para;</a></h2>
+<h3 id="t-007-lateral-movement-prevention">T-007: Lateral Movement Prevention<a class="headerlink" href="#t-007-lateral-movement-prevention" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 2 (Ubuntu) to VM 1 (Windows)</td>
+</tr>
+<tr>
+<td>Test Procedure</td>
+<td>Attempt connections from Ubuntu (10.0.1.10) to Windows (10.0.2.10)</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>All connections refused</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>All connections refused or timeout</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Test Results:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Service</th>
+<th>Command</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>445</td>
+<td>SMB</td>
+<td>nc -zv 10.0.2.10 445</td>
+<td>Connection refused</td>
+</tr>
+<tr>
+<td>3389</td>
+<td>RDP</td>
+<td>nc -zv 10.0.2.10 3389</td>
+<td>Connection refused</td>
+</tr>
+<tr>
+<td>22</td>
+<td>SSH</td>
+<td>nc -zv 10.0.2.10 22</td>
+<td>Connection refused</td>
+</tr>
+<tr>
+<td>ICMP</td>
+<td>Ping</td>
+<td>ping -c 4 10.0.2.10</td>
+<td>100% packet loss (illustrative expected output only)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>pfSense Log Entry:</strong></p>
+<p>Time: Execution date: not set 14:30:22
+Interface: LAN
+Source: 10.0.1.10:54321
+Destination: 10.0.2.10:445
+Protocol: TCP
+Action: Block
+Rule: 3 (Block DMZ to Internal)</p>
+<h2 id="execution-status-planned-not-executed_6"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_6" title="Permanent link">&para;</a></h2>
+<h3 id="t-008-pfsense-firewall-rules">T-008: pfSense Firewall Rules<a class="headerlink" href="#t-008-pfsense-firewall-rules" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 3 (pfSense)</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>pfSense WebGUI &gt; Firewall &gt; Rules</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Default deny, specific allow rules only</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Rules configured as expected</td>
+</tr>
+</tbody>
+</table>
+<p><strong>WAN Rules Summary:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Source</th>
+<th>Destination</th>
+<th>Port</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Any</td>
+<td>10.0.1.10</td>
+<td>80</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Any</td>
+<td>10.0.1.10</td>
+<td>443</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>3</td>
+<td>10.0.3.0/24</td>
+<td>10.0.1.10</td>
+<td>22</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Any</td>
+<td>Any</td>
+<td>Any</td>
+<td>Deny (Default)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>LAN Rules Summary:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Source</th>
+<th>Destination</th>
+<th>Port</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>10.0.2.10</td>
+<td>Any</td>
+<td>80,443</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>2</td>
+<td>10.0.2.10</td>
+<td>10.0.3.10</td>
+<td>1514</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>3</td>
+<td>10.0.1.0/24</td>
+<td>10.0.2.0/24</td>
+<td>Any</td>
+<td>Block</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Any</td>
+<td>Any</td>
+<td>3389</td>
+<td>Block</td>
+</tr>
+<tr>
+<td>5</td>
+<td>10.0.3.0/24</td>
+<td>10.0.2.10</td>
+<td>3389</td>
+<td>Allow</td>
+</tr>
+</tbody>
+</table>
+<h2 id="execution-status-planned-not-executed_7"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_7" title="Permanent link">&para;</a></h2>
+<h3 id="t-009-ubuntu-ufw-firewall">T-009: Ubuntu UFW Firewall<a class="headerlink" href="#t-009-ubuntu-ufw-firewall" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 2 (Ubuntu Web Server)</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>sudo ufw status verbose</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Default deny incoming, allow 80,443 only</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Correct configuration verified</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Illustrative expected output format (not observed):</strong></p>
+<p>Status: active
+Default: deny (incoming), allow (outgoing), disabled (routed)</p>
+<table>
+<thead>
+<tr>
+<th>To</th>
+<th>Action</th>
+<th>From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>80/tcp</td>
+<td>ALLOW IN</td>
+<td>Anywhere</td>
+</tr>
+<tr>
+<td>443/tcp</td>
+<td>ALLOW IN</td>
+<td>Anywhere</td>
+</tr>
+<tr>
+<td>22/tcp</td>
+<td>ALLOW IN</td>
+<td>10.0.3.0/24</td>
+</tr>
+</tbody>
+</table>
+<h2 id="execution-status-planned-not-executed_8"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_8" title="Permanent link">&para;</a></h2>
+<h3 id="t-010-ubuntu-ssh-hardening">T-010: Ubuntu SSH Hardening<a class="headerlink" href="#t-010-ubuntu-ssh-hardening" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 2 (Ubuntu Web Server)</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>sudo cat /etc/ssh/sshd_config</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Password authentication disabled, root login disabled</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>PasswordAuthentication no, PermitRootLogin no</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Configuration Values:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PermitRootLogin</td>
+<td>no</td>
+</tr>
+<tr>
+<td>PasswordAuthentication</td>
+<td>no</td>
+</tr>
+<tr>
+<td>PubkeyAuthentication</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>MaxAuthTries</td>
+<td>3</td>
+</tr>
+<tr>
+<td>ClientAliveInterval</td>
+<td>300</td>
+</tr>
+<tr>
+<td>ClientAliveCountMax</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="execution-status-planned-not-executed_9"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_9" title="Permanent link">&para;</a></h2>
+<h3 id="t-011-wazuh-failed-login-alert">T-011: Wazuh Failed Login Alert<a class="headerlink" href="#t-011-wazuh-failed-login-alert" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 4 (Wazuh)</td>
+</tr>
+<tr>
+<td>Test Procedure</td>
+<td>Trigger failed RDP login on Windows (Event ID 4625)</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Wazuh generates alert level 10</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Alert generated within 2 minutes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Alert Details:</strong></p>
+<p>{
+  "rule": {
+    "id": "100001",
+    "level": 10,
+    "description": "Windows Failed Login Attempt"
+  },
+  "agent": {
+    "name": "windows-enterprise-01",
+    "ip": "10.0.2.10"
+  },
+  "data": {
+    "win": {
+      "eventID": 4625,
+      "account": "lab-user",
+      "sourceIp": "10.0.3.10"
+    }
+  }
+}</p>
+<h2 id="execution-status-planned-not-executed_10"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_10" title="Permanent link">&para;</a></h2>
+<h3 id="t-012-wazuh-eicar-alert">T-012: Wazuh EICAR Alert<a class="headerlink" href="#t-012-wazuh-eicar-alert" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 4 (Wazuh)</td>
+</tr>
+<tr>
+<td>Test Procedure</td>
+<td>Trigger EICAR test file download on Windows</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Wazuh generates alert level 15</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>Alert generated immediately</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Alert Details:</strong></p>
+<p>{
+  "rule": {
+    "id": "100010",
+    "level": 15,
+    "description": "EICAR Test File Detected - Malware Test"
+  },
+  "agent": {
+    "name": "windows-enterprise-01",
+    "ip": "10.0.2.10"
+  },
+  "data": {
+    "threat": "EICAR Test File",
+    "action": "blocked"
+  }
+}</p>
+<h2 id="execution-status-planned-not-executed_11"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_11" title="Permanent link">&para;</a></h2>
+<h3 id="t-013-wazuh-agent-connectivity">T-013: Wazuh Agent Connectivity<a class="headerlink" href="#t-013-wazuh-agent-connectivity" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test Date</td>
+<td>Execution date: not set</td>
+</tr>
+<tr>
+<td>Tester role</td>
+<td>To be assigned</td>
+</tr>
+<tr>
+<td>VM</td>
+<td>VM 4 (Wazuh)</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>Wazuh Dashboard &gt; Agents</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>All 3 agents connected</td>
+</tr>
+<tr>
+<td>Expected result (not observed)</td>
+<td>All 3 agents connected and active</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Agent Status Summary:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Agent Name</th>
+<th>IP Address</th>
+<th>Status</th>
+<th>Last Check In</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>windows-enterprise-01</td>
+<td>10.0.2.10</td>
+<td>Active</td>
+<td>Execution date: not set 14:35:22</td>
+</tr>
+<tr>
+<td>ubuntu-web-01</td>
+<td>10.0.1.10</td>
+<td>Active</td>
+<td>Execution date: not set 14:35:18</td>
+</tr>
+<tr>
+<td>pfsense-01</td>
+<td>10.0.3.1</td>
+<td>Active</td>
+<td>Execution date: not set 14:35:20</td>
+</tr>
+</tbody>
+</table>
+<h2 id="execution-status-planned-not-executed_12"><strong>Execution status:</strong> Planned / not executed<a class="headerlink" href="#execution-status-planned-not-executed_12" title="Permanent link">&para;</a></h2>
+<h2 id="4-planned-test-coverage-by-vm-none-executed">4. Planned Test Coverage by VM (None Executed)<a class="headerlink" href="#4-planned-test-coverage-by-vm-none-executed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th style="text-align: right;">Cases defined</th>
+<th>Execution status</th>
+<th>Results</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VM 1 (Windows Enterprise)</td>
+<td style="text-align: right;">6</td>
+<td>Not run</td>
+<td>No outcome recorded</td>
+</tr>
+<tr>
+<td>VM 2 (Ubuntu Web Server)</td>
+<td style="text-align: right;">2</td>
+<td>Not run</td>
+<td>No outcome recorded</td>
+</tr>
+<tr>
+<td>VM 3 (pfSense)</td>
+<td style="text-align: right;">2</td>
+<td>Not run</td>
+<td>No outcome recorded</td>
+</tr>
+<tr>
+<td>VM 4 (Wazuh)</td>
+<td style="text-align: right;">3</td>
+<td>Not run</td>
+<td>No outcome recorded</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-framework-references-in-planned-cases-not-tested">5. Framework References in Planned Cases (Not Tested)<a class="headerlink" href="#5-framework-references-in-planned-cases-not-tested" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Framework reference</th>
+<th>Role in plan</th>
+<th>Execution status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>Proposed outcome crosswalk</td>
+<td>Not tested</td>
+</tr>
+<tr>
+<td>ISO/IEC 27001:2022</td>
+<td>Proposed Annex A references</td>
+<td>Not tested</td>
+</tr>
+<tr>
+<td>Historical PCI DSS 3.2.1-inspired learning material</td>
+<td>Historical reference only; not current PCI guidance</td>
+<td>Not tested</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-evidence-requested-not-collected">6. Evidence Requested (Not Collected)<a class="headerlink" href="#6-evidence-requested-not-collected" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Evidence ID</th>
+<th>Description</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EV-001</td>
+<td>Password policy output</td>
+<td>evidence/windows/net-accounts.png</td>
+</tr>
+<tr>
+<td>EV-002</td>
+<td>Weak password rejection</td>
+<td>evidence/windows/weak-password-reject.png</td>
+</tr>
+<tr>
+<td>EV-003</td>
+<td>Account lockout event</td>
+<td>evidence/windows/account-lockout.png</td>
+</tr>
+<tr>
+<td>EV-004</td>
+<td>Defender status</td>
+<td>evidence/windows/defender-status.png</td>
+</tr>
+<tr>
+<td>EV-005</td>
+<td>EICAR block</td>
+<td>evidence/windows/eicar-block.png</td>
+</tr>
+<tr>
+<td>EV-006</td>
+<td>CFA block event</td>
+<td>evidence/windows/cfa-block.png</td>
+</tr>
+<tr>
+<td>EV-007</td>
+<td>Firewall rules</td>
+<td>evidence/windows/firewall-rules.png</td>
+</tr>
+<tr>
+<td>EV-008</td>
+<td>Segmentation test</td>
+<td>evidence/windows/segmentation-test.png</td>
+</tr>
+<tr>
+<td>EV-009</td>
+<td>pfSense rules</td>
+<td>evidence/pfsense/rules.png</td>
+</tr>
+<tr>
+<td>EV-010</td>
+<td>pfSense block log</td>
+<td>evidence/pfsense/block-log.png</td>
+</tr>
+<tr>
+<td>EV-011</td>
+<td>Ubuntu UFW status</td>
+<td>evidence/ubuntu/ufw-status.png</td>
+</tr>
+<tr>
+<td>EV-012</td>
+<td>Ubuntu SSH config</td>
+<td>evidence/ubuntu/ssh-config.png</td>
+</tr>
+<tr>
+<td>EV-013</td>
+<td>Wazuh failed login alert</td>
+<td>evidence/wazuh/failed-login-alert.png</td>
+</tr>
+<tr>
+<td>EV-014</td>
+<td>Wazuh EICAR alert</td>
+<td>evidence/wazuh/eicar-alert.png</td>
+</tr>
+<tr>
+<td>EV-015</td>
+<td>Wazuh agents list</td>
+<td>evidence/wazuh/agents-list.png</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-conclusion">7. Conclusion<a class="headerlink" href="#7-conclusion" title="Permanent link">&para;</a></h2>
+<p>No VM test has been executed. The source chapter contains illustrative procedures and expected outcomes only. Control effectiveness, framework conformance, and risk reduction have not been assessed.</p>
+<p><strong>Planned validation topics (not achieved outcomes):</strong></p>
+<ul>
+<li>Validate the proposed authentication baseline and lockout behavior</li>
+<li>Verify endpoint protection status and safe test handling</li>
+<li>Test permitted and prohibited paths across the DMZ/internal boundary</li>
+<li>Review exported rules, ordering, NAT and default-deny behavior</li>
+<li>Trace a synthetic event through collection, parsing, alerting and retention</li>
+<li>Verify configured endpoints enroll and deliver telemetry</li>
+</ul>
+<p><strong>Recommendation:</strong> Do not use this design as a production authorization. Implement in an isolated lab, validate each control with retained evidence, and obtain organizational review before any operational use.</p>
+<hr />
+<p><strong>End of Testing and Validation Results</strong></p></article><nav class="navrow"><a href="../08-Technical-Controls/windows-hardening.html">← Windows Hardening</a><a href="test-scenarios.html">Test Scenarios →</a></nav><p class="footer-note">Chapter 25 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

@@ -1,0 +1,529 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Executive Summary | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link active" href="executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Executive Summary</div><article class="article"><h1>Executive Summary</h1><p class="crumb">Executive Summary · <a class="raw-link" href="../../../01-Executive-Summary/executive-summary.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> fictional design; not an engagement result</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#1-corporate-overview">1. Corporate Overview</a><ul>
+<li><a href="#11-basic-information">1.1 Basic Information</a></li>
+<li><a href="#12-business-description">1.2 Business Description</a></li>
+</ul>
+</li>
+<li><a href="#2-data-classification-sensitivity">2. Data Classification &amp; Sensitivity</a><ul>
+<li><a href="#21-data-types-held">2.1 Data Types Held</a></li>
+<li><a href="#22-data-volume-estimates">2.2 Data Volume Estimates</a></li>
+</ul>
+</li>
+<li><a href="#3-technology-footprint">3. Technology Footprint</a><ul>
+<li><a href="#31-infrastructure-overview">3.1 Infrastructure Overview</a></li>
+<li><a href="#32-applications-in-use">3.2 Applications in Use</a></li>
+</ul>
+</li>
+<li><a href="#4-organizational-structure">4. Organizational Structure</a><ul>
+<li><a href="#41-leadership-security-roles">4.1 Leadership &amp; Security Roles</a></li>
+<li><a href="#42-security-responsibilities-by-role">4.2 Security Responsibilities by Role</a></li>
+</ul>
+</li>
+<li><a href="#5-current-security-pain-points">5. Current Security Pain Points</a><ul>
+<li><a href="#51-stated-by-fictional-scenario-stakeholders">5.1 Stated by Fictional Scenario Stakeholders</a></li>
+<li><a href="#52-identified-gaps-pre-engagement">5.2 Identified Gaps (Pre-Engagement)</a></li>
+</ul>
+</li>
+<li><a href="#6-target-state-vision">6. Target State Vision</a><ul>
+<li><a href="#61-fictional-scenario-statement">6.1 Fictional Scenario Statement</a></li>
+<li><a href="#62-target-state-attributes">6.2 Target State Attributes</a></li>
+</ul>
+</li>
+<li><a href="#7-security-frameworks-applied">7. Security Frameworks Applied</a><ul>
+<li><a href="#71-framework-alignment">7.1 Framework Alignment</a></li>
+<li><a href="#72-sebi-alignment-contextual">7.2 SEBI Alignment (Contextual)</a></li>
+</ul>
+</li>
+<li><a href="#8-engagement-scope-boundaries">8. Engagement Scope &amp; Boundaries</a><ul>
+<li><a href="#81-in-scope">8.1 In Scope</a></li>
+<li><a href="#82-out-of-scope">8.2 Out of Scope</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="company-profile">Company Profile<a class="headerlink" href="#company-profile" title="Permanent link">&para;</a></h1>
+<h2 id="1-corporate-overview">1. Corporate Overview<a class="headerlink" href="#1-corporate-overview" title="Permanent link">&para;</a></h2>
+<h3 id="11-basic-information">1.1 Basic Information<a class="headerlink" href="#11-basic-information" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Legal Entity Name</strong></td>
+<td>Apex Capital (fictional lab scenario)</td>
+</tr>
+<tr>
+<td><strong>Entity Type</strong></td>
+<td>Registered Investment Adviser (RIA) / Portfolio Manager</td>
+</tr>
+<tr>
+<td><strong>AUM (Assets Under Management)</strong></td>
+<td>INR 35,000 Crores (Approx. 4.2 Billion USD)</td>
+</tr>
+<tr>
+<td><strong>Client Count</strong></td>
+<td>~12,000</td>
+</tr>
+<tr>
+<td><strong>Employee Count</strong></td>
+<td>350 total (200 HQ-based, 150 remote)</td>
+</tr>
+<tr>
+<td><strong>Headquarters</strong></td>
+<td>Mumbai, Maharashtra</td>
+</tr>
+<tr>
+<td><strong>Year Founded</strong></td>
+<td>2008</td>
+</tr>
+<tr>
+<td><strong>Regulatory Bodies</strong></td>
+<td>SEBI, RBI (as applicable)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-business-description">1.2 Business Description<a class="headerlink" href="#12-business-description" title="Permanent link">&para;</a></h3>
+<p>Apex Capital (fictional lab scenario) provides comprehensive financial advisory services to high-net-worth individuals, family offices, and institutional clients across India.</p>
+<p><strong>Core Services:</strong>
+- Mutual fund administration
+- Discretionary portfolio management
+- Retirement planning (NPS, pension)
+- Tax-loss harvesting
+- Estate and legacy planning
+- Alternative investment advisory</p>
+<hr />
+<h2 id="2-data-classification-sensitivity">2. Data Classification &amp; Sensitivity<a class="headerlink" href="#2-data-classification-sensitivity" title="Permanent link">&para;</a></h2>
+<h3 id="21-data-types-held">2.1 Data Types Held<a class="headerlink" href="#21-data-types-held" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Data Category</th>
+<th>Examples</th>
+<th>Regulatory Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Personal Information</strong></td>
+<td>PAN, Aadhaar (masked), passport, date of birth, address, phone number, email</td>
+<td>IT Act 2000, SEBI KYC requirements</td>
+</tr>
+<tr>
+<td><strong>Financial Data</strong></td>
+<td>Account numbers, demat details, investment holdings, trade confirmations, tax returns</td>
+<td>SEBI regulations, RBI guidelines</td>
+</tr>
+<tr>
+<td><strong>Beneficiary Information</strong></td>
+<td>Names, relationships, inheritance details</td>
+<td>Indian Succession Act</td>
+</tr>
+<tr>
+<td><strong>Employee Data</strong></td>
+<td>HR records, payroll, performance reviews</td>
+<td>Labour laws, internal confidentiality</td>
+</tr>
+<tr>
+<td><strong>Payment Data</strong></td>
+<td>NEFT/RTGS/IMPS details, UPI, card information (limited)</td>
+<td>RBI Payment and Settlement Systems Act, PCI DSS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-data-volume-estimates">2.2 Data Volume Estimates<a class="headerlink" href="#22-data-volume-estimates" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Data Type</th>
+<th>Estimated Records</th>
+<th>Growth Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Client Personal Data</td>
+<td>12,000 client records</td>
+<td>5-8% annually</td>
+</tr>
+<tr>
+<td>Financial transactions</td>
+<td>~50,000 per month</td>
+<td>10% annually</td>
+</tr>
+<tr>
+<td>Employee records</td>
+<td>350 active + terminated</td>
+<td>3-5% annually</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-technology-footprint">3. Technology Footprint<a class="headerlink" href="#3-technology-footprint" title="Permanent link">&para;</a></h2>
+<h3 id="31-infrastructure-overview">3.1 Infrastructure Overview<a class="headerlink" href="#31-infrastructure-overview" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>System Type</th>
+<th>Count</th>
+<th>Operating System</th>
+<th>Security Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HQ Workstations</td>
+<td>200</td>
+<td>Windows 10/11 Pro</td>
+<td>Endpoint protection, logging</td>
+</tr>
+<tr>
+<td>Remote Employee Laptops</td>
+<td>150</td>
+<td>Windows 10/11 Pro</td>
+<td>VPN required, remote access controls</td>
+</tr>
+<tr>
+<td>Web Servers (Customer Portal)</td>
+<td>2</td>
+<td>Ubuntu 22.04 LTS</td>
+<td>Public-facing, DMZ placement</td>
+</tr>
+<tr>
+<td>Internal File Servers</td>
+<td>3</td>
+<td>Windows Server 2019</td>
+<td>Client data storage, access logging</td>
+</tr>
+<tr>
+<td>Database Servers</td>
+<td>2</td>
+<td>Windows Server + SQL</td>
+<td>Portfolio data, transaction history</td>
+</tr>
+<tr>
+<td>Network Firewall</td>
+<td>1</td>
+<td>pfSense</td>
+<td>Segmentation, traffic filtering</td>
+</tr>
+<tr>
+<td>SIEM / Monitoring</td>
+<td>1</td>
+<td>Ubuntu + Wazuh</td>
+<td>Log aggregation, alerting</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-applications-in-use">3.2 Applications in Use<a class="headerlink" href="#32-applications-in-use" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Application</th>
+<th>Purpose</th>
+<th>Security Controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft 365</td>
+<td>Email, collaboration</td>
+<td>Conditional access, logging</td>
+</tr>
+<tr>
+<td>Salesforce Financial Cloud</td>
+<td>CRM, client management</td>
+<td>Role-based access, audit trails</td>
+</tr>
+<tr>
+<td>Morningstar Direct</td>
+<td>Investment research</td>
+<td>SSO integration</td>
+</tr>
+<tr>
+<td>Portfolio Management System</td>
+<td>Order execution, client reporting</td>
+<td>Dedicated admin accounts, audit logs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-organizational-structure">4. Organizational Structure<a class="headerlink" href="#4-organizational-structure" title="Permanent link">&para;</a></h2>
+<h3 id="41-leadership-security-roles">4.1 Leadership &amp; Security Roles<a class="headerlink" href="#41-leadership-security-roles" title="Permanent link">&para;</a></h3>
+<p><strong>Security Leadership Structure:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Reporting Line</th>
+<th>Security Responsibilities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Board of Directors</strong></td>
+<td>Oversight</td>
+<td>Final approval of security strategy, risk appetite</td>
+</tr>
+<tr>
+<td><strong>CEO / Managing Partner</strong></td>
+<td>Board</td>
+<td>Overall accountability for security program</td>
+</tr>
+<tr>
+<td><strong>CISO (Virtual/Contract)</strong></td>
+<td>CEO</td>
+<td>Strategic direction, policy approval, incident response escalation</td>
+</tr>
+<tr>
+<td><strong>CTO</strong></td>
+<td>CEO</td>
+<td>Technical implementation, infrastructure security, patch management</td>
+</tr>
+<tr>
+<td><strong>Compliance Officer</strong></td>
+<td>CEO</td>
+<td>Regulatory reporting (SEBI/RBI), audit coordination, policy enforcement</td>
+</tr>
+<tr>
+<td><strong>Proposed GRC Owner Role</strong></td>
+<td>CISO</td>
+<td>Risk assessments, policy development, compliance mapping, evidence management</td>
+</tr>
+<tr>
+<td><strong>All Employees</strong></td>
+<td>Respective managers</td>
+<td>Security awareness, incident reporting, policy adherence</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-security-responsibilities-by-role">4.2 Security Responsibilities by Role<a class="headerlink" href="#42-security-responsibilities-by-role" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Security Responsibilities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CISO (Virtual)</strong></td>
+<td>Strategic direction, policy approval, incident response escalation</td>
+</tr>
+<tr>
+<td><strong>Proposed GRC Owner Role</strong></td>
+<td>Risk assessments, policy development, compliance mapping, evidence management</td>
+</tr>
+<tr>
+<td><strong>CTO</strong></td>
+<td>Technical implementation, infrastructure security, patch management</td>
+</tr>
+<tr>
+<td><strong>Compliance Officer</strong></td>
+<td>SEBI/RBI reporting, audit coordination, policy enforcement</td>
+</tr>
+<tr>
+<td><strong>All Employees</strong></td>
+<td>Security awareness, incident reporting, policy adherence</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-current-security-pain-points">5. Current Security Pain Points<a class="headerlink" href="#5-current-security-pain-points" title="Permanent link">&para;</a></h2>
+<h3 id="51-stated-by-fictional-scenario-stakeholders">5.1 Stated by Fictional Scenario Stakeholders<a class="headerlink" href="#51-stated-by-fictional-scenario-stakeholders" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><em>"We passed our last SEBI audit, but it was painful – weeks of scrambling for evidence."</em></p>
+<p><em>"We have no formal risk register. If something happens, we don't know what we prioritized."</em></p>
+<p><em>"Our remote advisors use personal laptops inconsistently. Some have antivirus. Some don't."</em></p>
+<p><em>"If a regulator asked for real-time evidence of controls today, we could not produce it."</em></p>
+<p><em>"We need cyber resilience without slowing down trading operations."</em></p>
+</blockquote>
+<h3 id="52-identified-gaps-pre-engagement">5.2 Identified Gaps (Pre-Engagement)<a class="headerlink" href="#52-identified-gaps-pre-engagement" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Gap Area</th>
+<th>Description</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>No Risk Register</strong></td>
+<td>No formal documented risks or treatment plans</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td><strong>Missing Policies</strong></td>
+<td>No written security policies</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td><strong>No Centralized Logging</strong></td>
+<td>Logs exist only on individual systems</td>
+<td>High</td>
+</tr>
+<tr>
+<td><strong>No Network Segmentation</strong></td>
+<td>Web servers and internal servers on same network</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td><strong>Weak Password Policy</strong></td>
+<td>Default Windows settings, no lockout</td>
+<td>High</td>
+</tr>
+<tr>
+<td><strong>No Malware Detection Validation</strong></td>
+<td>Antivirus installed but never tested</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><strong>No Incident Response Plan</strong></td>
+<td>No documented procedures for breaches</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-target-state-vision">6. Target State Vision<a class="headerlink" href="#6-target-state-vision" title="Permanent link">&para;</a></h2>
+<h3 id="61-fictional-scenario-statement">6.1 Fictional Scenario Statement<a class="headerlink" href="#61-fictional-scenario-statement" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><em>"Audit-ready at all times. Continuous compliance monitoring. Cyber resilience without slowing down trading operations."</em></p>
+</blockquote>
+<h3 id="62-target-state-attributes">6.2 Target State Attributes<a class="headerlink" href="#62-target-state-attributes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Target Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Management</strong></td>
+<td>Documented risk register reviewed regularly</td>
+</tr>
+<tr>
+<td><strong>Compliance</strong></td>
+<td>Evidence repository exportable on demand for SEBI audits</td>
+</tr>
+<tr>
+<td><strong>Detection</strong></td>
+<td>Real-time alerting for security events</td>
+</tr>
+<tr>
+<td><strong>Response</strong></td>
+<td>Documented IR plan tested periodically</td>
+</tr>
+<tr>
+<td><strong>Segmentation</strong></td>
+<td>Isolation between public-facing and internal networks</td>
+</tr>
+<tr>
+<td><strong>Monitoring</strong></td>
+<td>Centralized SIEM with log retention</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-security-frameworks-applied">7. Security Frameworks Applied<a class="headerlink" href="#7-security-frameworks-applied" title="Permanent link">&para;</a></h2>
+<h3 id="71-framework-alignment">7.1 Framework Alignment<a class="headerlink" href="#71-framework-alignment" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Application</th>
+<th>Proposed Evidence (Not Captured)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NIST CSF 2.0</strong></td>
+<td>Risk assessment, controls mapping, incident response</td>
+<td>Risk register, control implementation, IR policy</td>
+</tr>
+<tr>
+<td><strong>ISO 27001:2022</strong></td>
+<td>Information Security Management System (ISMS)</td>
+<td>Policies, access controls, logging, asset management</td>
+</tr>
+<tr>
+<td><strong>Historical PCI DSS 3.2.1-inspired learning reference (not current compliance)</strong></td>
+<td>Payment data protection (Req 5, 8, 10)</td>
+<td>Malware detection (EICAR), password policy, audit logs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-sebi-alignment-contextual">7.2 SEBI Alignment (Contextual)<a class="headerlink" href="#72-sebi-alignment-contextual" title="Permanent link">&para;</a></h3>
+<p>While this engagement is technically aligned to global frameworks (NIST/ISO/PCI), the Proposed controls directly support SEBI's cybersecurity expectations for registered investment advisers:</p>
+<table>
+<thead>
+<tr>
+<th>SEBI Expectation</th>
+<th>Proposed Control</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Access control and authentication</td>
+<td>Password policy (14 char, lockout), role-based access</td>
+<td>Windows security policy screenshots</td>
+</tr>
+<tr>
+<td>Network segmentation</td>
+<td>pfSense firewall separating public and private subnets</td>
+<td>Firewall rule screenshots</td>
+</tr>
+<tr>
+<td>Logging and audit trails</td>
+<td>Wazuh SIEM centralized logging, failed login alerts</td>
+<td>Wazuh dashboard screenshots</td>
+</tr>
+<tr>
+<td>Malware protection</td>
+<td>Microsoft Defender with EICAR testing</td>
+<td>EICAR block screenshot</td>
+</tr>
+<tr>
+<td>Incident response</td>
+<td>Documented incident response policy</td>
+<td>IR policy document</td>
+</tr>
+<tr>
+<td>Vulnerability management</td>
+<td>OS hardening (CIS benchmarks)</td>
+<td>Hardening configuration screenshots</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-engagement-scope-boundaries">8. Engagement Scope &amp; Boundaries<a class="headerlink" href="#8-engagement-scope-boundaries" title="Permanent link">&para;</a></h2>
+<h3 id="81-in-scope">8.1 In Scope<a class="headerlink" href="#81-in-scope" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Risk assessment and risk register development</li>
+<li>Security policy development (6 core policies)</li>
+<li>Technical control implementation on 4 domains (Windows, Ubuntu, pfSense, Wazuh)</li>
+<li>Framework mapping (NIST CSF, ISO 27001, PCI-inspired)</li>
+<li>Testing and validation (EICAR, segmentation, passwords, alerting)</li>
+<li>Evidence repository and documentation</li>
+</ul>
+<h3 id="82-out-of-scope">8.2 Out of Scope<a class="headerlink" href="#82-out-of-scope" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Full penetration testing (separate engagement recommended)</li>
+<li>Third-party vendor risk assessments (recommended for Phase 2)</li>
+<li>Employee security awareness training (HR to lead)</li>
+<li>Cyber insurance policy review (legal/finance to lead)</li>
+<li>Physical security assessment (facilities to lead)</li>
+<li>Legal interpretation of SEBI circulars (external counsel recommended)</li>
+</ul>
+<hr />
+<p><strong>End of Company Profile</strong></p></article><nav class="navrow"><a href="../00-Front-Matter/Index.html">← Source Index</a><a href="../02-Company-Profile/company-profile.html">Scenario Profile →</a></nav><p class="footer-note">Chapter 4 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

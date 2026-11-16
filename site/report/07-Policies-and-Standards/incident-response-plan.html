@@ -1,0 +1,634 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Cyber Incident Response Plan | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="incident-response-policy.html">Incident Response Policy</a><a class="chapter-link active" href="incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Policies and Standards</div><article class="article"><h1>Cyber Incident Response Plan</h1><p class="crumb">Policies and Standards · <a class="raw-link" href="../../../07-Policies-and-Standards/incident-response-plan.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> proposed learning artifact; not approved or exercised</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#document-status">Document status</a></li>
+<li><a href="#1-purpose-and-objectives">1. Purpose and objectives</a></li>
+<li><a href="#2-scope-and-operating-assumptions">2. Scope and operating assumptions</a></li>
+<li><a href="#3-response-principles-and-framework-alignment">3. Response principles and framework alignment</a></li>
+<li><a href="#4-incident-types-and-initial-response">4. Incident types and initial response</a></li>
+<li><a href="#5-roles-authority-and-contacts">5. Roles, authority, and contacts</a><ul>
+<li><a href="#contact-register-to-complete-before-operational-use">Contact register to complete before operational use</a></li>
+</ul>
+</li>
+<li><a href="#6-severity-and-activation">6. Severity and activation</a></li>
+<li><a href="#7-intake-triage-and-investigation">7. Intake, triage, and investigation</a><ul>
+<li><a href="#initial-report">Initial report</a></li>
+<li><a href="#first-hour-decision-record">First-hour decision record</a></li>
+<li><a href="#investigation-questions">Investigation questions</a></li>
+<li><a href="#lab-telemetry-sources-to-consider">Lab telemetry sources to consider</a></li>
+</ul>
+</li>
+<li><a href="#8-containment-evidence-and-remediation">8. Containment, evidence, and remediation</a><ul>
+<li><a href="#containment-decisions">Containment decisions</a></li>
+<li><a href="#evidence-handling">Evidence handling</a></li>
+<li><a href="#remediation-action-register">Remediation action register</a></li>
+</ul>
+</li>
+<li><a href="#9-communications-and-notifications">9. Communications and notifications</a><ul>
+<li><a href="#notification-and-jurisdiction-review">Notification and jurisdiction review</a></li>
+</ul>
+</li>
+<li><a href="#10-recovery-and-return-to-service">10. Recovery and return to service</a></li>
+<li><a href="#11-post-incident-review-and-continuous-improvement">11. Post-incident review and continuous improvement</a></li>
+<li><a href="#12-supporting-procedures-and-readiness">12. Supporting procedures and readiness</a></li>
+<li><a href="#appendix-a-situation-report">Appendix A. Situation report</a></li>
+<li><a href="#appendix-b-incident-log">Appendix B. Incident log</a></li>
+<li><a href="#appendix-c-evidence-register">Appendix C. Evidence register</a></li>
+<li><a href="#appendix-d-remediation-and-improvement-register">Appendix D. Remediation and improvement register</a></li>
+<li><a href="#appendix-e-post-incident-review-prompts">Appendix E. Post-incident review prompts</a></li>
+</ul>
+</div>
+</details><h1 id="cyber-incident-response-plan">Cyber Incident Response Plan<a class="headerlink" href="#cyber-incident-response-plan" title="Permanent link">&para;</a></h1>
+<h2 id="document-status">Document status<a class="headerlink" href="#document-status" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment</td>
+<td>Fictional Apex Capital security lab</td>
+</tr>
+<tr>
+<td>Document owner</td>
+<td>Proposed role: Security Lead</td>
+</tr>
+<tr>
+<td>Approval</td>
+<td>Draft for review; no approval has been recorded</td>
+</tr>
+<tr>
+<td>Version</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td>Review cycle</td>
+<td>At least annually, and after a material incident, exercise, or environment change</td>
+</tr>
+<tr>
+<td>Classification</td>
+<td>Public learning artifact; contains no real contact details or operational credentials</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Scenario boundary.</strong> Apex Capital and its operating details are fictional. This plan describes a proposed response capability for a four-VM lab: pfSense with WAN, DMZ, internal and management interfaces; an Ubuntu web server in the DMZ; a Windows workstation in the internal zone; and Wazuh in the management zone. It is a design and learning artifact. No incident response exercise, VM validation, or recovery test is represented as completed.</p>
+</blockquote>
+<h2 id="1-purpose-and-objectives">1. Purpose and objectives<a class="headerlink" href="#1-purpose-and-objectives" title="Permanent link">&para;</a></h2>
+<p>This plan gives the Apex Capital scenario a repeatable way to report, assess, contain, investigate, recover from, and learn from suspected cyber incidents. It connects technical actions to business decisions: protect people and information, limit service disruption, preserve reliable evidence, meet applicable obligations, and restore services only when a responsible owner accepts the recovery evidence.</p>
+<p>The plan sets out decision authority, response roles, severity and escalation, internal and external communications, evidence handling, remediation tracking, recovery acceptance, and post-incident improvement. Supporting procedures should supply environment-specific commands and contact details after the lab or any real organization has been configured and approved.</p>
+<h2 id="2-scope-and-operating-assumptions">2. Scope and operating assumptions<a class="headerlink" href="#2-scope-and-operating-assumptions" title="Permanent link">&para;</a></h2>
+<p>The plan covers suspected compromise or disruption of the lab's network, systems, accounts, telemetry, and information. It also covers incidents reported by a service provider or other trusted party when they could affect Apex services or data.</p>
+<p>The proposed zones and systems are:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose in the scenario</th>
+<th>Incident-response relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pfSense WAN interface</td>
+<td>External connectivity</td>
+<td>Ingress/egress policy, firewall events, suspected command-and-control or denial of service</td>
+</tr>
+<tr>
+<td>pfSense DMZ interface and subnet <code>10.0.1.0/24</code></td>
+<td>Web-facing services</td>
+<td>Public exposure, web attacks, outbound connections, containment of the DMZ</td>
+</tr>
+<tr>
+<td>Ubuntu web server <code>10.0.1.10</code></td>
+<td>Fictional public application</td>
+<td>Web, operating-system, authentication, and application logs; preserve content and configuration state</td>
+</tr>
+<tr>
+<td>pfSense internal interface and subnet <code>10.0.2.0/24</code></td>
+<td>User workstation zone</td>
+<td>User activity, access to business data, malware, credential theft, and lateral movement</td>
+</tr>
+<tr>
+<td>Windows workstation <code>10.0.2.10</code></td>
+<td>Fictional employee endpoint</td>
+<td>Authentication, process, security, and endpoint telemetry; potential user and credential impact</td>
+</tr>
+<tr>
+<td>pfSense management interface and subnet <code>10.0.3.0/24</code></td>
+<td>Restricted administration and monitoring</td>
+<td>Protect the control plane and Wazuh; investigate privileged access and logging integrity</td>
+</tr>
+<tr>
+<td>Wazuh <code>10.0.3.10</code></td>
+<td>Central security monitoring</td>
+<td>Alert triage, endpoint telemetry, log retention, and detection of monitoring interruption</td>
+</tr>
+</tbody>
+</table>
+<p>The design assumes default-deny traffic between zones with explicitly approved paths. Proposed monitoring paths include agent or event forwarding to Wazuh on TCP 1514 and controlled agent enrollment on TCP 1515; any syslog or dashboard exposure must be explicitly scoped and restricted. These are design details, not evidence that the network or agents have been configured or tested. If Wazuh or the management zone may be compromised, responders must treat its alerts and stored logs as potentially incomplete or altered and seek independent firewall and endpoint records.</p>
+<p>This is not an approved business continuity plan, legal opinion, forensic procedure, or service-provider contract. In a real deployment, validate system owners, data classes, retention, backup availability, escalation contacts, authorities, and jurisdictional requirements before relying on it.</p>
+<h2 id="3-response-principles-and-framework-alignment">3. Response principles and framework alignment<a class="headerlink" href="#3-response-principles-and-framework-alignment" title="Permanent link">&para;</a></h2>
+<p>Responders should:</p>
+<ol>
+<li>Protect life, safety, essential services, and sensitive information before restoring convenience.</li>
+<li>Use the least disruptive containment that adequately limits harm; record the risk and approver for actions that may interrupt service or destroy volatile evidence.</li>
+<li>Separate observed facts, hypotheses, decisions, and unknowns in every incident record.</li>
+<li>Preserve original evidence, restrict access, hash collected files where practical, and record each transfer or transformation.</li>
+<li>Use an out-of-band channel if corporate identity, email, chat, or the monitoring platform may be compromised.</li>
+<li>Make external notifications and public statements through an authorized owner after legal, privacy, and business review; do not wait for perfect certainty when a reporting deadline may apply.</li>
+<li>Recover from a known-good state, verify control operation, and obtain explicit business acceptance before declaring normal operations.</li>
+</ol>
+<p>The workflow is intended to support risk-based incident handling and can be mapped to NIST CSF 2.0 Govern, Identify, Protect, Detect, Respond, and Recover outcomes, and to the organization's chosen ISO/IEC 27001 information-security controls. Incident-management procedures may also be mapped to the ISO/IEC 27035 series. A mapping describes intended alignment; it does not establish conformity, certification, or control effectiveness.</p>
+<h2 id="4-incident-types-and-initial-response">4. Incident types and initial response<a class="headerlink" href="#4-incident-types-and-initial-response" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Incident type</th>
+<th>Examples</th>
+<th>First response focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phishing or credential compromise</td>
+<td>Malicious link, token theft, unusual sign-in, unexpected MFA prompt</td>
+<td>Preserve the message and authentication records; revoke sessions or credentials through a trusted admin path; identify affected accounts and subsequent access</td>
+</tr>
+<tr>
+<td>Malware or ransomware</td>
+<td>Malicious process, encryption, endpoint detection alert</td>
+<td>Isolate affected endpoint or segment; protect backups and shared services; preserve volatile and disk evidence when feasible; do not reconnect until cleared</td>
+</tr>
+<tr>
+<td>Web application compromise</td>
+<td>Defacement, injection, unexpected files, anomalous web requests</td>
+<td>Preserve web, reverse-proxy/firewall, application, and host logs; restrict affected route or server; assess data access and outbound activity</td>
+</tr>
+<tr>
+<td>Denial of service or abuse</td>
+<td>Service saturation, brute-force traffic, resource exhaustion</td>
+<td>Confirm availability impact and traffic pattern; apply proportionate filtering or rate controls; preserve relevant flow and firewall telemetry</td>
+</tr>
+<tr>
+<td>Data exposure or exfiltration</td>
+<td>Publicly accessible data, unusual downloads, suspected transfer</td>
+<td>Restrict exposure, preserve access/configuration logs, identify data types and likely subjects, engage privacy/legal review promptly</td>
+</tr>
+<tr>
+<td>Privileged access or configuration misuse</td>
+<td>Unapproved account, firewall rule, security-tool change</td>
+<td>Protect administrative access, preserve change and identity logs, verify whether logging or recovery paths were altered</td>
+</tr>
+<tr>
+<td>Lost device or removable media</td>
+<td>Missing endpoint or storage</td>
+<td>Revoke credentials/tokens, identify encryption and data stored, preserve access records, assess privacy and contractual impact</td>
+</tr>
+<tr>
+<td>Supplier or cloud-service incident</td>
+<td>Provider advisory, lost telemetry, compromised integration</td>
+<td>Confirm affected service, tenant, data, and time window; invoke contractual contacts and evidence-retention requests; assess dependent services</td>
+</tr>
+</tbody>
+</table>
+<p>Threat vectors include web and email delivery, credential abuse, exploitation of exposed services, removable media, misconfiguration, insider misuse, lost equipment, and supplier compromise. A threat vector is a starting hypothesis, not a conclusion about cause.</p>
+<h2 id="5-roles-authority-and-contacts">5. Roles, authority, and contacts<a class="headerlink" href="#5-roles-authority-and-contacts" title="Permanent link">&para;</a></h2>
+<p>The fictional lab has no named on-call staff. Before using this plan operationally, fill the contact register and ensure a backup for every decision role. Keep a controlled copy accessible if the primary identity or collaboration service is unavailable.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Core responsibilities</th>
+<th>Decision authority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reporter / service desk</td>
+<td>Record initial report, preserve original message or alert, avoid unnecessary system changes, and reach the incident lead</td>
+<td>May raise an incident at any time; does not close or downgrade it</td>
+</tr>
+<tr>
+<td>Incident Manager</td>
+<td>Coordinate response, establish the incident record and timeline, assign owners, maintain situation reports, and convene decision-makers</td>
+<td>Proposes severity and coordinates approved actions; may initiate pre-authorized low-impact containment</td>
+</tr>
+<tr>
+<td>Technical Lead / responders</td>
+<td>Scope systems, collect logs and artifacts, recommend containment, eradication, and recovery steps</td>
+<td>Executes approved technical actions and records commands, outcomes, and exceptions</td>
+</tr>
+<tr>
+<td>System or service owner</td>
+<td>Explain business purpose, dependencies, data, recovery priority, and acceptable service impact</td>
+<td>Accepts business risk and signs off service restoration for their system</td>
+</tr>
+<tr>
+<td>Security / privacy / legal adviser</td>
+<td>Assess information sensitivity, evidence handling, applicable reporting, contracts, privilege, and notification content</td>
+<td>Advises on legal/privacy duties; authorized organizational officer approves external notifications</td>
+</tr>
+<tr>
+<td>Communications lead</td>
+<td>Prepare internal and external messages from confirmed facts; track recipients and updates</td>
+<td>Releases only messages approved by the designated executive and legal/privacy adviser</td>
+</tr>
+<tr>
+<td>Executive decision group</td>
+<td>Set business priorities, resources, risk appetite, customer posture, and crisis direction</td>
+<td>Approves high-impact service decisions, material risk acceptance, and public positions</td>
+</tr>
+<tr>
+<td>Supplier coordinator</td>
+<td>Contact provider, preserve contractual and technical evidence, track provider actions and dependencies</td>
+<td>Escalates under the service agreement; cannot accept risk for the service owner</td>
+</tr>
+</tbody>
+</table>
+<p>One person may fill multiple roles in a small exercise, but the incident record must show which role they were acting in. Avoid having a responder independently approve their own material risk acceptance or declare their own recovery evidence sufficient.</p>
+<h3 id="contact-register-to-complete-before-operational-use">Contact register to complete before operational use<a class="headerlink" href="#contact-register-to-complete-before-operational-use" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Contact</th>
+<th>Primary</th>
+<th>Backup</th>
+<th>Secure channel / out-of-band method</th>
+<th>Last verified</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Incident Manager</td>
+<td>To be assigned</td>
+<td>To be assigned</td>
+<td>To be confirmed</td>
+<td>Not verified</td>
+</tr>
+<tr>
+<td>Technical Lead / SOC</td>
+<td>To be assigned</td>
+<td>To be assigned</td>
+<td>To be confirmed</td>
+<td>Not verified</td>
+</tr>
+<tr>
+<td>Executive decision-maker</td>
+<td>To be assigned</td>
+<td>To be assigned</td>
+<td>To be confirmed</td>
+<td>Not verified</td>
+</tr>
+<tr>
+<td>Privacy / legal adviser</td>
+<td>To be assigned</td>
+<td>To be assigned</td>
+<td>To be confirmed</td>
+<td>Not verified</td>
+</tr>
+<tr>
+<td>Communications lead</td>
+<td>To be assigned</td>
+<td>To be assigned</td>
+<td>To be confirmed</td>
+<td>Not verified</td>
+</tr>
+<tr>
+<td>Internet, cloud, and security providers</td>
+<td>To be assigned</td>
+<td>To be assigned</td>
+<td>Contract-specific</td>
+<td>Not verified</td>
+</tr>
+<tr>
+<td>Applicable regulator / national CSIRT</td>
+<td>Maintain in controlled jurisdiction register</td>
+<td>Backup contact path</td>
+<td>Verify at incident time</td>
+<td>Not verified</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-severity-and-activation">6. Severity and activation<a class="headerlink" href="#6-severity-and-activation" title="Permanent link">&para;</a></h2>
+<p>Assign initial severity using business impact, not alert criticality alone. Consider confidentiality, integrity, availability, safety, legal exposure, customer impact, financial loss, duration, spread, and confidence in the facts. If dimensions differ, use the highest credible impact and revisit as evidence changes. Record the rationale and the next review time.</p>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Working definition</th>
+<th>Response posture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Critical</td>
+<td>Essential service unavailable; management plane or multiple zones plausibly controlled; confirmed or credible sensitive-data exposure at material scale; serious safety or legal consequences</td>
+<td>Activate full response and executive decision group immediately; use out-of-band communications; consider crisis and provider support</td>
+</tr>
+<tr>
+<td>High</td>
+<td>Confirmed compromise of a production-facing system or privileged account; likely data exposure; malware with plausible lateral movement; serious service degradation</td>
+<td>Activate core response team promptly; notify executive and advisers; increase situation-report frequency</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Limited system or account compromise, suspicious activity with bounded scope, or contained event with uncertain data impact</td>
+<td>Partial response; assign investigation owner and decision checkpoints; escalate if scope or impact grows</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>Isolated policy or technical event with no current evidence of compromise or material impact</td>
+<td>Handle through standard operations with a recorded rationale; escalate on new evidence</td>
+</tr>
+</tbody>
+</table>
+<p>The Incident Manager may activate the response team for any credible suspected incident. A responder must not wait for a complete root-cause analysis before raising a high-impact concern. The executive decision group is convened for Critical incidents and for High incidents involving sensitive data, customer impact, major business interruption, or significant external obligations. The service owner and privacy/legal adviser may be brought in at any severity when relevant. De-escalation requires a recorded explanation and approval by the Incident Manager plus the affected service owner; Critical cases also require executive agreement.</p>
+<h2 id="7-intake-triage-and-investigation">7. Intake, triage, and investigation<a class="headerlink" href="#7-intake-triage-and-investigation" title="Permanent link">&para;</a></h2>
+<h3 id="initial-report">Initial report<a class="headerlink" href="#initial-report" title="Permanent link">&para;</a></h3>
+<p>Capture what the reporter observed, when and how they noticed it, affected account/system/service, current operational impact, actions already taken, and a safe callback method. Preserve the original alert, message, URL, screenshot, or provider advisory where appropriate. Do not ask the reporter to investigate or forward suspected malware through ordinary channels.</p>
+<h3 id="first-hour-decision-record">First-hour decision record<a class="headerlink" href="#first-hour-decision-record" title="Permanent link">&para;</a></h3>
+<p>The Incident Manager opens a unique incident ID and records:</p>
+<ul>
+<li>detection time, report time, time zone, source, and confidence;</li>
+<li>observed facts versus hypotheses, initial incident type, and severity rationale;</li>
+<li>affected and potentially affected zones, accounts, data, users, suppliers, and service dependencies;</li>
+<li>whether the incident is active, spreading, or disrupting service;</li>
+<li>immediate safety, privacy, legal, contractual, and financial questions;</li>
+<li>actions taken, who authorized them, and known side effects;</li>
+<li>next owner, next decision point, and next update time.</li>
+</ul>
+<h3 id="investigation-questions">Investigation questions<a class="headerlink" href="#investigation-questions" title="Permanent link">&para;</a></h3>
+<p>Use questions to guide evidence collection; unanswered items remain explicitly unknown:</p>
+<ol>
+<li>What was the first reliable indicator and the earliest known time of suspicious activity?</li>
+<li>What initial access path is supported by evidence: web, email, exposed service, account, supplier, device, or configuration?</li>
+<li>Which hosts, accounts, subnets, applications, identities, and data are affected or potentially affected?</li>
+<li>Is there evidence of privilege escalation, persistence, lateral movement, command-and-control, or additional access?</li>
+<li>Were security controls, clocks, agents, logs, backups, or administrative accounts changed or disabled?</li>
+<li>Was information viewed, altered, encrypted, copied, or transferred? What data class and approximate volume are in scope?</li>
+<li>What is the current service and customer impact, and which dependencies could extend it?</li>
+<li>What evidence would confirm containment, eradication, and safe recovery?</li>
+<li>Which external parties must be consulted, and what reporting or contractual time limits may apply?</li>
+</ol>
+<h3 id="lab-telemetry-sources-to-consider">Lab telemetry sources to consider<a class="headerlink" href="#lab-telemetry-sources-to-consider" title="Permanent link">&para;</a></h3>
+<p>The proposed design offers pfSense firewall and DHCP records, Ubuntu authentication/system/web/application logs, Windows security and process events, and Wazuh alerts/agent status. Investigators should verify time synchronization, retention, collection coverage, and source integrity before drawing conclusions. The existence of a proposed source in this document does not mean its logging has been configured or its events have been collected.</p>
+<h2 id="8-containment-evidence-and-remediation">8. Containment, evidence, and remediation<a class="headerlink" href="#8-containment-evidence-and-remediation" title="Permanent link">&para;</a></h2>
+<h3 id="containment-decisions">Containment decisions<a class="headerlink" href="#containment-decisions" title="Permanent link">&para;</a></h3>
+<p>The Technical Lead recommends containment options and explains expected risk, service impact, evidence effect, and rollback path. The Incident Manager approves actions within delegated authority; the service owner approves material service interruption, and executive approval is required where the action could affect critical business operations. For an immediate threat, a responder may take a pre-authorized emergency action and notify the Incident Manager as soon as safe, recording the reason and time.</p>
+<p>Possible actions include disabling a compromised account and revoking sessions, isolating a host, restricting a firewall rule or web route, blocking a verified indicator, disabling a vulnerable integration, or pausing a supplier connection. Avoid broad blocks based on unverified indicators. Do not power off or wipe a suspected system until the evidence value and safety impact have been considered, unless continued operation creates unacceptable harm.</p>
+<h3 id="evidence-handling">Evidence handling<a class="headerlink" href="#evidence-handling" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Assign an evidence ID and record the incident ID, collector, source, acquisition method, date/time and time zone, system identity, and reason for collection.</li>
+<li>Record the original filename, size, relevant device identifiers, source and destination, and any tool/version used. Capture volatile data only when trained responders can do so safely and the expected value justifies the impact.</li>
+<li>Preserve the original read-only where practical. Calculate a cryptographic hash, such as SHA-256, for collected files and verify it after transfer. A hash supports integrity checking; it does not prove source authenticity or completeness.</li>
+<li>Store evidence in an access-controlled location with encryption, backup, and an access log. Do not place sensitive incident evidence in public repositories or general chat.</li>
+<li>For every transfer, copy, conversion, redaction, or analysis, record who handled it, when, why, and the resulting evidence ID/hash. Keep working copies separate from originals.</li>
+<li>Follow approved retention, privacy, legal hold, and deletion rules. Escalate uncertain evidentiary requirements to the legal adviser before altering or disposing of material.</li>
+</ol>
+<p>If the monitoring plane is suspect, obtain independent copies from firewall and endpoint sources, the platform provider, or a trusted acquisition path. Record collection limitations and gaps.</p>
+<h3 id="remediation-action-register">Remediation action register<a class="headerlink" href="#remediation-action-register" title="Permanent link">&para;</a></h3>
+<p>Every action has a unique ID, linked finding/evidence, priority, owner, approver, target date, current status, validation method, result, and closure authority. Status values are <strong>Open</strong>, <strong>In progress</strong>, <strong>Blocked</strong>, <strong>Implemented—verification pending</strong>, and <strong>Closed—verified</strong>. The action owner may provide implementation evidence; a separate reviewer should verify high-risk remediation. A plan or intended control is not closure evidence.</p>
+<h2 id="9-communications-and-notifications">9. Communications and notifications<a class="headerlink" href="#9-communications-and-notifications" title="Permanent link">&para;</a></h2>
+<p>The Incident Manager maintains a single approved situation report. Internal updates state what is known, what remains uncertain, business impact, actions, decisions needed, and the next update time. Use a trusted out-of-band channel if identity or messaging systems may be affected. Staff should preserve relevant evidence, follow approved workarounds, and direct enquiries to the named communications lead.</p>
+<p>External messages are coordinated by the communications lead with the executive decision-maker and legal/privacy adviser. Share only verified, necessary information. Record what was sent, to whom, by whom, when, through which channel, and the basis for the decision. Do not promise a resolution time or describe a breach as confirmed or ruled out without supporting evidence.</p>
+<h3 id="notification-and-jurisdiction-review">Notification and jurisdiction review<a class="headerlink" href="#notification-and-jurisdiction-review" title="Permanent link">&para;</a></h3>
+<p>At triage, the privacy/legal adviser records the potentially applicable jurisdictions, entity type, affected data, incident category, contractual commitments, regulator/sector contacts, reporting threshold, decision owner, and the source/date checked. Recheck current requirements for the specific facts; do not rely on the illustrative plan as a legal determination.</p>
+<p>For an India-based organization, the review should determine whether the incident falls within current CERT-In reporting directions and whether other privacy, sectoral, customer, law-enforcement, or contractual notifications apply. CERT-In directions include a six-hour reporting requirement for covered entities and listed incident categories; the adviser must confirm applicability, the triggering time, and the current reporting process for the incident. Consult the current official <a href="https://www.cert-in.org.in/Directions70B.jsp">CERT-In directions and reporting information</a>. Record the decision and evidence even when no external notification is made. Do not let confidentiality language delay a notification that the adviser determines is legally required.</p>
+<h2 id="10-recovery-and-return-to-service">10. Recovery and return to service<a class="headerlink" href="#10-recovery-and-return-to-service" title="Permanent link">&para;</a></h2>
+<p>Recovery starts only after the Incident Manager and Technical Lead agree that containment is adequate for the recovery action. The service owner identifies business priorities and acceptable interim service. Responders should:</p>
+<ol>
+<li>Identify the likely persistence and entry path and address them before reconnecting systems.</li>
+<li>Select a known-good image or backup and verify its provenance, integrity, and recovery point. Treat untested backup availability as unknown.</li>
+<li>Rebuild or restore in a controlled segment; rotate exposed credentials, keys, certificates, and tokens through trusted administration paths.</li>
+<li>Apply required security updates and configurations, restore monitoring, and confirm logs reach an independent or protected destination.</li>
+<li>Validate authentication, network segmentation, critical application behavior, data integrity, backup status, and detection coverage against documented acceptance checks.</li>
+<li>Obtain technical verification and explicit service-owner acceptance. Record residual risks, compensating controls, monitoring duration, and rollback trigger.</li>
+<li>Monitor for recurrence and unusual activity for a period set by the Incident Manager and Technical Lead based on the incident, then record the review date.</li>
+</ol>
+<p>Do not state that a system is recovered solely because it responds to a network check. Recovery targets and timeframes must come from an approved continuity analysis and tested recovery capability; none are asserted here.</p>
+<h2 id="11-post-incident-review-and-continuous-improvement">11. Post-incident review and continuous improvement<a class="headerlink" href="#11-post-incident-review-and-continuous-improvement" title="Permanent link">&para;</a></h2>
+<p>After containment and immediate recovery, the Incident Manager schedules a review proportionate to severity. The review examines the timeline, people and decision roles, process and authority, organizational coordination, supporting facilities and providers, technology and controls, training, and exercise design where relevant. It asks what happened, why defenses did or did not prevent it, how it was detected, what delayed or improved response, how well communication worked, and what will reduce recurrence or impact.</p>
+<p>The review separates established cause from unresolved hypotheses and records evidence for conclusions. Each recommendation enters the action register with an accountable owner, target date, priority, and objective validation. Update this plan, playbooks, contact register, detection logic, and training materials after material changes. Exercise revisions through a discussion-based tabletop before relying on them operationally.</p>
+<h2 id="12-supporting-procedures-and-readiness">12. Supporting procedures and readiness<a class="headerlink" href="#12-supporting-procedures-and-readiness" title="Permanent link">&para;</a></h2>
+<p>This plan should be paired with maintained procedures for event intake, triage and severity, identity compromise, endpoint isolation and acquisition, firewall change control, backup restoration, business continuity, supplier incident escalation, evidence storage, privacy assessment, external communication, and recovery verification. Supporting playbooks must name decision points and rollback conditions, not just commands.</p>
+<p>Before operational use, confirm that:</p>
+<ul>
+<li>the incident and executive contacts, alternates, and out-of-band channels are current and reachable;</li>
+<li>critical systems, owners, dependencies, data classes, and recovery priorities are documented;</li>
+<li>logging sources, time synchronization, retention, and protected evidence storage have been configured and tested;</li>
+<li>responder authority for account disabling, system isolation, firewall changes, and restoration is approved;</li>
+<li>service-provider contacts, evidence access, incident notification, and cooperation terms are available;</li>
+<li>legal/privacy reporting requirements and decision ownership are recorded for relevant jurisdictions;</li>
+<li>recovery backups can be restored and validated, and business owners know their acceptance role;</li>
+<li>incident records and action tracking are accessible during an outage;</li>
+<li>responders have practiced the plan and understand where to find current playbooks.</li>
+</ul>
+<h2 id="appendix-a-situation-report">Appendix A. Situation report<a class="headerlink" href="#appendix-a-situation-report" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Entry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Incident ID / title</td>
+<td></td>
+</tr>
+<tr>
+<td>Report author and role</td>
+<td></td>
+</tr>
+<tr>
+<td>Report time and time zone</td>
+<td></td>
+</tr>
+<tr>
+<td>First detected / reported</td>
+<td></td>
+</tr>
+<tr>
+<td>Status and severity</td>
+<td></td>
+</tr>
+<tr>
+<td>Incident type</td>
+<td></td>
+</tr>
+<tr>
+<td>Confirmed facts</td>
+<td></td>
+</tr>
+<tr>
+<td>Unknowns / working hypotheses</td>
+<td></td>
+</tr>
+<tr>
+<td>Affected systems, zones, accounts, data, services</td>
+<td></td>
+</tr>
+<tr>
+<td>Business and customer impact</td>
+<td></td>
+</tr>
+<tr>
+<td>Containment and investigation actions</td>
+<td></td>
+</tr>
+<tr>
+<td>Decisions made, approver, rationale</td>
+<td></td>
+</tr>
+<tr>
+<td>Notifications sent / pending / decision owner</td>
+<td></td>
+</tr>
+<tr>
+<td>Assistance required</td>
+<td></td>
+</tr>
+<tr>
+<td>Current risks and blockers</td>
+<td></td>
+</tr>
+<tr>
+<td>Next actions and owners</td>
+<td></td>
+</tr>
+<tr>
+<td>Next update due</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix-b-incident-log">Appendix B. Incident log<a class="headerlink" href="#appendix-b-incident-log" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Timestamp and time zone</th>
+<th>Actor / role</th>
+<th>Fact, action, or decision</th>
+<th>System / evidence ID</th>
+<th>Rationale / impact</th>
+<th>Approver</th>
+<th>Outcome / next step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Use one row per material observation, action, decision, or communication. Preserve original entries; correct errors with a new timestamped note.</p>
+<h2 id="appendix-c-evidence-register">Appendix C. Evidence register<a class="headerlink" href="#appendix-c-evidence-register" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Evidence ID</th>
+<th>Source / system</th>
+<th>Item and collection method</th>
+<th>Collector / time zone</th>
+<th>Original location</th>
+<th>Hash / verification</th>
+<th>Storage location and access</th>
+<th>Transfers / transformations</th>
+<th>Limitations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix-d-remediation-and-improvement-register">Appendix D. Remediation and improvement register<a class="headerlink" href="#appendix-d-remediation-and-improvement-register" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Action ID</th>
+<th>Linked incident / finding</th>
+<th>Action and expected risk reduction</th>
+<th>Owner</th>
+<th>Approver</th>
+<th>Due date</th>
+<th>Status</th>
+<th>Validation evidence / reviewer</th>
+<th>Closure date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Open</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix-e-post-incident-review-prompts">Appendix E. Post-incident review prompts<a class="headerlink" href="#appendix-e-post-incident-review-prompts" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Review questions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Timeline and impact</td>
+<td>When did activity begin, become detectable, get reported, get contained, and recover? Which services, users, and data were affected?</td>
+</tr>
+<tr>
+<td>Protection</td>
+<td>Which preventive controls were expected to help? Did they work as designed, and what evidence supports that assessment?</td>
+</tr>
+<tr>
+<td>Detection</td>
+<td>Which signals identified the event? Were logs complete and timely? What would reduce time to detect?</td>
+</tr>
+<tr>
+<td>Response</td>
+<td>Were roles, authority, escalation, containment, evidence handling, and communications effective? What caused delay or unnecessary impact?</td>
+</tr>
+<tr>
+<td>Recovery</td>
+<td>Was the source understood and removed? Were backup and control checks successful? Who accepted remaining risk?</td>
+</tr>
+<tr>
+<td>People and organization</td>
+<td>Were skills, staffing, supplier support, decision paths, and executive oversight adequate?</td>
+</tr>
+<tr>
+<td>Process and technology</td>
+<td>Which plans, tools, configurations, dependencies, and training need a specific change?</td>
+</tr>
+<tr>
+<td>Actions</td>
+<td>What measurable change will prevent recurrence, improve detection, reduce impact, or shorten recovery? Who owns and verifies it?</td>
+</tr>
+</tbody>
+</table></article><nav class="navrow"><a href="incident-response-policy.html">← Incident Response Policy</a><a href="password-policy.html">Authentication and Password Policy →</a></nav><p class="footer-note">Chapter 19 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

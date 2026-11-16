@@ -1,0 +1,997 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Historical PCI DSS 3.2.1-Inspired Learning Appendix | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link active" href="pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Framework Mapping</div><article class="article"><h1>Historical PCI DSS 3.2.1-Inspired Learning Appendix</h1><p class="crumb">Framework Mapping · <a class="raw-link" href="../../../06-Framework-Mapping/pci-inspired-mapping.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> historical learning material only; not current PCI compliance</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#4-vm-architecture-for-pci-controls">4-VM Architecture for PCI Controls</a></li>
+<li><a href="#requirement-mapping">Requirement Mapping</a><ul>
+<li><a href="#requirement-1-install-and-maintain-firewall-configuration">Requirement 1: Install and Maintain Firewall Configuration</a></li>
+<li><a href="#requirement-2-do-not-use-vendor-supplied-defaults">Requirement 2: Do Not Use Vendor-Supplied Defaults</a></li>
+<li><a href="#requirement-3-protect-stored-cardholder-data">Requirement 3: Protect Stored Cardholder Data</a></li>
+<li><a href="#requirement-4-encrypt-transmission-of-cardholder-data">Requirement 4: Encrypt Transmission of Cardholder Data</a></li>
+<li><a href="#requirement-5-protect-all-systems-against-malware">Requirement 5: Protect All Systems Against Malware</a></li>
+<li><a href="#requirement-6-develop-and-maintain-secure-systems">Requirement 6: Develop and Maintain Secure Systems</a></li>
+<li><a href="#requirement-7-restrict-access-to-cardholder-data">Requirement 7: Restrict Access to Cardholder Data</a></li>
+<li><a href="#requirement-8-identify-and-authenticate-access">Requirement 8: Identify and Authenticate Access</a></li>
+<li><a href="#requirement-9-restrict-physical-access">Requirement 9: Restrict Physical Access</a></li>
+<li><a href="#requirement-10-track-and-monitor-all-access">Requirement 10: Track and Monitor All Access</a></li>
+<li><a href="#requirement-11-regularly-test-security-systems">Requirement 11: Regularly Test Security Systems</a></li>
+<li><a href="#requirement-12-maintain-security-policy">Requirement 12: Maintain Security Policy</a></li>
+</ul>
+</li>
+<li><a href="#historical-pci-inspired-mapping-presence-by-vm-not-implementation-or-compliance-status">Historical PCI-inspired mapping presence by VM (not implementation or compliance status)</a></li>
+<li><a href="#evidence-index-by-pci-requirement">Evidence Index by PCI Requirement</a></li>
+<li><a href="#pci-dss-applicability-statement">PCI DSS Applicability Statement</a></li>
+<li><a href="#pci-dss-gap-analysis-inspired-controls">PCI DSS Gap Analysis (Inspired Controls)</a></li>
+<li><a href="#pci-to-nist-cross-reference">PCI to NIST Cross Reference</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Historical learning appendix only:</strong> This source chapter discusses PCI DSS 3.2.1-inspired control concepts. It is not current PCI DSS guidance, an assessment, or a compliance claim.</p>
+</blockquote>
+<h1 id="pci-dss-inspired-controls-payment-related">PCI DSS Inspired Controls (Payment-Related)<a class="headerlink" href="#pci-dss-inspired-controls-payment-related" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Apex Capital (fictional lab scenario) processes client fee debits via ACH/NEFT and advisor commission payments. Credit card processing is limited and not stored. Therefore, full PCI DSS compliance is not required. However, PCI DSS inspired controls are applied where payment data is involved.</p>
+<table>
+<thead>
+<tr>
+<th>Payment Type</th>
+<th>Processing Method</th>
+<th>Cardholder Data Stored</th>
+<th>PCI DSS Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Client fee debits</td>
+<td>ACH/NEFT</td>
+<td>No</td>
+<td>No (inspired only)</td>
+</tr>
+<tr>
+<td>Advisor commissions</td>
+<td>Bank transfer</td>
+<td>No</td>
+<td>No (inspired only)</td>
+</tr>
+<tr>
+<td>Credit card payments (limited)</td>
+<td>Third-party gateway</td>
+<td>No</td>
+<td>No (inspired only)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> This engagement applies PCI DSS controls as a <strong>security best practice framework</strong> for financial services, not as a formal certification.</p>
+<hr />
+<h2 id="4-vm-architecture-for-pci-controls">4-VM Architecture for PCI Controls<a class="headerlink" href="#4-vm-architecture-for-pci-controls" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>Role</th>
+<th>PCI Requirements Addressed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VM 1 - Windows 11 Enterprise</td>
+<td>Internal workstation/server</td>
+<td>Req 2, 5, 6, 7, 8, 10</td>
+</tr>
+<tr>
+<td>VM 2 - Ubuntu Server</td>
+<td>Public-facing web server</td>
+<td>Req 1, 2, 4, 6</td>
+</tr>
+<tr>
+<td>VM 3 - pfSense</td>
+<td>Firewall and segmentation</td>
+<td>Req 1, 4, 11</td>
+</tr>
+<tr>
+<td>VM 4 - Wazuh</td>
+<td>SIEM and monitoring</td>
+<td>Req 10, 11</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="requirement-mapping">Requirement Mapping<a class="headerlink" href="#requirement-mapping" title="Permanent link">&para;</a></h2>
+<h3 id="requirement-1-install-and-maintain-firewall-configuration">Requirement 1: Install and Maintain Firewall Configuration<a class="headerlink" href="#requirement-1-install-and-maintain-firewall-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>Firewall configuration standards</td>
+<td>pfSense rules documented</td>
+<td>Firewall rule screenshots</td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>Deny all traffic by default</td>
+<td>Default deny rule on WAN interface</td>
+<td>pfSense rule list</td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>Restrict inbound/outbound traffic</td>
+<td>Public vs private subnet segregation</td>
+<td>Segmentation test screenshot</td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>Personal firewall configuration</td>
+<td>Windows Defender Firewall enabled</td>
+<td>Firewall settings screenshot</td>
+<td>VM 1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-2-do-not-use-vendor-supplied-defaults">Requirement 2: Do Not Use Vendor-Supplied Defaults<a class="headerlink" href="#requirement-2-do-not-use-vendor-supplied-defaults" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1</td>
+<td>Change default passwords</td>
+<td>Password policy enforced</td>
+<td>Weak password rejection</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>Remove unnecessary services</td>
+<td>Windows service minimization, Ubuntu minimal install</td>
+<td>Services list screenshot</td>
+<td>VM 1, VM 2</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>Configure system security parameters</td>
+<td>CIS benchmarks, hardening guides</td>
+<td>Hardening documentation</td>
+<td>VM 1, VM 2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-3-protect-stored-cardholder-data">Requirement 3: Protect Stored Cardholder Data<a class="headerlink" href="#requirement-3-protect-stored-cardholder-data" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td>Minimize cardholder data storage</td>
+<td>No cardholder data stored</td>
+<td>Data classification policy</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>Protect stored data</td>
+<td>NTFS permissions, data classification</td>
+<td>Data classification policy</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>3.3</td>
+<td>Mask PAN when displayed</td>
+<td>Not applicable (no PAN stored)</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> Apex Capital does not store cardholder data. Client fee debits are processed via ACH/NEFT, not credit cards.</p>
+<h3 id="requirement-4-encrypt-transmission-of-cardholder-data">Requirement 4: Encrypt Transmission of Cardholder Data<a class="headerlink" href="#requirement-4-encrypt-transmission-of-cardholder-data" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.1</td>
+<td>Use strong cryptography</td>
+<td>HTTPS enforcement on web server</td>
+<td>Browser padlock screenshot</td>
+<td>VM 2</td>
+</tr>
+<tr>
+<td>4.2</td>
+<td>Encrypt transmissions over open networks</td>
+<td>SSH for remote access, TLS for web</td>
+<td>SSH config, HTTPS cert</td>
+<td>VM 2, VM 3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-5-protect-all-systems-against-malware">Requirement 5: Protect All Systems Against Malware<a class="headerlink" href="#requirement-5-protect-all-systems-against-malware" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.1</td>
+<td>Deploy anti-malware software</td>
+<td>Microsoft Defender enabled</td>
+<td>Defender settings screenshot</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>5.2</td>
+<td>Keep anti-malware software current</td>
+<td>Automatic updates enabled</td>
+<td>Update settings screenshot</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>5.3</td>
+<td>Anti-malware mechanisms are active</td>
+<td>Real-time protection enabled</td>
+<td>Real-time protection status</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>5.4</td>
+<td>Test anti-malware mechanisms</td>
+<td>EICAR test file detection</td>
+<td>EICAR block screenshot</td>
+<td>VM 1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-6-develop-and-maintain-secure-systems">Requirement 6: Develop and Maintain Secure Systems<a class="headerlink" href="#requirement-6-develop-and-maintain-secure-systems" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6.1</td>
+<td>Install security patches</td>
+<td>Patch management policy</td>
+<td>Patch schedule documentation</td>
+<td>VM 1, VM 2</td>
+</tr>
+<tr>
+<td>6.2</td>
+<td>Develop secure applications</td>
+<td>SSH hardening, service minimization</td>
+<td><code>sshd_config</code> screenshot</td>
+<td>VM 2</td>
+</tr>
+<tr>
+<td>6.3</td>
+<td>Change management process</td>
+<td>Documented change log</td>
+<td>Firewall rule change log</td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>6.4</td>
+<td>Separate development/test environments</td>
+<td>Not applicable (no dev environment)</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>6.5</td>
+<td>Address common coding vulnerabilities</td>
+<td>Ubuntu server hardening</td>
+<td>Hardening documentation</td>
+<td>VM 2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-7-restrict-access-to-cardholder-data">Requirement 7: Restrict Access to Cardholder Data<a class="headerlink" href="#requirement-7-restrict-access-to-cardholder-data" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7.1</td>
+<td>Limit access on need-to-know basis</td>
+<td>Least privilege policy</td>
+<td>Access control policy</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>7.2</td>
+<td>Establish access control system</td>
+<td>Windows user roles, separate admin accounts</td>
+<td>User role screenshot</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>7.3</td>
+<td>Document access privileges</td>
+<td>Access control policy documented</td>
+<td>Policy document</td>
+<td>VM 1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-8-identify-and-authenticate-access">Requirement 8: Identify and Authenticate Access<a class="headerlink" href="#requirement-8-identify-and-authenticate-access" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8.1</td>
+<td>Assign unique IDs</td>
+<td>Individual user accounts</td>
+<td>User list screenshot</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>8.2</td>
+<td>Implement strong authentication</td>
+<td>Password policy (14 char, complexity)</td>
+<td><code>net accounts</code> output</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>8.3</td>
+<td>Implement multi-factor authentication</td>
+<td>Recommended but out of scope</td>
+<td>Residual risk recommendation</td>
+<td>All</td>
+</tr>
+<tr>
+<td>8.4</td>
+<td>Lock out after invalid attempts</td>
+<td>5 attempts lockout policy</td>
+<td>Lockout settings screenshot</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>8.5</td>
+<td>Use appropriate authentication</td>
+<td>Password authentication with complexity</td>
+<td>Weak password rejection</td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>8.6</td>
+<td>Secure authentication data</td>
+<td>Passwords stored with hashing</td>
+<td>Windows default behavior</td>
+<td>VM 1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-9-restrict-physical-access">Requirement 9: Restrict Physical Access<a class="headerlink" href="#requirement-9-restrict-physical-access" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9.1-9.9</td>
+<td>Physical access controls</td>
+<td>Out of scope (virtual environment)</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> Physical access controls are not applicable to this virtualized lab environment.</p>
+<h3 id="requirement-10-track-and-monitor-all-access">Requirement 10: Track and Monitor All Access<a class="headerlink" href="#requirement-10-track-and-monitor-all-access" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10.1</td>
+<td>Implement audit logging</td>
+<td>Wazuh SIEM centralized logging</td>
+<td>Wazuh dashboard screenshot</td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>10.2</td>
+<td>Log all access to system components</td>
+<td>Windows Event Logs (Event ID 4625)</td>
+<td>Event log screenshot</td>
+<td>VM 1, VM 4</td>
+</tr>
+<tr>
+<td>10.3</td>
+<td>Record audit log details</td>
+<td>Timestamps, user IDs, source IPs</td>
+<td>Wazuh alert details</td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>10.4</td>
+<td>Synchronize time across systems</td>
+<td>NTP configuration</td>
+<td>Date/time settings</td>
+<td>All</td>
+</tr>
+<tr>
+<td>10.5</td>
+<td>Secure audit logs</td>
+<td>Wazuh log retention, access controls</td>
+<td>Wazuh configuration</td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>10.6</td>
+<td>Review audit logs</td>
+<td>Failed login alerting</td>
+<td>Wazuh alert screenshot</td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>10.7</td>
+<td>Retain audit logs</td>
+<td>90-day retention policy</td>
+<td>Wazuh retention settings</td>
+<td>VM 4</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-11-regularly-test-security-systems">Requirement 11: Regularly Test Security Systems<a class="headerlink" href="#requirement-11-regularly-test-security-systems" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>11.1</td>
+<td>Run internal vulnerability scans</td>
+<td>Not in scope (full scanning not performed)</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>11.2</td>
+<td>Run external vulnerability scans</td>
+<td>Not in scope</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>11.3</td>
+<td>Perform penetration testing</td>
+<td>Not in scope (separate engagement)</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>11.4</td>
+<td>Detect intrusion</td>
+<td>Wazuh SIEM, pfSense firewall logs</td>
+<td>Wazuh alerts</td>
+<td>VM 3, VM 4</td>
+</tr>
+<tr>
+<td>11.5</td>
+<td>Deploy change detection</td>
+<td>File integrity monitoring (partial)</td>
+<td>Wazuh FIM (optional)</td>
+<td>VM 4</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Testing performed in this engagement:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Description</th>
+<th>Result</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EICAR test</td>
+<td>Malware detection validation</td>
+<td>Blocked</td>
+<td><code>evidence/eicar-block.png</code></td>
+</tr>
+<tr>
+<td>Segmentation test</td>
+<td>Lateral movement prevention</td>
+<td>Blocked</td>
+<td><code>evidence/segmentation-test.png</code></td>
+</tr>
+<tr>
+<td>Password test</td>
+<td>Weak password rejection</td>
+<td>Rejected</td>
+<td><code>evidence/weak-password-rejected.png</code></td>
+</tr>
+<tr>
+<td>Alert test</td>
+<td>Failed login detection</td>
+<td>Alert generated</td>
+<td><code>evidence/wazuh-failed-login-alert.png</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-12-maintain-security-policy">Requirement 12: Maintain Security Policy<a class="headerlink" href="#requirement-12-maintain-security-policy" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+<th>Implementation</th>
+<th>Evidence</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>12.1</td>
+<td>Establish security policy</td>
+<td>6 policies documented</td>
+<td><code>07-Policies-and-Standards/</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>12.2</td>
+<td>Conduct risk assessment</td>
+<td>Risk register with 8 risks</td>
+<td><code>04-Risk-Assessment/</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>12.3</td>
+<td>Manage usage of critical technologies</td>
+<td>Acceptable use policy</td>
+<td><code>07-Policies-and-Standards/acceptable-use-policy.md</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>12.4</td>
+<td>Define security responsibilities</td>
+<td>Roles defined in company profile</td>
+<td><code>02-Company-Profile/</code> Section 4</td>
+<td>All</td>
+</tr>
+<tr>
+<td>12.5</td>
+<td>Assign information security responsibility</td>
+<td>CISO, GRC Lead roles defined</td>
+<td><code>02-Company-Profile/</code> Section 4</td>
+<td>All</td>
+</tr>
+<tr>
+<td>12.6</td>
+<td>Implement security awareness</td>
+<td>Recommended but out of scope</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>12.7</td>
+<td>Screen personnel</td>
+<td>Not applicable</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>12.8</td>
+<td>Manage service providers</td>
+<td>Vendor risk program (Planned)</td>
+<td>R-007 in risk register</td>
+<td>All</td>
+</tr>
+<tr>
+<td>12.9</td>
+<td>Incident response plan</td>
+<td>Documented IR policy</td>
+<td><code>07-Policies-and-standards/incident-response-policy.md</code></td>
+<td>All</td>
+</tr>
+<tr>
+<td>12.10</td>
+<td>Test incident response plan</td>
+<td>Recommended for Phase 2</td>
+<td>Residual risk recommendation</td>
+<td>All</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="historical-pci-inspired-mapping-presence-by-vm-not-implementation-or-compliance-status">Historical PCI-inspired mapping presence by VM (not implementation or compliance status)<a class="headerlink" href="#historical-pci-inspired-mapping-presence-by-vm-not-implementation-or-compliance-status" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>VM 1 (Windows)</th>
+<th>VM 2 (Ubuntu)</th>
+<th>VM 3 (pfSense)</th>
+<th>VM 4 (Wazuh)</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Req 1 (Firewall)</td>
+<td>Partial</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 2 (Defaults)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 3 (Storage)</td>
+<td>Yes</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 4 (Encryption)</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 5 (Malware)</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 6 (Secure systems)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Partial</td>
+<td>No</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 7 (Access)</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 8 (Authentication)</td>
+<td>Yes</td>
+<td>Partial</td>
+<td>No</td>
+<td>No</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 9 (Physical)</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>Out of Scope</td>
+</tr>
+<tr>
+<td>Req 10 (Logging)</td>
+<td>Partial</td>
+<td>Partial</td>
+<td>Partial</td>
+<td>Yes</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 11 (Testing)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Planned / not executed</td>
+</tr>
+<tr>
+<td>Req 12 (Policy)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Planned / not executed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="evidence-index-by-pci-requirement">Evidence Index by PCI Requirement<a class="headerlink" href="#evidence-index-by-pci-requirement" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>PCI Requirement</th>
+<th>Control</th>
+<th>Evidence File</th>
+<th>Primary VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Req 1</td>
+<td>Firewall segmentation</td>
+<td><code>evidence/segmentation-test.png</code></td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>Req 2</td>
+<td>Default password change</td>
+<td><code>evidence/weak-password-rejected.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>Req 4</td>
+<td>HTTPS encryption</td>
+<td><code>evidence/https-padlock.png</code></td>
+<td>VM 2</td>
+</tr>
+<tr>
+<td>Req 5</td>
+<td>Malware detection</td>
+<td><code>evidence/eicar-block.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>Req 7</td>
+<td>Access control</td>
+<td><code>evidence/access-denied.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>Req 8</td>
+<td>Password policy</td>
+<td><code>evidence/net-accounts-output.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>Req 10</td>
+<td>Failed login alert</td>
+<td><code>evidence/wazuh-failed-login-alert.png</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>Req 11</td>
+<td>EICAR test</td>
+<td><code>evidence/eicar-block.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>Req 11</td>
+<td>Segmentation test</td>
+<td><code>evidence/segmentation-test.png</code></td>
+<td>VM 3</td>
+</tr>
+<tr>
+<td>Req 12</td>
+<td>Security policies</td>
+<td><code>07-Policies-and-Standards/</code></td>
+<td>All</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="pci-dss-applicability-statement">PCI DSS Applicability Statement<a class="headerlink" href="#pci-dss-applicability-statement" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Status</th>
+<th>Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full PCI DSS compliance</td>
+<td>Not required</td>
+<td>No cardholder data stored or processed</td>
+</tr>
+<tr>
+<td>Cardholder data environment (CDE)</td>
+<td>Not applicable</td>
+<td>No credit card numbers on systems</td>
+</tr>
+<tr>
+<td>SAQ (Self-Assessment Questionnaire)</td>
+<td>Not required</td>
+<td>ACH/NEFT only, no card processing</td>
+</tr>
+<tr>
+<td>PCI DSS inspired controls</td>
+<td>Planned / not executed</td>
+<td>11 of 12 requirements addressed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Control implementation summary:</strong>
+- 11 requirements Proposed (inspired)
+- 1 requirement out of scope (physical access)
+- MFA recommended for further authentication strength</p>
+<hr />
+<h2 id="pci-dss-gap-analysis-inspired-controls">PCI DSS Gap Analysis (Inspired Controls)<a class="headerlink" href="#pci-dss-gap-analysis-inspired-controls" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Description</th>
+<th>Risk Level</th>
+<th>Remediation Plan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MFA not Proposed</td>
+<td>No multi-factor authentication for remote access</td>
+<td>Medium</td>
+<td>Recommend for Phase 2</td>
+</tr>
+<tr>
+<td>Full vulnerability scanning</td>
+<td>Not performed in this engagement</td>
+<td>Low</td>
+<td>Recommend separate engagement</td>
+</tr>
+<tr>
+<td>Penetration testing</td>
+<td>Not performed in this engagement</td>
+<td>Low</td>
+<td>Recommend separate engagement</td>
+</tr>
+<tr>
+<td>Security awareness training</td>
+<td>Not Proposed</td>
+<td>Medium</td>
+<td>HR to lead</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="pci-to-nist-cross-reference">PCI to NIST Cross Reference<a class="headerlink" href="#pci-to-nist-cross-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>PCI Requirement</th>
+<th>NIST CSF 2.0 Function</th>
+<th>NIST Subcategory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Req 1</td>
+<td>Protect (PR)</td>
+<td>PR.IR-01 (Network segregation)</td>
+</tr>
+<tr>
+<td>Req 2</td>
+<td>Protect (PR)</td>
+<td>PR.PS-01 (Configuration management)</td>
+</tr>
+<tr>
+<td>Req 4</td>
+<td>Protect (PR)</td>
+<td>PR.DS-2 (Data in transit)</td>
+</tr>
+<tr>
+<td>Req 5</td>
+<td>Protect (PR)</td>
+<td>DE.CM-09 (Malware protection)</td>
+</tr>
+<tr>
+<td>Req 7</td>
+<td>Protect (PR)</td>
+<td>PR.AA-05 (Least privilege)</td>
+</tr>
+<tr>
+<td>Req 8</td>
+<td>Protect (PR)</td>
+<td>PR.AA-05 (Identity management)</td>
+</tr>
+<tr>
+<td>Req 10</td>
+<td>Detect (DE)</td>
+<td>DE.CM-7 (Log collection)</td>
+</tr>
+<tr>
+<td>Req 11</td>
+<td>Detect (DE)</td>
+<td>DE.AE-3 (Detection testing)</td>
+</tr>
+<tr>
+<td>Req 12</td>
+<td>Govern (GV)</td>
+<td>GV.PO-1 (Policies)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of PCI DSS Inspired Controls Mapping</strong></p></article><nav class="navrow"><a href="nist-csf-mapping.html">← NIST CSF Mapping</a><a href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy →</a></nav><p class="footer-note">Chapter 14 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

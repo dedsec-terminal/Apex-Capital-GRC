@@ -1,0 +1,1253 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Access Control Policy | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link active" href="access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Policies and Standards</div><article class="article"><h1>Access Control Policy</h1><p class="crumb">Policies and Standards · <a class="raw-link" href="../../../07-Policies-and-Standards/access-control-policy.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> draft template; not approved</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#1-framework-references">1. Framework References</a></li>
+<li><a href="#2-purpose">2. Purpose</a></li>
+<li><a href="#3-scope">3. Scope</a></li>
+<li><a href="#4-core-principles">4. Core Principles</a></li>
+<li><a href="#5-role-based-access-control-rbac">5. Role-Based Access Control (RBAC)</a><ul>
+<li><a href="#51-user-roles-windows-vm-1">5.1 User Roles (Windows - VM 1)</a></li>
+<li><a href="#52-user-roles-ubuntu-vm-2">5.2 User Roles (Ubuntu - VM 2)</a></li>
+<li><a href="#53-user-roles-pfsense-vm-3">5.3 User Roles (pfSense - VM 3)</a></li>
+<li><a href="#54-user-roles-wazuh-vm-4">5.4 User Roles (Wazuh - VM 4)</a></li>
+</ul>
+</li>
+<li><a href="#6-authentication-requirements">6. Authentication Requirements</a><ul>
+<li><a href="#61-password-requirements">6.1 Password Requirements</a></li>
+<li><a href="#62-account-lockout-requirements">6.2 Account Lockout Requirements</a></li>
+<li><a href="#63-multi-factor-authentication-mfa">6.3 Multi-Factor Authentication (MFA)</a></li>
+</ul>
+</li>
+<li><a href="#7-access-provisioning-and-deprovisioning">7. Access Provisioning and Deprovisioning</a><ul>
+<li><a href="#71-access-request-process">7.1 Access Request Process</a></li>
+<li><a href="#72-access-removal-process">7.2 Access Removal Process</a></li>
+<li><a href="#73-access-request-form">7.3 Access Request Form</a></li>
+</ul>
+</li>
+<li><a href="#8-access-reviews-and-certification">8. Access Reviews and Certification</a><ul>
+<li><a href="#81-review-schedule">8.1 Review Schedule</a></li>
+<li><a href="#82-access-review-process">8.2 Access Review Process</a></li>
+<li><a href="#83-access-certification-form">8.3 Access Certification Form</a></li>
+</ul>
+</li>
+<li><a href="#9-privileged-access-management">9. Privileged Access Management</a><ul>
+<li><a href="#91-privileged-account-requirements">9.1 Privileged Account Requirements</a></li>
+<li><a href="#92-privileged-account-types">9.2 Privileged Account Types</a></li>
+<li><a href="#93-emergency-access-procedure">9.3 Emergency Access Procedure</a></li>
+</ul>
+</li>
+<li><a href="#10-no-shared-accounts">10. No Shared Accounts</a></li>
+<li><a href="#11-technical-controls-by-vm">11. Technical Controls by VM</a></li>
+<li><a href="#12-monitoring-and-logging">12. Monitoring and Logging</a></li>
+<li><a href="#13-compliance-and-enforcement">13. Compliance and Enforcement</a></li>
+<li><a href="#14-user-acknowledgment">14. User Acknowledgment</a></li>
+<li><a href="#15-exceptions">15. Exceptions</a></li>
+<li><a href="#16-review-cycle">16. Review Cycle</a></li>
+<li><a href="#17-evidence-of-implementation">17. Evidence of Implementation</a></li>
+<li><a href="#18-related-documents">18. Related Documents</a></li>
+<li><a href="#19-policy-version-history">19. Policy Version History</a></li>
+<li><a href="#20-approval">20. Approval</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="access-control-policy">Access Control Policy<a class="headerlink" href="#access-control-policy" title="Permanent link">&para;</a></h1>
+<p><strong>Policy Number:</strong> APX-POL-001
+<strong>Version:</strong> 1.0
+<strong>Effective Date:</strong> May 2026
+<strong>Classification:</strong> Internal
+<strong>Owner:</strong> Information Security
+<strong>Approval status (not approved):</strong> CISO</p>
+<hr />
+<h2 id="1-framework-references">1. Framework References<a class="headerlink" href="#1-framework-references" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Control Reference</th>
+<th>Control Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>PR.AA-05</td>
+<td>Identities and credentials are managed</td>
+</tr>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>PR.AA-05</td>
+<td>Access permissions and authorizations are managed</td>
+</tr>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>PR.AA-03</td>
+<td>User, device, and other asset authentication</td>
+</tr>
+<tr>
+<td>ISO 27001:2022</td>
+<td>A.8.2</td>
+<td>Privileged access rights</td>
+</tr>
+<tr>
+<td>ISO 27001:2022</td>
+<td>A.8.3</td>
+<td>User access reviews</td>
+</tr>
+<tr>
+<td>Historical PCI DSS 3.2.1-inspired reference (not current compliance)</td>
+<td>Req 7</td>
+<td>Restrict access to cardholder data</td>
+</tr>
+<tr>
+<td>Historical PCI DSS 3.2.1-inspired reference (not current compliance)</td>
+<td>Req 8</td>
+<td>Identify and authenticate access</td>
+</tr>
+</tbody>
+</table>
+<p><strong>External References:</strong>
+- NIST SP 800-53 (AC-1 to AC-25): Access Control Family
+- SANS Access Control Policy Template</p>
+<hr />
+<h2 id="2-purpose">2. Purpose<a class="headerlink" href="#2-purpose" title="Permanent link">&para;</a></h2>
+<p>This policy ensures that only authorized individuals have access to Apex Capital's systems, applications, and client data, following the principle of least privilege.</p>
+<p><strong>Risk Addressed:</strong> R-002 (Credential Theft), R-006 (Insider Threat)</p>
+<hr />
+<h2 id="3-scope">3. Scope<a class="headerlink" href="#3-scope" title="Permanent link">&para;</a></h2>
+<p>This policy applies to:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Employees</strong></td>
+<td>All full-time and part-time employees of Apex Capital</td>
+</tr>
+<tr>
+<td><strong>Contractors</strong></td>
+<td>Temporary staff, consultants, and outsourced vendors</td>
+</tr>
+<tr>
+<td><strong>Third Parties</strong></td>
+<td>Business partners with access to Apex systems</td>
+</tr>
+<tr>
+<td><strong>Systems</strong></td>
+<td>All 4 VMs (Windows, Ubuntu, pfSense, Wazuh) and all applications</td>
+</tr>
+<tr>
+<td><strong>Data</strong></td>
+<td>All client data, financial information, and internal documents</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-core-principles">4. Core Principles<a class="headerlink" href="#4-core-principles" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Principle</th>
+<th>Definition</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Least Privilege</strong></td>
+<td>Users receive only the minimum access required to perform their job</td>
+<td>Role-Based Access Control (RBAC) via Windows local users</td>
+</tr>
+<tr>
+<td><strong>Need-to-Know</strong></td>
+<td>Access granted only when necessary for business role</td>
+<td>User group membership based on job function</td>
+</tr>
+<tr>
+<td><strong>Separation of Duties</strong></td>
+<td>Critical functions divided between different individuals</td>
+<td>Admin accounts separate from standard user accounts</td>
+</tr>
+<tr>
+<td><strong>Default Deny</strong></td>
+<td>All access not explicitly approved is denied</td>
+<td>pfSense default deny rule, Windows UAC</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-role-based-access-control-rbac">5. Role-Based Access Control (RBAC)<a class="headerlink" href="#5-role-based-access-control-rbac" title="Permanent link">&para;</a></h2>
+<h3 id="51-user-roles-windows-vm-1">5.1 User Roles (Windows - VM 1)<a class="headerlink" href="#51-user-roles-windows-vm-1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Access Level</th>
+<th>Responsibilities</th>
+<th>Example Users</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Standard User</strong></td>
+<td>Basic workstation access</td>
+<td>Daily job functions, email, client portal</td>
+<td>Advisors, Client Service Reps</td>
+</tr>
+<tr>
+<td><strong>Power User</strong></td>
+<td>Limited administrative privileges</td>
+<td>Application installation (approved list only)</td>
+<td>Senior Advisors, Team Leads</td>
+</tr>
+<tr>
+<td><strong>Local Administrator</strong></td>
+<td>Full workstation control</td>
+<td>Software installation, configuration changes</td>
+<td>IT Support Staff</td>
+</tr>
+<tr>
+<td><strong>Domain Administrator</strong></td>
+<td>Full system control</td>
+<td>All systems, all data, all configurations</td>
+<td>CISO, IT Manager, GRC Lead</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-user-roles-ubuntu-vm-2">5.2 User Roles (Ubuntu - VM 2)<a class="headerlink" href="#52-user-roles-ubuntu-vm-2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Access Level</th>
+<th>Responsibilities</th>
+<th>sudo Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Standard User</strong></td>
+<td>Read-only web server access</td>
+<td>Monitor web server status</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Web Administrator</strong></td>
+<td>Web server configuration</td>
+<td>Update web content, manage services</td>
+<td>systemctl, nginx, ufw</td>
+</tr>
+<tr>
+<td><strong>System Administrator</strong></td>
+<td>Full Ubuntu control</td>
+<td>OS updates, security configuration, SSH</td>
+<td>Full sudo access</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-user-roles-pfsense-vm-3">5.3 User Roles (pfSense - VM 3)<a class="headerlink" href="#53-user-roles-pfsense-vm-3" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Access Level</th>
+<th>Responsibilities</th>
+<th>WebGUI Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Read-Only User</strong></td>
+<td>View firewall status</td>
+<td>Monitor traffic, review logs</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><strong>Firewall Administrator</strong></td>
+<td>Manage firewall rules</td>
+<td>Create rules, modify segmentation</td>
+<td>Read-Write</td>
+</tr>
+<tr>
+<td><strong>System Administrator</strong></td>
+<td>Full pfSense control</td>
+<td>All configurations, updates, backups</td>
+<td>Full admin</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-user-roles-wazuh-vm-4">5.4 User Roles (Wazuh - VM 4)<a class="headerlink" href="#54-user-roles-wazuh-vm-4" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Access Level</th>
+<th>Responsibilities</th>
+<th>API Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Read-Only User</strong></td>
+<td>View alerts and dashboards</td>
+<td>Security monitoring, incident review</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><strong>Analyst</strong></td>
+<td>Manage alerts, create reports</td>
+<td>Investigate incidents, document findings</td>
+<td>Limited write</td>
+</tr>
+<tr>
+<td><strong>Administrator</strong></td>
+<td>Full Wazuh control</td>
+<td>Configure agents, rules, integrations</td>
+<td>Full admin</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-authentication-requirements">6. Authentication Requirements<a class="headerlink" href="#6-authentication-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="61-password-requirements">6.1 Password Requirements<a class="headerlink" href="#61-password-requirements" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Setting</th>
+<th>Enforcement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minimum length</td>
+<td>14 characters</td>
+<td>VM 1 (Windows policy)</td>
+</tr>
+<tr>
+<td>Password complexity</td>
+<td>Upper, lower, number, special (3 of 4)</td>
+<td>VM 1 (Windows policy)</td>
+</tr>
+<tr>
+<td>Password history</td>
+<td>24 passwords remembered</td>
+<td>VM 1 (Windows policy)</td>
+</tr>
+<tr>
+<td>Maximum password age</td>
+<td>90 days</td>
+<td>VM 1 (Windows policy)</td>
+</tr>
+<tr>
+<td>Minimum password age</td>
+<td>1 day</td>
+<td>VM 1 (Windows policy)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-account-lockout-requirements">6.2 Account Lockout Requirements<a class="headerlink" href="#62-account-lockout-requirements" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Setting</th>
+<th>Enforcement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lockout threshold</td>
+<td>5 failed attempts</td>
+<td>VM 1 (Windows policy)</td>
+</tr>
+<tr>
+<td>Lockout duration</td>
+<td>30 minutes</td>
+<td>VM 1 (Windows policy)</td>
+</tr>
+<tr>
+<td>Reset lockout counter</td>
+<td>30 minutes</td>
+<td>VM 1 (Windows policy)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-multi-factor-authentication-mfa">6.3 Multi-Factor Authentication (MFA)<a class="headerlink" href="#63-multi-factor-authentication-mfa" title="Permanent link">&para;</a></h3>
+<p>MFA is <strong>mandatory</strong> for the following access types:</p>
+<table>
+<thead>
+<tr>
+<th>Access Type</th>
+<th>MFA Requirement</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All remote access</td>
+<td>Required</td>
+<td>Recommended for Phase 2</td>
+</tr>
+<tr>
+<td>All administrative accounts</td>
+<td>Required</td>
+<td>Recommended for Phase 2</td>
+</tr>
+<tr>
+<td>Client portal access</td>
+<td>Required</td>
+<td>Out of scope (client responsibility)</td>
+</tr>
+<tr>
+<td>VPN connections</td>
+<td>Required</td>
+<td>Recommended for Phase 2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> MFA implementation is recommended for Phase 2 of the security program.</p>
+<hr />
+<h2 id="7-access-provisioning-and-deprovisioning">7. Access Provisioning and Deprovisioning<a class="headerlink" href="#7-access-provisioning-and-deprovisioning" title="Permanent link">&para;</a></h2>
+<h3 id="71-access-request-process">7.1 Access Request Process<a class="headerlink" href="#71-access-request-process" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Responsible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Employee/Manager submits access request form to IT</td>
+<td>Employee</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Manager approves request</td>
+<td>Manager</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Data Owner approves (if applicable)</td>
+<td>Data Owner</td>
+</tr>
+<tr>
+<td>4</td>
+<td>IT implements access within 2 business days</td>
+<td>IT</td>
+</tr>
+<tr>
+<td>5</td>
+<td>User notified and trained on access</td>
+<td>IT</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Access logged in HR system</td>
+<td>HR</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-access-removal-process">7.2 Access Removal Process<a class="headerlink" href="#72-access-removal-process" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Action Required</th>
+<th>Timeline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Voluntary termination</td>
+<td>Disable accounts immediately</td>
+<td>Within 4 hours</td>
+</tr>
+<tr>
+<td>Involuntary termination</td>
+<td>Disable accounts immediately, preserve evidence</td>
+<td>Within 1 hour</td>
+</tr>
+<tr>
+<td>Contract completion</td>
+<td>Disable accounts, coordinate with vendor</td>
+<td>Within 24 hours</td>
+</tr>
+<tr>
+<td>Role change</td>
+<td>Review and modify access based on new role</td>
+<td>Within 5 business days</td>
+</tr>
+<tr>
+<td>Extended leave (30+ days)</td>
+<td>Suspend accounts, reactivate upon return</td>
+<td>Before leave begins</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-access-request-form">7.3 Access Request Form<a class="headerlink" href="#73-access-request-form" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requestor Name</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Employee Name (if different)</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Employee ID</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Department</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Job Title</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Access Type (New/Change/Remove)</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Systems Requiring Access</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Role Requested</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Business Justification</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Expected Duration</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Manager Approval Signature</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Data Owner Approval Signature</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>IT Implementation Date</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>IT Administrator Signature</td>
+<td>__________________________</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-access-reviews-and-certification">8. Access Reviews and Certification<a class="headerlink" href="#8-access-reviews-and-certification" title="Permanent link">&para;</a></h2>
+<h3 id="81-review-schedule">8.1 Review Schedule<a class="headerlink" href="#81-review-schedule" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Review Type</th>
+<th>Frequency</th>
+<th>Responsible Party</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User access review</td>
+<td>Quarterly</td>
+<td>Department Managers</td>
+</tr>
+<tr>
+<td>Privileged access review</td>
+<td>Monthly</td>
+<td>CISO / IT Manager</td>
+</tr>
+<tr>
+<td>Service account review</td>
+<td>Quarterly</td>
+<td>IT Administrator</td>
+</tr>
+<tr>
+<td>Application access review</td>
+<td>Semi-annually</td>
+<td>Application Owner</td>
+</tr>
+<tr>
+<td>Third-party access review</td>
+<td>Quarterly</td>
+<td>Vendor Management</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-access-review-process">8.2 Access Review Process<a class="headerlink" href="#82-access-review-process" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Responsible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>IT generates access report for department</td>
+<td>IT</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Manager reviews each user's access</td>
+<td>Manager</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Manager certifies access or requests changes</td>
+<td>Manager</td>
+</tr>
+<tr>
+<td>4</td>
+<td>IT implements approved changes</td>
+<td>IT</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Review documented and stored</td>
+<td>Compliance</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-access-certification-form">8.3 Access Certification Form<a class="headerlink" href="#83-access-certification-form" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Department</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Manager Name</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Review Period</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Number of Users Reviewed</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Number of Users with Changes</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Certifier Signature</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>IT Auditor Signature</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>__________________________</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-privileged-access-management">9. Privileged Access Management<a class="headerlink" href="#9-privileged-access-management" title="Permanent link">&para;</a></h2>
+<h3 id="91-privileged-account-requirements">9.1 Privileged Account Requirements<a class="headerlink" href="#91-privileged-account-requirements" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Description</th>
+<th>Enforcement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Separate admin accounts</td>
+<td>Standard user account separate from admin account</td>
+<td>Windows local user policy (VM 1)</td>
+</tr>
+<tr>
+<td>No daily use of admin accounts</td>
+<td>Admin accounts only for administrative tasks</td>
+<td>Policy enforcement</td>
+</tr>
+<tr>
+<td>MFA for admin accounts</td>
+<td>Required for all privileged access</td>
+<td>Recommended for Phase 2</td>
+</tr>
+<tr>
+<td>Just-in-Time access</td>
+<td>Time-limited admin access where possible</td>
+<td>Recommended for Phase 2</td>
+</tr>
+<tr>
+<td>Logging of admin actions</td>
+<td>All admin activities logged and monitored</td>
+<td>Wazuh (VM 4)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-privileged-account-types">9.2 Privileged Account Types<a class="headerlink" href="#92-privileged-account-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Account Type</th>
+<th>Purpose</th>
+<th>Access Level</th>
+<th>MFA Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard User</td>
+<td>Daily job functions</td>
+<td>Basic workstation</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Admin User</td>
+<td>System administration</td>
+<td>Full system control</td>
+<td>Yes (recommended)</td>
+</tr>
+<tr>
+<td>Service Account</td>
+<td>Application to application</td>
+<td>Minimal required</td>
+<td>No (rotated passwords)</td>
+</tr>
+<tr>
+<td>Emergency Account</td>
+<td>Break-glass scenarios</td>
+<td>Full system control</td>
+<td>Yes + approval</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-emergency-access-procedure">9.3 Emergency Access Procedure<a class="headerlink" href="#93-emergency-access-procedure" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Security incident requiring emergency access</td>
+</tr>
+<tr>
+<td>2</td>
+<td>CISO or IT Manager approves verbally</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Emergency account enabled (30-minute session)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>All actions logged and reviewed</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Account disabled after session</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Written justification submitted within 24 hours</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-no-shared-accounts">10. No Shared Accounts<a class="headerlink" href="#10-no-shared-accounts" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Requirement</th>
+<th>Exception Process</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No password sharing</td>
+<td>Passwords must not be shared</td>
+<td>No exceptions</td>
+</tr>
+<tr>
+<td>No shared user accounts</td>
+<td>Each user has unique credentials</td>
+<td>Service accounts only</td>
+</tr>
+<tr>
+<td>No group passwords</td>
+<td>No passwords shared among teams</td>
+<td>No exceptions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Service Account Exception:</strong> Service accounts are allowed but must have:
+- Complex passwords (20+ characters)
+- Rotated annually
+- Access limited to required functions
+- Logged and monitored</p>
+<hr />
+<h2 id="11-technical-controls-by-vm">11. Technical Controls by VM<a class="headerlink" href="#11-technical-controls-by-vm" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>Control</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VM 1 (Windows)</td>
+<td>Local user accounts</td>
+<td>Standard user vs Administrator separation</td>
+</tr>
+<tr>
+<td>VM 1 (Windows)</td>
+<td>Password policy</td>
+<td><code>net accounts</code> configured</td>
+</tr>
+<tr>
+<td>VM 1 (Windows)</td>
+<td>Account lockout</td>
+<td>5 attempts, 30 minute lockout</td>
+</tr>
+<tr>
+<td>VM 1 (Windows)</td>
+<td>Event logging</td>
+<td>Event ID 4624 (success), 4625 (failure)</td>
+</tr>
+<tr>
+<td>VM 2 (Ubuntu)</td>
+<td>SSH key authentication</td>
+<td>Password authentication disabled</td>
+</tr>
+<tr>
+<td>VM 2 (Ubuntu)</td>
+<td>sudo access</td>
+<td>Limited sudo for specific commands</td>
+</tr>
+<tr>
+<td>VM 2 (Ubuntu)</td>
+<td>User isolation</td>
+<td>Separate user accounts</td>
+</tr>
+<tr>
+<td>VM 3 (pfSense)</td>
+<td>WebGUI access</td>
+<td>Restricted to management subnet</td>
+</tr>
+<tr>
+<td>VM 3 (pfSense)</td>
+<td>Firewall rules</td>
+<td>Role-based access to interfaces</td>
+</tr>
+<tr>
+<td>VM 4 (Wazuh)</td>
+<td>User roles</td>
+<td>Read-only, Analyst, Administrator</td>
+</tr>
+<tr>
+<td>VM 4 (Wazuh)</td>
+<td>API authentication</td>
+<td>Token-based access</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-monitoring-and-logging">12. Monitoring and Logging<a class="headerlink" href="#12-monitoring-and-logging" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Activity</th>
+<th>Logged</th>
+<th>Retention</th>
+<th>Monitoring</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Successful logins</td>
+<td>Yes (Event ID 4624)</td>
+<td>90 days</td>
+<td>Wazuh (VM 4)</td>
+</tr>
+<tr>
+<td>Failed logins</td>
+<td>Yes (Event ID 4625)</td>
+<td>90 days</td>
+<td>Wazuh alert on 5+ failures</td>
+</tr>
+<tr>
+<td>Privilege escalation</td>
+<td>Yes (Event ID 4672)</td>
+<td>90 days</td>
+<td>Wazuh (VM 4)</td>
+</tr>
+<tr>
+<td>Account creation/deletion</td>
+<td>Yes (Event IDs 4720, 4726)</td>
+<td>90 days</td>
+<td>Wazuh (VM 4)</td>
+</tr>
+<tr>
+<td>sudo commands (Ubuntu)</td>
+<td>Yes (auth.log)</td>
+<td>90 days</td>
+<td>Wazuh (VM 4)</td>
+</tr>
+<tr>
+<td>pfSense configuration changes</td>
+<td>Yes (config log)</td>
+<td>90 days</td>
+<td>pfSense backup</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-compliance-and-enforcement">13. Compliance and Enforcement<a class="headerlink" href="#13-compliance-and-enforcement" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Violation</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Password sharing</td>
+<td>Written warning (first), Suspension (second), Termination (third)</td>
+</tr>
+<tr>
+<td>Using another user's account</td>
+<td>Immediate suspension pending investigation</td>
+</tr>
+<tr>
+<td>Unauthorized privilege escalation</td>
+<td>Immediate termination</td>
+</tr>
+<tr>
+<td>Failure to report lost credentials</td>
+<td>Written warning</td>
+</tr>
+<tr>
+<td>Bypassing access controls</td>
+<td>Immediate termination</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-user-acknowledgment">14. User Acknowledgment<a class="headerlink" href="#14-user-acknowledgment" title="Permanent link">&para;</a></h2>
+<p>All employees must sign this acknowledgment form:</p>
+<p><strong>Apex Capital (fictional lab scenario) - Access Control Policy Acknowledgment</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Employee Name</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Employee ID</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Department</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>__________________________</td>
+</tr>
+</tbody>
+</table>
+<p>By signing below, I acknowledge that:</p>
+<ol>
+<li>
+<p>I have read and understood the Access Control Policy of Apex Capital (fictional lab scenario).</p>
+</li>
+<li>
+<p>I understand that I must not share my password or credentials with anyone.</p>
+</li>
+<li>
+<p>I understand that I must not use another user's account.</p>
+</li>
+<li>
+<p>I understand that my access is based on my job role and the principle of least privilege.</p>
+</li>
+<li>
+<p>I will report any unauthorized access or suspicious activity immediately.</p>
+</li>
+<li>
+<p>I understand that violations may result in disciplinary action up to termination.</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Employee Signature</strong></td>
+<td style="text-align: left;">__________________________</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Date</strong></td>
+<td style="text-align: left;">__________________________</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Manager Signature</strong></td>
+<td style="text-align: left;">__________________________</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Date</strong></td>
+<td style="text-align: left;">__________________________</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="15-exceptions">15. Exceptions<a class="headerlink" href="#15-exceptions" title="Permanent link">&para;</a></h2>
+<p>Any exception to this policy requires:</p>
+<ol>
+<li>Business justification</li>
+<li>Compensating controls</li>
+<li>Approval from CISO</li>
+<li>Expiration date (max 90 days)</li>
+<li>Quarterly review</li>
+</ol>
+<p><strong>Exception Request Form:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requester Name</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Policy Exception Requested</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Business Justification</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Compensating Controls</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Requested Duration (days)</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>CISO Approval Signature</td>
+<td>__________________________</td>
+</tr>
+<tr>
+<td>Expiration Date</td>
+<td>__________________________</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="16-review-cycle">16. Review Cycle<a class="headerlink" href="#16-review-cycle" title="Permanent link">&para;</a></h2>
+<p>This policy will be reviewed:</p>
+<ul>
+<li>Annually (minimum)</li>
+<li>After significant security incidents</li>
+<li>When regulatory requirements change</li>
+<li>After major system changes</li>
+</ul>
+<hr />
+<h2 id="17-evidence-of-implementation">17. Evidence of Implementation<a class="headerlink" href="#17-evidence-of-implementation" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Evidence ID</th>
+<th>Description</th>
+<th>Location</th>
+<th>VM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EV-001</td>
+<td>Standard user vs Administrator accounts</td>
+<td><code>evidence/windows-user-accounts.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>EV-002</td>
+<td>Password policy applied</td>
+<td><code>evidence/net-accounts-output.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>EV-003</td>
+<td>Account lockout settings</td>
+<td><code>evidence/account-lockout.png</code></td>
+<td>VM 1</td>
+</tr>
+<tr>
+<td>EV-004</td>
+<td>Failed login alert</td>
+<td><code>evidence/wazuh-failed-login-alert.png</code></td>
+<td>VM 4</td>
+</tr>
+<tr>
+<td>EV-005</td>
+<td>Ubuntu sudoers configuration</td>
+<td><code>evidence/ubuntu-sudoers.png</code></td>
+<td>VM 2</td>
+</tr>
+<tr>
+<td>EV-006</td>
+<td>pfSense WebGUI access restriction</td>
+<td><code>evidence/pfsense-webgui-access.png</code></td>
+<td>VM 3</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="18-related-documents">18. Related Documents<a class="headerlink" href="#18-related-documents" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Password Policy</td>
+<td><code>07-Policies-and-Standards/password-policy.md</code></td>
+</tr>
+<tr>
+<td>Acceptable Use Policy</td>
+<td><code>07-Policies-and-Standards/acceptable-use-policy.md</code></td>
+</tr>
+<tr>
+<td>Incident Response Policy</td>
+<td><code>07-Policies-and-Standards/incident-response-policy.md</code></td>
+</tr>
+<tr>
+<td>Data Classification Policy</td>
+<td><code>07-Policies-and-Standards/data-classification-policy.md</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="19-policy-version-history">19. Policy Version History<a class="headerlink" href="#19-policy-version-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>March 2026</td>
+<td>S. Singh</td>
+<td>Initial draft</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>April 2026</td>
+<td>S. Singh</td>
+<td>Added 4-VM role mapping</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Draft learning edition</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="20-approval">20. Approval<a class="headerlink" href="#20-approval" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Policy Approval status (not approved)</strong></td>
+<td style="text-align: left;">__________________________</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Date</strong></td>
+<td style="text-align: left;">__________________________</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CISO Signature</strong></td>
+<td style="text-align: left;">__________________________</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Date</strong></td>
+<td style="text-align: left;">__________________________</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Access Control Policy</strong></p></article><nav class="navrow"><a href="acceptable-use-policy.html">← Acceptable Use Policy</a><a href="data-classification-policy.html">Data Classification Policy →</a></nav><p class="footer-note">Chapter 16 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

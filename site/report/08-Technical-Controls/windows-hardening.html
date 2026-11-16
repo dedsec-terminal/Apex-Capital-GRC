@@ -1,0 +1,1090 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Windows Hardening | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link active" href="windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Technical Controls</div><article class="article"><h1>Windows Hardening</h1><p class="crumb">Technical Controls · <a class="raw-link" href="../../../08-Technical-Controls/windows-hardening.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> proposed configuration and tests</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#1-framework-references">1. Framework References</a></li>
+<li><a href="#2-purpose">2. Purpose</a></li>
+<li><a href="#3-system-information">3. System Information</a></li>
+<li><a href="#4-account-and-authentication-controls">4. Account and Authentication Controls</a><ul>
+<li><a href="#41-password-policy">4.1 Password Policy</a></li>
+<li><a href="#42-account-lockout-policy">4.2 Account Lockout Policy</a></li>
+<li><a href="#43-local-administrator-account">4.3 Local Administrator Account</a></li>
+</ul>
+</li>
+<li><a href="#5-endpoint-protection-microsoft-defender">5. Endpoint Protection (Microsoft Defender)</a><ul>
+<li><a href="#51-defender-configuration">5.1 Defender Configuration</a></li>
+<li><a href="#52-controlled-folder-access-cfa">5.2 Controlled Folder Access (CFA)</a></li>
+<li><a href="#53-attack-surface-reduction-asr-rules">5.3 Attack Surface Reduction (ASR) Rules</a></li>
+<li><a href="#54-eicar-malware-test-validation">5.4 EICAR Malware Test Validation</a></li>
+</ul>
+</li>
+<li><a href="#6-system-hardening">6. System Hardening</a><ul>
+<li><a href="#61-windows-firewall">6.1 Windows Firewall</a></li>
+<li><a href="#62-disable-unnecessary-services">6.2 Disable Unnecessary Services</a></li>
+<li><a href="#63-windows-update-configuration">6.3 Windows Update Configuration</a></li>
+<li><a href="#64-user-account-control-uac">6.4 User Account Control (UAC)</a></li>
+</ul>
+</li>
+<li><a href="#7-logging-and-auditing">7. Logging and Auditing</a><ul>
+<li><a href="#71-advanced-audit-policy-configuration">7.1 Advanced Audit Policy Configuration</a></li>
+<li><a href="#72-critical-event-ids-to-monitor">7.2 Critical Event IDs to Monitor</a></li>
+<li><a href="#73-wazuh-agent-configuration">7.3 Wazuh Agent Configuration</a></li>
+</ul>
+</li>
+<li><a href="#8-hardening-checklist">8. Hardening Checklist</a></li>
+<li><a href="#9-security-validation-tests">9. Security Validation Tests</a><ul>
+<li><a href="#91-weak-password-rejection-test">9.1 Weak Password Rejection Test</a></li>
+<li><a href="#92-account-lockout-test">9.2 Account Lockout Test</a></li>
+<li><a href="#93-eicar-malware-test">9.3 EICAR Malware Test</a></li>
+<li><a href="#94-controlled-folder-access-test">9.4 Controlled Folder Access Test</a></li>
+<li><a href="#95-firewall-segmentation-test">9.5 Firewall Segmentation Test</a></li>
+</ul>
+</li>
+<li><a href="#10-troubleshooting-commands">10. Troubleshooting Commands</a></li>
+<li><a href="#11-maintenance-procedures">11. Maintenance Procedures</a><ul>
+<li><a href="#111-daily-tasks">11.1 Daily Tasks</a></li>
+<li><a href="#112-weekly-tasks">11.2 Weekly Tasks</a></li>
+<li><a href="#113-monthly-tasks">11.3 Monthly Tasks</a></li>
+</ul>
+</li>
+<li><a href="#12-related-documents">12. Related Documents</a></li>
+<li><a href="#13-version-history">13. Version History</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="windows-enterprise-hardening">Windows Enterprise Hardening<a class="headerlink" href="#windows-enterprise-hardening" title="Permanent link">&para;</a></h1>
+<p><strong>Last Updated:</strong> May 2026
+<strong>Version:</strong> 1.0
+<strong>VM Role:</strong> Internal workstation / server
+<strong>Classification:</strong> Internal
+<strong>IP Address:</strong> 10.0.2.10
+<strong>Subnet:</strong> 10.0.2.0/24 (Internal)</p>
+<hr />
+<h2 id="1-framework-references">1. Framework References<a class="headerlink" href="#1-framework-references" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Control Reference</th>
+<th>Control Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>PR.AA-05</td>
+<td>Identities and credentials are managed</td>
+</tr>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>DE.CM-09</td>
+<td>Malware protection is Proposed</td>
+</tr>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>PR.IR-01</td>
+<td>Network segregation is enforced</td>
+</tr>
+<tr>
+<td>ISO 27001:2022</td>
+<td>A.8.2</td>
+<td>Privileged access rights</td>
+</tr>
+<tr>
+<td>ISO 27001:2022</td>
+<td>A.8.7</td>
+<td>Protection against malware</td>
+</tr>
+<tr>
+<td>Historical PCI DSS 3.2.1-inspired reference (not current compliance)</td>
+<td>Requirement 5</td>
+<td>Protect all systems against malware</td>
+</tr>
+<tr>
+<td>Historical PCI DSS 3.2.1-inspired reference (not current compliance)</td>
+<td>Requirement 8</td>
+<td>Identify and authenticate access</td>
+</tr>
+</tbody>
+</table>
+<p><strong>External References:</strong>
+- CIS Microsoft Windows 10/11 Benchmark
+- Microsoft Security Baselines
+- NIST SP 800-53: AC, AU, SC families</p>
+<hr />
+<h2 id="2-purpose">2. Purpose<a class="headerlink" href="#2-purpose" title="Permanent link">&para;</a></h2>
+<p>Windows Enterprise VM is hardened according to CIS Benchmarks and organizational policy to protect client financial data, prevent unauthorized access, and ensure compliance with regulatory requirements.</p>
+<p><strong>Risk Addressed:</strong> R-002 (Credential Theft), R-003 (Ransomware), R-006 (Insider Threat)</p>
+<hr />
+<h2 id="3-system-information">3. System Information<a class="headerlink" href="#3-system-information" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operating System</td>
+<td>Windows 11 Enterprise</td>
+</tr>
+<tr>
+<td>Build Version</td>
+<td>23H2 (22631.XXXX)</td>
+</tr>
+<tr>
+<td>Defender Version</td>
+<td>4.18.24030.9</td>
+</tr>
+<tr>
+<td>Local Users</td>
+<td>Administrator (renamed), Standard User</td>
+</tr>
+<tr>
+<td>Wazuh Agent</td>
+<td>Version 4.9.0</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-account-and-authentication-controls">4. Account and Authentication Controls<a class="headerlink" href="#4-account-and-authentication-controls" title="Permanent link">&para;</a></h2>
+<h3 id="41-password-policy">4.1 Password Policy<a class="headerlink" href="#41-password-policy" title="Permanent link">&para;</a></h3>
+<p><strong>Configure via Local Security Policy (secpol.msc):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enforce password history</td>
+<td>24 passwords remembered</td>
+<td>secpol.msc &gt; Account Policies &gt; Password Policy</td>
+</tr>
+<tr>
+<td>Maximum password age</td>
+<td>90 days</td>
+<td>secpol.msc &gt; Account Policies &gt; Password Policy</td>
+</tr>
+<tr>
+<td>Minimum password age</td>
+<td>1 day</td>
+<td>secpol.msc &gt; Account Policies &gt; Password Policy</td>
+</tr>
+<tr>
+<td>Minimum password length</td>
+<td>14 characters</td>
+<td>secpol.msc &gt; Account Policies &gt; Password Policy</td>
+</tr>
+<tr>
+<td>Password must meet complexity requirements</td>
+<td>Enabled</td>
+<td>secpol.msc &gt; Account Policies &gt; Password Policy</td>
+</tr>
+<tr>
+<td>Store passwords using reversible encryption</td>
+<td>Disabled</td>
+<td>secpol.msc &gt; Account Policies &gt; Password Policy</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verification via Command Prompt (Admin):</strong></p>
+<p>net accounts</p>
+<p><strong>Expected Output:</strong></p>
+<p>Minimum password age (days): 1
+Maximum password age (days): 90
+Minimum password length: 14
+Length of password history maintained: 24
+Lockout threshold: 5
+Lockout duration (minutes): 30
+Lockout observation window (minutes): 30</p>
+<h3 id="42-account-lockout-policy">4.2 Account Lockout Policy<a class="headerlink" href="#42-account-lockout-policy" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Account lockout duration</td>
+<td>30 minutes</td>
+<td>secpol.msc &gt; Account Policies &gt; Account Lockout Policy</td>
+</tr>
+<tr>
+<td>Account lockout threshold</td>
+<td>5 invalid attempts</td>
+<td>secpol.msc &gt; Account Policies &gt; Account Lockout Policy</td>
+</tr>
+<tr>
+<td>Reset account lockout counter after</td>
+<td>30 minutes</td>
+<td>secpol.msc &gt; Account Policies &gt; Account Lockout Policy</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-local-administrator-account">4.3 Local Administrator Account<a class="headerlink" href="#43-local-administrator-account" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Command (Admin PowerShell)</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rename Administrator account</td>
+<td><code>wmic useraccount where name="Administrator" rename "APEX-CISO"</code></td>
+<td>Prevent targeted attacks</td>
+</tr>
+<tr>
+<td>Disable built-in Administrator</td>
+<td><code>net user "Administrator" /active:no</code></td>
+<td>Reduce attack surface</td>
+</tr>
+<tr>
+<td>Create separate admin account</td>
+<td><code>net user lab-admin [SYNTHETIC-TEST-CREDENTIAL] /add</code></td>
+<td>Administrative tasks</td>
+</tr>
+<tr>
+<td>Add admin to Administrators group</td>
+<td><code>net localgroup Administrators lab-admin /add</code></td>
+<td>Grant admin privileges</td>
+</tr>
+<tr>
+<td>Create standard user account</td>
+<td><code>net user lab-user [SYNTHETIC-TEST-CREDENTIAL] /add</code></td>
+<td>Daily use account</td>
+</tr>
+<tr>
+<td>Remove standard user from Administrators</td>
+<td><code>net localgroup Administrators lab-user /delete</code></td>
+<td>Enforce least privilege</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-endpoint-protection-microsoft-defender">5. Endpoint Protection (Microsoft Defender)<a class="headerlink" href="#5-endpoint-protection-microsoft-defender" title="Permanent link">&para;</a></h2>
+<h3 id="51-defender-configuration">5.1 Defender Configuration<a class="headerlink" href="#51-defender-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>Configure via Windows Security or PowerShell:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>PowerShell Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-time protection</td>
+<td>Enabled</td>
+<td><code>Set-MpPreference -DisableRealtimeMonitoring $false</code></td>
+</tr>
+<tr>
+<td>Cloud-delivered protection</td>
+<td>Enabled</td>
+<td><code>Set-MpPreference -CloudBlockLevel High</code></td>
+</tr>
+<tr>
+<td>Cloud timeout</td>
+<td>50 seconds</td>
+<td><code>Set-MpPreference -CloudTimeout 50</code></td>
+</tr>
+<tr>
+<td>Network protection</td>
+<td>Block mode</td>
+<td><code>Set-MpPreference -EnableNetworkProtection Enabled</code></td>
+</tr>
+<tr>
+<td>Tamper protection</td>
+<td>Enabled</td>
+<td>Configure via Windows Security UI</td>
+</tr>
+<tr>
+<td>Sample submission</td>
+<td>Send safe samples</td>
+<td><code>Set-MpPreference -SubmitSamplesConsent 1</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verification (PowerShell Admin):</strong></p>
+<p>Get-MpComputerStatus</p>
+<p><strong>Look for:</strong></p>
+<p>AntivirusEnabled         : True
+RealTimeProtectionEnabled : True
+BehaviorMonitorEnabled    : True
+IoavProtectionEnabled     : True
+OnAccessProtectionEnabled : True</p>
+<h3 id="52-controlled-folder-access-cfa">5.2 Controlled Folder Access (CFA)<a class="headerlink" href="#52-controlled-folder-access-cfa" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>PowerShell Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Controlled Folder Access</td>
+<td>Enabled</td>
+<td><code>Set-MpPreference -EnableControlledFolderAccess Enabled</code></td>
+</tr>
+<tr>
+<td>Protected folders</td>
+<td>Desktop, Documents, Pictures, Videos</td>
+<td>Default + custom</td>
+</tr>
+<tr>
+<td>Blocked apps</td>
+<td>Logged and blocked</td>
+<td>Default configuration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Protected folders list:</strong></p>
+<ul>
+<li>C:\Users\%USERNAME%\Desktop</li>
+<li>C:\Users\%USERNAME%\Documents</li>
+<li>C:\Users\%USERNAME%\Pictures</li>
+<li>C:\Users\%USERNAME%\Videos</li>
+<li>C:\Users\%USERNAME%\Downloads</li>
+</ul>
+<p><strong>Verification:</strong></p>
+<p>Get-MpPreference | Select-Object EnableControlledFolderAccess, ControlledFolderAccessProtectedFolders</p>
+<h3 id="53-attack-surface-reduction-asr-rules">5.3 Attack Surface Reduction (ASR) Rules<a class="headerlink" href="#53-attack-surface-reduction-asr-rules" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ASR Rule ID</th>
+<th>Description</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D4F940AB-401B-4EFC-AADC-AD5F3C50688A</td>
+<td>Block executable content from email client</td>
+<td>Enabled (Block)</td>
+</tr>
+<tr>
+<td>3B576869-A4EC-4529-8536-B80A7769E899</td>
+<td>Block Office apps from creating child processes</td>
+<td>Enabled (Block)</td>
+</tr>
+<tr>
+<td>75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84</td>
+<td>Block Office apps from injecting into processes</td>
+<td>Enabled (Block)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Enable ASR rules via PowerShell:</strong></p>
+<p>Set-MpPreference -AttackSurfaceReductionRules_Ids D4F940AB-401B-4EFC-AADC-AD5F3C50688A -AttackSurfaceReductionRules_Actions Enabled
+Set-MpPreference -AttackSurfaceReductionRules_Ids 3B576869-A4EC-4529-8536-B80A7769E899 -AttackSurfaceReductionRules_Actions Enabled</p>
+<h3 id="54-eicar-malware-test-validation">5.4 EICAR Malware Test Validation<a class="headerlink" href="#54-eicar-malware-test-validation" title="Permanent link">&para;</a></h3>
+<p><strong>EICAR Test String:</strong></p>
+<p>X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Open Notepad</td>
+<td>Notepad opens</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Copy EICAR test string</td>
+<td>String copied</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Save as eicar.com</td>
+<td>File deleted/quarantined immediately</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Check Defender history</td>
+<td>Threat detected - EICAR Test File</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> EICAR is a safe test file recognized by antivirus as a test signature.</p>
+<hr />
+<h2 id="6-system-hardening">6. System Hardening<a class="headerlink" href="#6-system-hardening" title="Permanent link">&para;</a></h2>
+<h3 id="61-windows-firewall">6.1 Windows Firewall<a class="headerlink" href="#61-windows-firewall" title="Permanent link">&para;</a></h3>
+<p><strong>Configure via PowerShell (Admin):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enable firewall all profiles</td>
+<td><code>Set-NetFirewallProfile -All -Enabled True</code></td>
+<td>Firewall active</td>
+</tr>
+<tr>
+<td>Block inbound by default</td>
+<td><code>Set-NetFirewallProfile -All -DefaultInboundAction Block</code></td>
+<td>Default deny inbound</td>
+</tr>
+<tr>
+<td>Allow outbound by default</td>
+<td><code>Set-NetFirewallProfile -All -DefaultOutboundAction Allow</code></td>
+<td>Outbound internet</td>
+</tr>
+<tr>
+<td>Block RDP from public subnets</td>
+<td><code>New-NetFirewallRule -DisplayName "Block RDP from Public" -Direction Inbound -Protocol TCP -LocalPort 3389 -Action Block -RemoteAddress 10.0.1.0/24</code></td>
+<td>Lateral movement prevention</td>
+</tr>
+<tr>
+<td>Allow RDP from management</td>
+<td><code>New-NetFirewallRule -DisplayName "Allow RDP from Management" -Direction Inbound -Protocol TCP -LocalPort 3389 -Action Allow -RemoteAddress 10.0.3.0/24</code></td>
+<td>Admin access only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verification:</strong></p>
+<p>Get-NetFirewallProfile | Select-Object Name, Enabled
+Get-NetFirewallRule | Where-Object {$_.DisplayName -like "<em>RDP</em>"} | Select-Object DisplayName, Action, Enabled</p>
+<h3 id="62-disable-unnecessary-services">6.2 Disable Unnecessary Services<a class="headerlink" href="#62-disable-unnecessary-services" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Service Name</th>
+<th>Display Name</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RemoteRegistry</td>
+<td>Remote Registry</td>
+<td><code>Stop-Service RemoteRegistry; Set-Service RemoteRegistry -StartupType Disabled</code></td>
+</tr>
+<tr>
+<td>Telnet</td>
+<td>Telnet</td>
+<td><code>Disable-WindowsOptionalFeature -Online -FeatureName TelnetClient</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-windows-update-configuration">6.3 Windows Update Configuration<a class="headerlink" href="#63-windows-update-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automatic updates</td>
+<td>Enabled</td>
+</tr>
+<tr>
+<td>Quality updates</td>
+<td>Monthly (Patch Tuesday)</td>
+</tr>
+<tr>
+<td>Feature updates</td>
+<td>Defer 90 days</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Check update status via PowerShell:</strong></p>
+<p>Get-WindowsUpdate
+Get-HotFix | Select-Object InstalledOn, Description</p>
+<h3 id="64-user-account-control-uac">6.4 User Account Control (UAC)<a class="headerlink" href="#64-user-account-control-uac" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UAC level</td>
+<td>Always notify</td>
+</tr>
+<tr>
+<td>Admin approval mode</td>
+<td>Enabled</td>
+</tr>
+<tr>
+<td>Secure desktop</td>
+<td>Enabled</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-logging-and-auditing">7. Logging and Auditing<a class="headerlink" href="#7-logging-and-auditing" title="Permanent link">&para;</a></h2>
+<h3 id="71-advanced-audit-policy-configuration">7.1 Advanced Audit Policy Configuration<a class="headerlink" href="#71-advanced-audit-policy-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>Enable via PowerShell (Admin):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Audit Category</th>
+<th>Subcategory</th>
+<th>Setting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Account Logon</td>
+<td>Credential Validation</td>
+<td>Success and Failure</td>
+</tr>
+<tr>
+<td>Logon/Logoff</td>
+<td>Logon</td>
+<td>Success and Failure</td>
+</tr>
+<tr>
+<td>Logon/Logoff</td>
+<td>Account Lockout</td>
+<td>Success and Failure</td>
+</tr>
+<tr>
+<td>Object Access</td>
+<td>File System</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>Policy Change</td>
+<td>Audit Policy Change</td>
+<td>Success and Failure</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Commands:</strong></p>
+<p>auditpol /set /subcategory:"Credential Validation" /success:enable /failure:enable
+auditpol /set /subcategory:"Logon" /success:enable /failure:enable
+auditpol /set /subcategory:"Account Lockout" /success:enable /failure:enable</p>
+<p><strong>Verify audit policy:</strong></p>
+<p>auditpol /get /category:*</p>
+<h3 id="72-critical-event-ids-to-monitor">7.2 Critical Event IDs to Monitor<a class="headerlink" href="#72-critical-event-ids-to-monitor" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Event ID</th>
+<th>Event Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4624</td>
+<td>Success</td>
+<td>Successful logon</td>
+</tr>
+<tr>
+<td>4625</td>
+<td>Failure</td>
+<td>Failed logon</td>
+</tr>
+<tr>
+<td>4740</td>
+<td>Success</td>
+<td>Account locked out</td>
+</tr>
+<tr>
+<td>4688</td>
+<td>Success</td>
+<td>Process creation</td>
+</tr>
+<tr>
+<td>7045</td>
+<td>Success</td>
+<td>Service installed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-wazuh-agent-configuration">7.3 Wazuh Agent Configuration<a class="headerlink" href="#73-wazuh-agent-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>Wazuh configuration file location:</strong></p>
+<p>C:\Program Files (x86)\ossec-agent\ossec.conf</p>
+<p><strong>Configuration content to add/modify:</strong></p>
+<p>The client section must point to the Wazuh server (VM 4) at 10.0.3.10. The localfile sections define which Windows event logs to forward.</p>
+<p><strong>Client configuration - set server address:</strong></p>
+<p>Set the server address to 10.0.3.10 and port to 1514 using TCP protocol.</p>
+<p><strong>Localfile configuration for Security events:</strong></p>
+<p>Configure localfile to forward Windows Security event channel.</p>
+<p><strong>Localfile configuration for System events:</strong></p>
+<p>Configure localfile to forward Windows System event channel.</p>
+<p><strong>Localfile configuration for Defender events:</strong></p>
+<p>Configure localfile to forward Microsoft-Windows-Windows Defender/Operational event channel.</p>
+<p><strong>Example of properly configured ossec.conf sections:</strong></p>
+<p>For the client section, configure:
+- Server address: 10.0.3.10
+- Port: 1514
+- Protocol: tcp</p>
+<p>For event collection, add localfile entries for:
+- Security event channel
+- System event channel
+- Microsoft-Windows-Windows Defender/Operational event channel</p>
+<p><strong>Restart Wazuh agent after configuration:</strong></p>
+<p>Restart-Service -Name "Wazuh"</p>
+<p><strong>Verify agent connection:</strong></p>
+<p>Get-Service -Name "Wazuh"
+Check service status should be "Running"</p>
+<hr />
+<h2 id="8-hardening-checklist">8. Hardening Checklist<a class="headerlink" href="#8-hardening-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Command / Action</th>
+<th>Status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Password policy applied</td>
+<td>net accounts</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Account lockout configured</td>
+<td>net accounts</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Weak password rejected</td>
+<td>Attempt "[SYNTHETIC-TEST-CREDENTIAL]"</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Administrator renamed</td>
+<td>wmic useraccount get name</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Built-in admin disabled</td>
+<td>net user Administrator /active</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Standard user created</td>
+<td>net user lab-user</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Defender real-time protection</td>
+<td>Get-MpComputerStatus</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Controlled Folder Access enabled</td>
+<td>Get-MpPreference</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>EICAR test blocked</td>
+<td>Download eicar.com</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Windows Firewall enabled</td>
+<td>Get-NetFirewallProfile</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>RDP restricted</td>
+<td>Get-NetFirewallRule</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Audit policy configured</td>
+<td>auditpol /get /category:*</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+<tr>
+<td>Wazuh agent connected</td>
+<td>Get-Service -Name "Wazuh"</td>
+<td>Pending</td>
+<td>Screenshot</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-security-validation-tests">9. Security Validation Tests<a class="headerlink" href="#9-security-validation-tests" title="Permanent link">&para;</a></h2>
+<h3 id="91-weak-password-rejection-test">9.1 Weak Password Rejection Test<a class="headerlink" href="#91-weak-password-rejection-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Open Command Prompt as standard user</td>
+<td>cmd opens</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Run: net user lab-test-user [SYNTHETIC-TEST-CREDENTIAL] /add</td>
+<td>Command fails - password does not meet complexity</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Run: net user lab-test-user [SYNTHETIC-TEST-CREDENTIAL] /add</td>
+<td>Command succeeds</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Clean up: net user lab-test-user /delete</td>
+<td>Account removed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-account-lockout-test">9.2 Account Lockout Test<a class="headerlink" href="#92-account-lockout-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Attempt RDP login with wrong password 5 times</td>
+<td>Account locked</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Check login screen after 5th failure</td>
+<td>Account locked message</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Check Wazuh dashboard</td>
+<td>Alert level 10 generated</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Wait 30 minutes</td>
+<td>Account automatically unlocked</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-eicar-malware-test">9.3 EICAR Malware Test<a class="headerlink" href="#93-eicar-malware-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Open Notepad</td>
+<td>Notepad opens</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Paste EICAR test string</td>
+<td>String pasted</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Save as C:\eicar.com</td>
+<td>File blocked/deleted immediately</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Check Defender history</td>
+<td>Threat detected - EICAR Test File</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Check Wazuh dashboard</td>
+<td>Alert level 15 generated</td>
+</tr>
+</tbody>
+</table>
+<h3 id="94-controlled-folder-access-test">9.4 Controlled Folder Access Test<a class="headerlink" href="#94-controlled-folder-access-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Create test script: test.bat</td>
+<td>File created</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Write a command to Documents folder</td>
+<td>Script blocked by CFA</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Check Windows Event Log</td>
+<td>Event ID 1123 logged</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Check Wazuh dashboard</td>
+<td>Alert generated</td>
+</tr>
+</tbody>
+</table>
+<h3 id="95-firewall-segmentation-test">9.5 Firewall Segmentation Test<a class="headerlink" href="#95-firewall-segmentation-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>From Ubuntu VM (10.0.1.10) attempt to connect to Windows (10.0.2.10) port 445</td>
+<td>Connection refused</td>
+</tr>
+<tr>
+<td>2</td>
+<td>From Ubuntu VM attempt RDP to Windows on port 3389</td>
+<td>Connection refused</td>
+</tr>
+<tr>
+<td>3</td>
+<td>From Management subnet (10.0.3.0/24) attempt RDP</td>
+<td>Connection successful</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-troubleshooting-commands">10. Troubleshooting Commands<a class="headerlink" href="#10-troubleshooting-commands" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Command</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Password policy not applied</td>
+<td>secpol.msc</td>
+<td>Check Local Security Policy</td>
+</tr>
+<tr>
+<td>Defender disabled</td>
+<td>Get-MpComputerStatus</td>
+<td>Re-enable via Windows Security</td>
+</tr>
+<tr>
+<td>Firewall blocking legitimate traffic</td>
+<td>Get-NetFirewallRule</td>
+<td>Review and add allow rule</td>
+</tr>
+<tr>
+<td>Wazuh agent not connecting</td>
+<td>Get-Service Wazuh</td>
+<td>Check server IP, restart service</td>
+</tr>
+<tr>
+<td>Audit events not logging</td>
+<td>auditpol /get /category:*</td>
+<td>Re-enable audit policy</td>
+</tr>
+<tr>
+<td>UAC not prompting</td>
+<td>reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System</td>
+<td>Check ConsentPromptBehaviorAdmin</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-maintenance-procedures">11. Maintenance Procedures<a class="headerlink" href="#11-maintenance-procedures" title="Permanent link">&para;</a></h2>
+<h3 id="111-daily-tasks">11.1 Daily Tasks<a class="headerlink" href="#111-daily-tasks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command / Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Check Windows Update status</td>
+<td>Get-WindowsUpdate</td>
+</tr>
+<tr>
+<td>Review Defender protection history</td>
+<td>Get-MpThreatDetection</td>
+</tr>
+<tr>
+<td>Verify Wazuh agent running</td>
+<td>Get-Service Wazuh</td>
+</tr>
+</tbody>
+</table>
+<h3 id="112-weekly-tasks">11.2 Weekly Tasks<a class="headerlink" href="#112-weekly-tasks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command / Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Review security event log</td>
+<td>Get-EventLog -LogName Security -Newest 100</td>
+</tr>
+<tr>
+<td>Check for failed logins</td>
+<td>Get-EventLog -LogName Security -InstanceId 4625 -Newest 50</td>
+</tr>
+<tr>
+<td>Verify backup status</td>
+<td>Check backup logs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="113-monthly-tasks">11.3 Monthly Tasks<a class="headerlink" href="#113-monthly-tasks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command / Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apply Windows updates</td>
+<td>Install pending updates</td>
+</tr>
+<tr>
+<td>Run full Defender scan</td>
+<td>Start-MpScan -ScanType FullScan</td>
+</tr>
+<tr>
+<td>Review audit policy</td>
+<td>auditpol /get /category:*</td>
+</tr>
+<tr>
+<td>Password expiration notification</td>
+<td>Notify users of upcoming expiration</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-related-documents">12. Related Documents<a class="headerlink" href="#12-related-documents" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pfSense Network Security</td>
+<td>08-Technical-Controls/pfsense-network.md</td>
+</tr>
+<tr>
+<td>Ubuntu Web Server Hardening</td>
+<td>08-Technical-Controls/ubuntu-web-server.md</td>
+</tr>
+<tr>
+<td>Wazuh Monitoring</td>
+<td>08-Technical-Controls/wazuh-monitoring.md</td>
+</tr>
+<tr>
+<td>Access Control Policy</td>
+<td>07-Policies-and-Standards/access-control-policy.md</td>
+</tr>
+<tr>
+<td>Password Policy</td>
+<td>07-Policies-and-Standards/password-policy.md</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-version-history">13. Version History<a class="headerlink" href="#13-version-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>April 2026</td>
+<td>S. Singh</td>
+<td>Initial draft</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Added ASR rules and CFA</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Draft learning edition</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Windows Enterprise Hardening</strong></p></article><nav class="navrow"><a href="wazuh-monitoring.html">← Wazuh Monitoring</a><a href="../09-Testing-and-Validation/results.html">Test Results Register →</a></nav><p class="footer-note">Chapter 24 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

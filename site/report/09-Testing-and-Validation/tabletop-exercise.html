@@ -1,0 +1,253 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Incident Response Tabletop Exercise | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="results.html">Test Results Register</a><a class="chapter-link" href="test-scenarios.html">Test Scenarios</a><a class="chapter-link active" href="tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Testing and Validation</div><article class="article"><h1>Incident Response Tabletop Exercise</h1><p class="crumb">Testing and Validation · <a class="raw-link" href="../../../09-Testing-and-Validation/tabletop-exercise.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> proposed scenario; not conducted</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#exercise-status">Exercise status</a></li>
+<li><a href="#exercise-at-a-glance">Exercise at a glance</a></li>
+<li><a href="#exercise-objectives-and-observations">Exercise objectives and observations</a></li>
+<li><a href="#scenario-background">Scenario background</a><ul>
+<li><a href="#inject-1-unusual-web-activity">Inject 1 — unusual web activity</a></li>
+<li><a href="#inject-2-possible-credential-misuse-and-monitoring-gap">Inject 2 — possible credential misuse and monitoring gap</a></li>
+<li><a href="#inject-3-provider-notification-and-potential-data-exposure">Inject 3 — provider notification and potential data exposure</a></li>
+<li><a href="#inject-4-restoration-pressure">Inject 4 — restoration pressure</a></li>
+</ul>
+</li>
+<li><a href="#facilitator-notes">Facilitator notes</a></li>
+<li><a href="#exercise-record">Exercise record</a><ul>
+<li><a href="#observation-log">Observation log</a></li>
+<li><a href="#improvement-action-register">Improvement action register</a></li>
+</ul>
+</li>
+<li><a href="#debrief">Debrief</a></li>
+</ul>
+</div>
+</details><h1 id="tabletop-exercise-scenario">Tabletop Exercise Scenario<a class="headerlink" href="#tabletop-exercise-scenario" title="Permanent link">&para;</a></h1>
+<h2 id="exercise-status">Exercise status<a class="headerlink" href="#exercise-status" title="Permanent link">&para;</a></h2>
+<p>This is a proposed discussion-based exercise for the fictional Apex Capital lab. It has not been conducted. The scenario and injects are fictional; the prompts do not represent observed telemetry, an actual compromise, a test result, or participant feedback. Complete the attendance, decision, observation, and action records during a future facilitated session.</p>
+<h2 id="exercise-at-a-glance">Exercise at a glance<a class="headerlink" href="#exercise-at-a-glance" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Design</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Objective</td>
+<td>Practice incident intake, severity assignment, evidence-aware containment, executive communication, privacy/legal escalation, supplier coordination, and recovery acceptance</td>
+</tr>
+<tr>
+<td>Format</td>
+<td>Facilitated tabletop; no system changes or live attack activity</td>
+</tr>
+<tr>
+<td>Suggested duration</td>
+<td>60–75 minutes, plus a short debrief</td>
+</tr>
+<tr>
+<td>Participants</td>
+<td>Incident Manager, technical responder, Ubuntu service owner, Windows endpoint owner, privacy/legal adviser, communications lead, executive decision-maker, supplier coordinator, facilitator, and observer</td>
+</tr>
+<tr>
+<td>Environment model</td>
+<td>pfSense separating WAN, DMZ (<code>10.0.1.0/24</code>), internal (<code>10.0.2.0/24</code>), and management (<code>10.0.3.0/24</code>); Ubuntu web server, Windows workstation, Wazuh</td>
+</tr>
+<tr>
+<td>Materials</td>
+<td>Current incident response plan, blank situation report, incident log, evidence register, action register, and fictional service/contact map</td>
+</tr>
+<tr>
+<td>Safety boundary</td>
+<td>Use discussion only. Do not send real notifications, contact actual providers, block live addresses, isolate systems, or share personal data.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="exercise-objectives-and-observations">Exercise objectives and observations<a class="headerlink" href="#exercise-objectives-and-observations" title="Permanent link">&para;</a></h2>
+<p>The facilitator records whether the team can:</p>
+<ol>
+<li>Open an incident record with times, facts, hypotheses, impact, and an assigned lead.</li>
+<li>Select and explain a severity, escalation path, and next decision time as information changes.</li>
+<li>Choose containment that limits spread while considering service impact and evidence preservation.</li>
+<li>Identify which independent sources could establish scope if the monitoring plane is incomplete.</li>
+<li>Assign legal/privacy and supplier decisions without inventing a reporting conclusion or deadline.</li>
+<li>Give executives and staff a clear update that separates known facts from unknowns.</li>
+<li>Define recovery acceptance checks and name the owner who must approve return to service.</li>
+<li>Convert observations into owned, dated, verifiable improvement actions.</li>
+</ol>
+<p>The observer uses <strong>Demonstrated</strong>, <strong>Partly demonstrated</strong>, <strong>Not demonstrated</strong>, or <strong>Not observed</strong>. Capture the supporting decision, record, or statement; a score without evidence is not useful.</p>
+<h2 id="scenario-background">Scenario background<a class="headerlink" href="#scenario-background" title="Permanent link">&para;</a></h2>
+<p>The fictional Apex web service is hosted on Ubuntu in the DMZ. A Windows workstation is used by an employee who administers content through a restricted workflow. Wazuh is intended to receive endpoint events in the management zone. Firewall policy is intended to deny unsolicited traffic between zones. No actual service-level objective, customer count, data inventory, backup recovery point, or named supplier contact is supplied; exercise participants should identify these as information gaps rather than assume values.</p>
+<h3 id="inject-1-unusual-web-activity">Inject 1 — unusual web activity<a class="headerlink" href="#inject-1-unusual-web-activity" title="Permanent link">&para;</a></h3>
+<p><strong>Facilitator release:</strong> The service owner reports an unexpected change to a public web page. A Wazuh alert shows repeated web-server errors and a new process on the Ubuntu host. The alert time and the host's local timestamp differ. The service remains reachable. No reliable evidence yet identifies who made the change or whether data was accessed.</p>
+<p><strong>Prompts:</strong></p>
+<ul>
+<li>Who opens the incident, sets the initial severity, and owns the timeline?</li>
+<li>Which facts and unknowns are recorded? What time source and time zone will be used?</li>
+<li>What evidence should be preserved from Wazuh, Ubuntu, web/application logs, and pfSense before remediation?</li>
+<li>Would you isolate the host, restrict only the web route, or observe briefly? Who approves the service impact and why?</li>
+<li>What initial message can be sent to the service owner and executive without overstating the event?</li>
+</ul>
+<p><strong>Expected decisions to observe:</strong> An incident ID and owner; explicit severity rationale; preservation plan; containment choice with approver, effect, and review time; clear separation of confirmed defacement from unconfirmed data access.</p>
+<h3 id="inject-2-possible-credential-misuse-and-monitoring-gap">Inject 2 — possible credential misuse and monitoring gap<a class="headerlink" href="#inject-2-possible-credential-misuse-and-monitoring-gap" title="Permanent link">&para;</a></h3>
+<p><strong>Facilitator release:</strong> The content administrator reports an unexpected sign-in prompt and a successful login they do not recognize. The Windows endpoint has a new scheduled-task alert. Wazuh has not received events from that endpoint for 40 minutes. The firewall record shows a connection from the internal zone toward the DMZ, but the destination is not yet confirmed as authorized.</p>
+<p><strong>Prompts:</strong></p>
+<ul>
+<li>Which accounts and sessions should be protected, and through what trusted administrative path?</li>
+<li>What independent records can help determine whether the endpoint, web server, or management plane is affected?</li>
+<li>What conditions would cause escalation to High or Critical? Could lateral movement be confirmed from current facts?</li>
+<li>How will responders preserve endpoint, identity, firewall, and agent-health evidence?</li>
+<li>What business decision is needed before isolating the endpoint or disrupting content publishing?</li>
+</ul>
+<p><strong>Expected decisions to observe:</strong> Containment protects credentials without relying on a possibly compromised session; monitoring loss is treated as a coverage gap; the team seeks independent logs; severity is updated only with a recorded rationale; endpoint isolation authority and business impact are explicit.</p>
+<h3 id="inject-3-provider-notification-and-potential-data-exposure">Inject 3 — provider notification and potential data exposure<a class="headerlink" href="#inject-3-provider-notification-and-potential-data-exposure" title="Permanent link">&para;</a></h3>
+<p><strong>Facilitator release:</strong> A fictional hosting provider sends an advisory that a shared management component may have exposed customer metadata. The notice does not confirm that Apex data was accessed. The provider can preserve tenant-specific logs only if requested promptly. The service owner cannot determine which metadata fields are stored without checking the data inventory.</p>
+<p><strong>Prompts:</strong></p>
+<ul>
+<li>Who contacts the provider, preserves the notice, and requests tenant-specific logs and retention?</li>
+<li>What data inventory, access logs, contracts, and service dependencies must be checked?</li>
+<li>Who determines whether privacy, regulatory, contractual, or customer notification thresholds are met, and what facts are needed?</li>
+<li>If India-based reporting obligations may apply, who checks the current rule and incident category, calculates the trigger from verified facts, and records the decision?</li>
+<li>What can be communicated internally while data exposure remains unconfirmed?</li>
+</ul>
+<p><strong>Expected decisions to observe:</strong> The provider's statement is not treated as proof or exoneration; evidence and retention requests are assigned; a named privacy/legal decision owner is engaged; the team checks current applicable requirements and records the basis for notifying or not notifying; communications distinguish exposure from potential exposure.</p>
+<h3 id="inject-4-restoration-pressure">Inject 4 — restoration pressure<a class="headerlink" href="#inject-4-restoration-pressure" title="Permanent link">&para;</a></h3>
+<p><strong>Facilitator release:</strong> The business asks to restore the public page immediately. The technical team has a backup from an unknown point in time, has not verified its integrity, and has not identified how the administrator account was misused. Wazuh forwarding is still unavailable for the Windows endpoint.</p>
+<p><strong>Prompts:</strong></p>
+<ul>
+<li>What minimum conditions must be met before rebuilding or reconnecting the web server?</li>
+<li>How will the team select and validate a clean image or backup?</li>
+<li>Which credentials, tokens, or keys may require rotation? How can this be done without trusting a suspected endpoint?</li>
+<li>What tests demonstrate that segmentation, authentication, logging, data integrity, and monitoring work after restoration?</li>
+<li>Who accepts the residual risk and authorizes return to service? What rollback trigger and heightened monitoring period are appropriate?</li>
+</ul>
+<p><strong>Expected decisions to observe:</strong> The team does not equate availability with recovery; it identifies root-cause and clean-state questions, assigns verification evidence, identifies an independent reviewer and service-owner acceptance, records residual risk and rollback criteria, and communicates a realistic next update.</p>
+<h2 id="facilitator-notes">Facilitator notes<a class="headerlink" href="#facilitator-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Release one inject at a time and allow the group to state decisions before revealing the next fact.</li>
+<li>Do not supply missing architecture, contacts, log contents, or legal conclusions. Ask participants how they would obtain and verify them.</li>
+<li>If participants propose an action that changes a real system, stop the discussion and remind them this is a no-action tabletop.</li>
+<li>Capture the exact decision, responsible role, evidence requested, approval needed, unresolved question, and time at which the team expects to revisit it.</li>
+<li>Where the group lacks an owner or procedure, record a gap rather than resolving it by facilitator assumption.</li>
+</ul>
+<h2 id="exercise-record">Exercise record<a class="headerlink" href="#exercise-record" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Entry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Facilitator / observer</td>
+<td></td>
+</tr>
+<tr>
+<td>Date and duration</td>
+<td></td>
+</tr>
+<tr>
+<td>Participants and roles</td>
+<td></td>
+</tr>
+<tr>
+<td>Plan version used</td>
+<td></td>
+</tr>
+<tr>
+<td>Scenario changes</td>
+<td></td>
+</tr>
+<tr>
+<td>Overall objective results</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="observation-log">Observation log<a class="headerlink" href="#observation-log" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Objective</th>
+<th>Demonstrated / partly / not / not observed</th>
+<th>Supporting decision or artifact</th>
+<th>Gap / contributing factor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Incident intake and timeline</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Severity and escalation</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Containment and evidence</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Scope and independent telemetry</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Legal, privacy, supplier coordination</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Communications</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Recovery acceptance</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Improvement actions</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="improvement-action-register">Improvement action register<a class="headerlink" href="#improvement-action-register" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Observed gap</th>
+<th>Corrective action</th>
+<th>Owner</th>
+<th>Due date</th>
+<th>Verification evidence</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Open</td>
+</tr>
+</tbody>
+</table>
+<h2 id="debrief">Debrief<a class="headerlink" href="#debrief" title="Permanent link">&para;</a></h2>
+<p>Discuss which decisions were clear, which depended on missing information, and where authority or evidence paths were uncertain. Review preparation, role coverage, process, organization, support arrangements, technology, training, and exercise design. Record successful practices as well as gaps. Assign each action to an owner and verify it through an artifact, retest, or follow-up exercise; do not mark improvement complete because a meeting agreed with it.</p></article><nav class="navrow"><a href="test-scenarios.html">← Test Scenarios</a><a href="capability-evaluation.html">Security Capability Evaluation →</a></nav><p class="footer-note">Chapter 27 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

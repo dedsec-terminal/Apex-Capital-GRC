@@ -1,0 +1,471 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Security Architecture Overview | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link active" href="architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Security Architecture</div><article class="article"><h1>Security Architecture Overview</h1><p class="crumb">Security Architecture · <a class="raw-link" href="../../../05-Security-Architecture/architecture-overview.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> proposed design</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#design-principles">Design Principles</a></li>
+<li><a href="#4-vm-architecture">4-VM Architecture</a></li>
+<li><a href="#pfsense-interface-configuration">pfSense Interface Configuration</a></li>
+<li><a href="#network-zones">Network Zones</a><ul>
+<li><a href="#1-dmz-zone-1001024">1. DMZ Zone (10.0.1.0/24)</a></li>
+<li><a href="#2-internal-trusted-zone-1002024">2. Internal Trusted Zone (10.0.2.0/24)</a></li>
+<li><a href="#3-management-zone-1003024">3. Management Zone (10.0.3.0/24)</a></li>
+</ul>
+</li>
+<li><a href="#traffic-flow">Traffic Flow</a></li>
+<li><a href="#firewall-rules-summary">Firewall Rules Summary</a><ul>
+<li><a href="#wan-uplink">WAN uplink</a></li>
+<li><a href="#dmz-opt1">DMZ / OPT1</a></li>
+<li><a href="#internal-lan">Internal / LAN</a></li>
+<li><a href="#management-opt2">Management / OPT2</a></li>
+</ul>
+</li>
+<li><a href="#key-protection-goals">Key Protection Goals</a></li>
+<li><a href="#logging-and-monitoring-flow">Logging and Monitoring Flow</a></li>
+<li><a href="#key-protection-goals_1">Key Protection Goals</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="security-architecture-overview">Security Architecture Overview<a class="headerlink" href="#security-architecture-overview" title="Permanent link">&para;</a></h1>
+<h2 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Defense-in-Depth</li>
+<li>Network Segmentation (Zero Trust inspired)</li>
+<li>Least Privilege</li>
+<li>Centralized Logging &amp; Monitoring</li>
+<li>Auditability and Compliance Evidence</li>
+</ul>
+<hr />
+<h2 id="4-vm-architecture">4-VM Architecture<a class="headerlink" href="#4-vm-architecture" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>Hostname</th>
+<th>IP Address</th>
+<th>Subnet</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VM 1</td>
+<td>Windows-Enterprise</td>
+<td>10.0.2.10</td>
+<td>Internal (10.0.2.0/24)</td>
+<td>Workstation / Server</td>
+</tr>
+<tr>
+<td>VM 2</td>
+<td>Ubuntu-Web</td>
+<td>10.0.1.10</td>
+<td>DMZ (10.0.1.0/24)</td>
+<td>Public Web Server</td>
+</tr>
+<tr>
+<td>VM 3</td>
+<td>pfSense</td>
+<td>10.0.1.1, 10.0.2.1, 10.0.3.1</td>
+<td>All</td>
+<td>Firewall / Router</td>
+</tr>
+<tr>
+<td>VM 4</td>
+<td>Wazuh-SIEM</td>
+<td>10.0.3.10</td>
+<td>Management (10.0.3.0/24)</td>
+<td>SIEM / Monitoring</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="pfsense-interface-configuration">pfSense Interface Configuration<a class="headerlink" href="#pfsense-interface-configuration" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Name</th>
+<th>IP Address</th>
+<th>Subnet</th>
+<th>Connected system</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WAN</td>
+<td>Upstream isolated lab uplink</td>
+<td>Assigned by lab network; unspecified</td>
+<td>Outside lab zones</td>
+<td>Virtual uplink, not a guest VM</td>
+</tr>
+<tr>
+<td>OPT1</td>
+<td>DMZ</td>
+<td>10.0.1.1</td>
+<td>10.0.1.0/24</td>
+<td>VM 2 (Ubuntu)</td>
+</tr>
+<tr>
+<td>LAN</td>
+<td>Internal</td>
+<td>10.0.2.1</td>
+<td>10.0.2.0/24</td>
+<td>VM 1 (Windows)</td>
+</tr>
+<tr>
+<td>OPT2</td>
+<td>Management</td>
+<td>10.0.3.1</td>
+<td>10.0.3.0/24</td>
+<td>VM 4 (Wazuh)</td>
+</tr>
+</tbody>
+</table>
+<p>This is the proposed four-interface design. The upstream WAN address, virtual-switch attachment and NAT method remain unspecified. No running pfSense configuration has been inspected.</p>
+<h2 id="network-zones">Network Zones<a class="headerlink" href="#network-zones" title="Permanent link">&para;</a></h2>
+<p>The proposed design uses four pfSense interfaces: one upstream WAN uplink and three isolated zones. The WAN address/NAT is unspecified; this is not a captured pfSense configuration. The DMZ is not the WAN interface.</p>
+<h3 id="1-dmz-zone-1001024">1. DMZ Zone (10.0.1.0/24)<a class="headerlink" href="#1-dmz-zone-1001024" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>VM 2 - Ubuntu Web Server</strong> (Customer Investment Portal)</li>
+<li>Simulated public-facing service; external exposure requires explicit isolated-lab NAT/port-forward</li>
+<li>Only ports 80 (HTTP) and 443 (HTTPS) are open</li>
+<li>SSH access restricted to Management Zone only</li>
+</ul>
+<h3 id="2-internal-trusted-zone-1002024">2. Internal Trusted Zone (10.0.2.0/24)<a class="headerlink" href="#2-internal-trusted-zone-1002024" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>VM 1 - Windows Enterprise</strong> (Workstation / Server)</li>
+<li>No direct internet access</li>
+<li>RDP (3389) blocked from DMZ and internet</li>
+<li>RDP only allowed from Management Zone</li>
+</ul>
+<h3 id="3-management-zone-1003024">3. Management Zone (10.0.3.0/24)<a class="headerlink" href="#3-management-zone-1003024" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>VM 4 - Wazuh SIEM</strong> (Monitoring and Alerting)</li>
+<li>Centralized log collection</li>
+<li>Administrative access point</li>
+<li>Can initiate RDP to Windows and SSH to Ubuntu</li>
+</ul>
+<hr />
+<h2 id="traffic-flow">Traffic Flow<a class="headerlink" href="#traffic-flow" title="Permanent link">&para;</a></h2>
+<p>The network-architecture.mermaid file in this section provides the proposed logical topology. The permitted flows below are design intent only.</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Protocol / port</th>
+<th>Policy intent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WAN uplink</td>
+<td>Ubuntu DMZ</td>
+<td>TCP 80/443 through explicit port-forward only</td>
+<td>Optional simulated web exposure; never expose management ports</td>
+</tr>
+<tr>
+<td>Approved admin source in management zone</td>
+<td>Ubuntu DMZ</td>
+<td>TCP 22</td>
+<td>Restrict SSH to approved administrators</td>
+</tr>
+<tr>
+<td>Approved admin source in management zone</td>
+<td>Windows internal</td>
+<td>TCP 3389</td>
+<td>Restrict RDP to approved administrators</td>
+</tr>
+<tr>
+<td>Windows and Ubuntu endpoints</td>
+<td>Wazuh management</td>
+<td>TCP 1514</td>
+<td>Endpoint-initiated Wazuh agent telemetry</td>
+</tr>
+<tr>
+<td>Endpoints during controlled enrollment</td>
+<td>Wazuh management</td>
+<td>TCP 1515</td>
+<td>Temporary/restricted agent enrollment only</td>
+</tr>
+<tr>
+<td>pfSense</td>
+<td>Wazuh management</td>
+<td>UDP 514, if syslog collection is enabled</td>
+<td>Optional firewall log forwarding; collector is disabled by default</td>
+</tr>
+<tr>
+<td>Approved admin sources</td>
+<td>Wazuh management</td>
+<td>TCP 443</td>
+<td>Restricted dashboard access</td>
+</tr>
+<tr>
+<td>DMZ</td>
+<td>Internal</td>
+<td>Any</td>
+<td>Deny by default; verify with paired tests</td>
+</tr>
+<tr>
+<td>Internal/management</td>
+<td>WAN</td>
+<td>Explicitly defined outbound services only</td>
+<td>Egress must be deliberately scoped</td>
+</tr>
+</tbody>
+</table>
+<p>pfSense state handling, rule order, NAT, logging and source limits must be checked against the eventual configuration. A subnet label does not grant every host administrative access.</p>
+<h2 id="firewall-rules-summary">Firewall Rules Summary<a class="headerlink" href="#firewall-rules-summary" title="Permanent link">&para;</a></h2>
+<p>Rules are design intent and require implementation and validation. Apply them to the correct pfSense interface, account for stateful return traffic, and keep management access limited to approved source hosts.</p>
+<h3 id="wan-uplink">WAN uplink<a class="headerlink" href="#wan-uplink" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Service</th>
+<th>Intended action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>External test source</td>
+<td>Ubuntu DMZ</td>
+<td>TCP 80/443 via explicit NAT/port-forward</td>
+<td>Optional allow only for an isolated lab; no WAN-to-admin access</td>
+</tr>
+<tr>
+<td>Any</td>
+<td>Firewall management interfaces</td>
+<td>Any</td>
+<td>Deny</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dmz-opt1">DMZ / OPT1<a class="headerlink" href="#dmz-opt1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Service</th>
+<th>Intended action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Approved management source</td>
+<td>Ubuntu DMZ</td>
+<td>TCP 22</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>DMZ subnet</td>
+<td>Internal subnet</td>
+<td>Any</td>
+<td>Deny</td>
+</tr>
+<tr>
+<td>Ubuntu endpoint</td>
+<td>Wazuh management</td>
+<td>TCP 1514</td>
+<td>Allow agent telemetry</td>
+</tr>
+<tr>
+<td>Ubuntu endpoint</td>
+<td>Wazuh management</td>
+<td>TCP 1515</td>
+<td>Allow only during controlled enrollment</td>
+</tr>
+<tr>
+<td>DMZ</td>
+<td>Other zones</td>
+<td>Any</td>
+<td>Deny unless explicitly listed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="internal-lan">Internal / LAN<a class="headerlink" href="#internal-lan" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Service</th>
+<th>Intended action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Approved management source</td>
+<td>Windows host</td>
+<td>TCP 3389</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>Windows endpoint</td>
+<td>Wazuh management</td>
+<td>TCP 1514</td>
+<td>Allow agent telemetry</td>
+</tr>
+<tr>
+<td>Windows endpoint</td>
+<td>Wazuh management</td>
+<td>TCP 1515</td>
+<td>Allow only during controlled enrollment</td>
+</tr>
+<tr>
+<td>Windows host</td>
+<td>WAN</td>
+<td>Required update destinations/services only</td>
+<td>Proposed egress; define before use</td>
+</tr>
+<tr>
+<td>Internal</td>
+<td>DMZ/management</td>
+<td>Any</td>
+<td>Deny unless explicitly listed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="management-opt2">Management / OPT2<a class="headerlink" href="#management-opt2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Service</th>
+<th>Intended action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Approved management source</td>
+<td>Windows host</td>
+<td>TCP 3389</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>Approved management source</td>
+<td>Ubuntu DMZ</td>
+<td>TCP 22</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>Approved management source</td>
+<td>Wazuh dashboard</td>
+<td>TCP 443</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>pfSense</td>
+<td>Wazuh management</td>
+<td>UDP 514</td>
+<td>Optional syslog only when configured</td>
+</tr>
+<tr>
+<td>Any other source</td>
+<td>Management zone</td>
+<td>Any</td>
+<td>Deny by default</td>
+</tr>
+</tbody>
+</table>
+<p>Wazuh default ports: TCP 1514 for agent communication; TCP 1515 for enrollment. UDP 514 syslog collection is optional and disabled by default. Confirm the installed version and service configuration before creating rules.</p>
+<h2 id="key-protection-goals">Key Protection Goals<a class="headerlink" href="#key-protection-goals" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Implementation</th>
+<th>Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prevent lateral movement</strong></td>
+<td>pfSense block rule: DMZ to Internal</td>
+<td><code>nc -zv</code> from Ubuntu to Windows fails</td>
+</tr>
+<tr>
+<td><strong>Protect client data at rest</strong></td>
+<td>NTFS permissions, Windows policy</td>
+<td>Access control verification</td>
+</tr>
+<tr>
+<td><strong>Protect data in transit (design intent)</strong></td>
+<td>TLS/SSH configured to approved protocol/cipher baselines</td>
+<td>Review negotiated protocol/cipher and certificate chain; verify by test</td>
+</tr>
+<tr>
+<td><strong>Enable secure remote access</strong></td>
+<td>RDP only from Management subnet</td>
+<td>RDP from Management works, from internet fails</td>
+</tr>
+<tr>
+<td><strong>Support rapid detection</strong></td>
+<td>Wazuh SIEM alerting intent</td>
+<td>Validate receipt, parsing, rule match, timestamp, and measured latency</td>
+</tr>
+<tr>
+<td><strong>Support rapid response</strong></td>
+<td>Incident response policy</td>
+<td>Documented IR plan</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="logging-and-monitoring-flow">Logging and Monitoring Flow<a class="headerlink" href="#logging-and-monitoring-flow" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Flow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows endpoint</td>
+<td>Wazuh server (10.0.3.10)</td>
+<td>Agent connection to TCP 1514</td>
+</tr>
+<tr>
+<td>Ubuntu endpoint</td>
+<td>Wazuh server (10.0.3.10)</td>
+<td>Agent connection to TCP 1514</td>
+</tr>
+<tr>
+<td>Endpoint during enrollment</td>
+<td>Wazuh server (10.0.3.10)</td>
+<td>TCP 1515 only during controlled enrollment</td>
+</tr>
+<tr>
+<td>pfSense</td>
+<td>Wazuh server (10.0.3.10)</td>
+<td>Optional syslog to UDP 514 after explicitly enabling collection</td>
+</tr>
+<tr>
+<td>Approved management sources</td>
+<td>Wazuh dashboard</td>
+<td>HTTPS TCP 443, restricted by source policy</td>
+</tr>
+</tbody>
+</table>
+<p>These flows describe a proposed design, not observed telemetry or an operational alerting pipeline. Validate event receipt, parsing, timestamps, retention, alert rules and measured latency before claiming monitoring coverage.</p>
+<h2 id="key-protection-goals_1">Key Protection Goals<a class="headerlink" href="#key-protection-goals_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p>Prevent lateral movement between DMZ and Internal zones</p>
+</li>
+<li>
+<p>Protect client data at rest and in transit</p>
+</li>
+<li>
+<p>Enable secure remote access (RDP restricted to Management subnet)</p>
+</li>
+<li>
+<p>Support rapid detection and response via Wazuh SIEM</p>
+</li>
+</ul>
+<hr />
+<p><strong>End of Security Architecture Overview</strong></p></article><nav class="navrow"><a href="../04-Risk-Assessment/risk-register.html">← Risk Register</a><a href="network-architecture.html">Network Architecture →</a></nav><p class="footer-note">Chapter 10 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

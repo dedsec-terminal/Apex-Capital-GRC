@@ -1,0 +1,36 @@
+flowchart TB
+    Internet((Internet))
+
+    subgraph FW [pfSense Firewall - VM 3]
+        WAN[WAN uplink<br/>isolated lab assigned address]
+        LAN[LAN Interface - Internal<br/>10.0.2.1/24]
+        OPT1[OPT1 Interface - DMZ<br/>10.0.1.1/24]
+        OPT2[OPT2 Interface - Management<br/>10.0.3.1/24]
+    end
+
+    subgraph DMZ [DMZ Subnet - 10.0.1.0/24]
+        Ubuntu[Ubuntu Web Server<br/>VM 2 - 10.0.1.10<br/>Ports: 80, 443]
+    end
+
+    subgraph Internal [Internal Subnet - 10.0.2.0/24]
+        Windows[Windows Enterprise<br/>VM 1 - 10.0.2.10<br/>Ports: RDP, SMB]
+    end
+
+    subgraph Management [Management Subnet - 10.0.3.0/24]
+        Wazuh[Wazuh SIEM<br/>VM 4 - 10.0.3.10<br/>Agent 1514/TCP; admin 443/TCP]
+    end
+
+    Internet --> WAN
+    WAN -->|Explicit NAT/port-forward TCP 80/443 only| Ubuntu
+
+    OPT2 -->|Approved-source RDP 3389| Windows
+    OPT2 -->|Approved-source SSH 22| Ubuntu
+    OPT2 -->|Approved admin HTTPS 443| Wazuh
+
+    Ubuntu -.->|BLOCKED - Lateral Movement| Windows
+
+    Windows -->|Agent telemetry TCP 1514| Wazuh
+    Ubuntu -->|Agent telemetry TCP 1514| Wazuh
+    Windows -.->|Controlled enrollment TCP 1515| Wazuh
+    Ubuntu -.->|Controlled enrollment TCP 1515| Wazuh
+    FW -.->|Optional syslog UDP 514; disabled by default| Wazuh

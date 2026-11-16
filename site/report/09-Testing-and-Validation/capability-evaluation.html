@@ -1,0 +1,281 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Security Capability Evaluation | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="results.html">Test Results Register</a><a class="chapter-link" href="test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link active" href="capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Testing and Validation</div><article class="article"><h1>Security Capability Evaluation</h1><p class="crumb">Testing and Validation · <a class="raw-link" href="../../../09-Testing-and-Validation/capability-evaluation.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> design reasoning and proposed evaluation; not executed</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#purpose-and-decision">Purpose and decision</a></li>
+<li><a href="#business-context-and-service-priorities">Business context and service priorities</a></li>
+<li><a href="#requirements-and-traceability">Requirements and traceability</a></li>
+<li><a href="#control-decisions-and-their-tradeoffs">Control decisions and their tradeoffs</a></li>
+<li><a href="#proposed-incident-walkthrough">Proposed incident walkthrough</a></li>
+<li><a href="#evaluation-method">Evaluation method</a></li>
+<li><a href="#review-and-improvement-register">Review and improvement register</a></li>
+<li><a href="#how-to-demonstrate-the-work">How to demonstrate the work</a></li>
+</ul>
+</div>
+</details><h1 id="security-capability-evaluation">Security capability evaluation<a class="headerlink" href="#security-capability-evaluation" title="Permanent link">&para;</a></h1>
+<h2 id="purpose-and-decision">Purpose and decision<a class="headerlink" href="#purpose-and-decision" title="Permanent link">&para;</a></h2>
+<p>This report demonstrates how I would translate a financial-services security problem into requirements, control choices, an incident response workflow and evidence-based improvement decisions. Apex Capital is a fictional organization. The four-VM design provides a bounded environment for testing the reasoning before extending it to a business network.</p>
+<p>The design is ready for structured review. Operational acceptance remains pending: the virtual machines have not been provisioned, the security tests have not been run and no stakeholder has approved the proposed risk decisions. The appropriate next step is to review the response plan through a tabletop exercise, then implement the isolated lab and collect the specified evidence. A written procedure is a deliverable; control effectiveness is a separate conclusion that requires execution evidence.</p>
+<h2 id="business-context-and-service-priorities">Business context and service priorities<a class="headerlink" href="#business-context-and-service-priorities" title="Permanent link">&para;</a></h2>
+<p>The scenario separates a public web service in the DMZ, an internal Windows system holding synthetic business records, and a management network containing Wazuh. pfSense mediates the WAN and the three internal zones. These are representative services, not a complete replica of a financial institution.</p>
+<table>
+<thead>
+<tr>
+<th>Service or information</th>
+<th>Why it matters</th>
+<th>Response priority</th>
+<th>Decision needed before deployment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Internal records and privileged identities</td>
+<td>Unauthorized access could undermine confidentiality and the integrity of business decisions</td>
+<td>Stop suspected misuse, establish the scope of affected identities and preserve records</td>
+<td>Data owner confirms classification, access roles and acceptable recovery point</td>
+</tr>
+<tr>
+<td>Public web service</td>
+<td>An exposed service can be an entry point and an availability dependency</td>
+<td>Contain the affected service without unnecessarily removing management visibility</td>
+<td>Service owner defines minimum acceptable service and restoration order</td>
+</tr>
+<tr>
+<td>Monitoring and administration</td>
+<td>Responders need trustworthy telemetry and a clean path for recovery</td>
+<td>Protect log collection and administrative access while isolating compromised assets</td>
+<td>Security owner confirms retention, time synchronization and responder access</td>
+</tr>
+<tr>
+<td>Supplier connections and evidence</td>
+<td>A service provider may affect access, data handling or recovery</td>
+<td>Establish dependency, request evidence and restrict risky integration where justified</td>
+<td>Supplier owner records criticality, contractual duties and escalation contacts</td>
+</tr>
+</tbody>
+</table>
+<p>Recovery time and recovery point objectives are deliberately unset until a business impact review establishes them. Targets chosen only because the lab can achieve them would not demonstrate that business requirements were met.</p>
+<h2 id="requirements-and-traceability">Requirements and traceability<a class="headerlink" href="#requirements-and-traceability" title="Permanent link">&para;</a></h2>
+<p>The following matrix connects intended outcomes to the proposed control crosswalk, a validation activity and the evidence needed for a conclusion. Framework references are selected associations, not a claim of certification or complete coverage. The short <code>T-01</code> identifiers refer to the grouped <a href="../../../docs/validation-plan.md">validation plan</a>; the longer <code>T-001</code> identifiers in the original test chapter are detailed technical procedures.</p>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Risks</th>
+<th>Proposed references</th>
+<th>Validation activity</th>
+<th>Evidence required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prevent a DMZ compromise from reaching internal records</td>
+<td>R-001, R-008</td>
+<td>NIST PR.IR-01; ISO A.8.22, A.8.32</td>
+<td>T-01, T-08</td>
+<td>Approved flow matrix; allowed and denied connection results; firewall rule and log correlation</td>
+</tr>
+<tr>
+<td>Restrict administration and sensitive-data access</td>
+<td>R-002, R-006</td>
+<td>NIST PR.AA-05; ISO A.5.18, A.8.2</td>
+<td>T-02, T-03</td>
+<td>Effective access policy; separate privileged accounts; positive and negative access tests</td>
+</tr>
+<tr>
+<td>Identify and investigate suspicious activity</td>
+<td>R-004, R-005</td>
+<td>NIST DE.CM-01, DE.CM-09; ISO A.8.15, A.8.16</td>
+<td>T-05</td>
+<td>Original source event; corresponding Wazuh record; host, timestamp and rule identifiers</td>
+</tr>
+<tr>
+<td>Contain an incident with accountable decisions</td>
+<td>R-001, R-002, R-003</td>
+<td>NIST RS.MA-01; ISO A.5.24, A.5.26</td>
+<td>Proposed tabletop exercise</td>
+<td>Activation decision; authority; evidence references; containment tradeoff and decision log</td>
+</tr>
+<tr>
+<td>Recover trusted data and service</td>
+<td>R-003</td>
+<td>NIST PR.DS-11, RC.RP-01; ISO A.8.13, A.5.30</td>
+<td>T-06 and recovery tabletop</td>
+<td>Backup provenance; isolated restore; integrity and service checks; owner acceptance</td>
+</tr>
+<tr>
+<td>Review suppliers before relying on their security claims</td>
+<td>R-007</td>
+<td>NIST GV.SC-04, GV.SC-06, GV.SC-07; ISO A.5.19, A.5.20</td>
+<td>T-07</td>
+<td>Scoped evidence packet; reviewer rationale; unresolved gaps; treatment decision and reassessment trigger</td>
+</tr>
+</tbody>
+</table>
+<p>All execution results in this matrix are pending. Evidence filenames identify what should be collected; a filename alone does not establish that the artifact exists.</p>
+<h2 id="control-decisions-and-their-tradeoffs">Control decisions and their tradeoffs<a class="headerlink" href="#control-decisions-and-their-tradeoffs" title="Permanent link">&para;</a></h2>
+<p><strong>Segmentation.</strong> The DMZ does not need general access to the internal Windows network. The proposed policy therefore denies this path by default and permits only documented service dependencies. An allowed management connection must also be tested: a failed connection could reflect a broken route or an unavailable service rather than an effective deny rule.</p>
+<p><strong>Administrative access.</strong> Restrict SSH and RDP to approved management sources and separate routine user activity from privileged administration. Network location alone does not establish identity or authorization. If a VPN or MFA service is added, its configuration and failure behavior become separate evidence requirements.</p>
+<p><strong>Monitoring.</strong> A Wazuh alert is an investigation lead. The analyst should establish which source produced it, whether the clocks agree and whether a second source corroborates the activity before asserting compromise. Retention and retrieval matter alongside alert creation because a missing investigation window can prevent an otherwise well-designed response.</p>
+<p><strong>Containment.</strong> Isolating an affected host can limit propagation but may interrupt business activity or remove access to volatile evidence. The incident manager records the observed risk, the isolation scope and the approving role. Where active harm requires immediate action, responders document the emergency decision and obtain retrospective review rather than inventing prior approval.</p>
+<p><strong>Recovery.</strong> Restoring a file does not establish that the host, credentials or exploited entry point are trustworthy. Recovery includes a clean baseline, remediation of the entry point, credential rotation from a clean administrative system, validation of restored data and functioning monitoring before reconnection.</p>
+<p><strong>Supplier assurance.</strong> An assurance report must match the supplier entity, service, period and relevant control scope. A marketing badge or a corrected document is not independent evidence that a control operated effectively. Open gaps remain visible until a reviewer evaluates the evidence and the accountable business role records a decision.</p>
+<h2 id="proposed-incident-walkthrough">Proposed incident walkthrough<a class="headerlink" href="#proposed-incident-walkthrough" title="Permanent link">&para;</a></h2>
+<p>This is an illustrative reasoning exercise. The signals and decisions below have not been observed in a running Apex environment and do not represent a completed tabletop session.</p>
+<table>
+<thead>
+<tr>
+<th>Stage and synthetic prompt</th>
+<th>Expected decision and rationale</th>
+<th>Record to retain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wazuh reports unusual authentication activity for Windows at <code>10.0.2.10</code>; an endpoint signal suggests file modification</td>
+<td>Open a case; validate source and time; collect authentication and endpoint context. Treat compromise as suspected until corroborated</td>
+<td>Incident record, original alert reference and initial confidence assessment</td>
+</tr>
+<tr>
+<td>A second source confirms unexpected encryption of synthetic records</td>
+<td>Activate the response team, grade severity against business impact and authorize targeted isolation. Keep the monitoring network available</td>
+<td>Severity rationale, activation time, containment decision and affected asset list</td>
+</tr>
+<tr>
+<td>Firewall records suggest attempted connections from the affected host</td>
+<td>Compare the observed path with the approved flow matrix. Determine whether it was permitted, denied or not logged; do not infer successful lateral movement from an attempt</td>
+<td>Source and destination, action, rule, timestamp and follow-up query</td>
+</tr>
+<tr>
+<td>A supplier support account appears in the investigation</td>
+<td>Review session and access records, restrict exposed access where justified and request scoped supplier evidence through the supplier owner</td>
+<td>Access decision, supplier request, contractual dependency and outstanding questions</td>
+</tr>
+<tr>
+<td>The business owner requests an immediate return to service</td>
+<td>Explain the remaining uncertainty and require clean-baseline, credential, data-integrity and monitoring checks before reconnection</td>
+<td>Recovery checklist, validation evidence and recorded acceptance or rejection</td>
+</tr>
+<tr>
+<td>A review identifies that a critical log source was absent</td>
+<td>Open an improvement action and update the risk assessment. Preserve the limitation in the investigation conclusion</td>
+<td>Gap, owner, proposed due date, closure evidence and retest requirement</td>
+</tr>
+</tbody>
+</table>
+<p>If corroboration is absent, the analyst records uncertainty and continues proportionate investigation. The walkthrough must include that branch so that a participant is not rewarded merely for declaring every alert a confirmed incident.</p>
+<h2 id="evaluation-method">Evaluation method<a class="headerlink" href="#evaluation-method" title="Permanent link">&para;</a></h2>
+<p>The exercise facilitator should record actual prompts, decisions and timestamps separately from the expected answers. A self-review is useful practice but is not stakeholder feedback. For a facilitated session, record who participated, the role they played, the recommendations discussed and any resulting changes to the plan.</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Definition</th>
+<th>How to collect it</th>
+<th>Current result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Classification decision time</td>
+<td>Time from delivery of the first incident prompt to a recorded severity and activation decision</td>
+<td>Facilitator prompt timestamp and decision-log timestamp</td>
+<td>Not measured</td>
+</tr>
+<tr>
+<td>Containment decision time</td>
+<td>Time from delivery of corroborating compromise evidence to an authorized containment decision</td>
+<td>Inject and authorization records</td>
+<td>Not measured</td>
+</tr>
+<tr>
+<td>Evidence completeness</td>
+<td>Completed applicable required fields divided by total applicable required fields</td>
+<td>Check the evidence register against its defined schema</td>
+<td>Not measured</td>
+</tr>
+<tr>
+<td>Decision traceability</td>
+<td>Decisions with an evidence reference and rationale divided by all material decisions</td>
+<td>Review the incident decision log</td>
+<td>Not measured</td>
+</tr>
+<tr>
+<td>Communication accuracy</td>
+<td>Supported factual statements divided by all factual statements in the situation report</td>
+<td>Compare each statement with the scenario evidence available at that stage</td>
+<td>Not measured</td>
+</tr>
+<tr>
+<td>Recovery readiness</td>
+<td>Required recovery gates addressed with evidence or a documented blocker divided by all required gates</td>
+<td>Review recovery checklist and acceptance decision</td>
+<td>Not measured</td>
+</tr>
+<tr>
+<td>Improvement closure</td>
+<td>Actions with accepted closure evidence divided by actions due for review</td>
+<td>Review action register, evidence and reviewer disposition</td>
+<td>Not measured</td>
+</tr>
+</tbody>
+</table>
+<p>Where the denominator is zero, report the metric as not applicable rather than 100%. Timing in a tabletop measures decision handling under the exercise conditions; it is not production detection, containment or recovery performance. No percentage improvement should be claimed without a comparable baseline, a repeated exercise and a clear description of the measurement conditions.</p>
+<h2 id="review-and-improvement-register">Review and improvement register<a class="headerlink" href="#review-and-improvement-register" title="Permanent link">&para;</a></h2>
+<p>The actions below are proposed work, not findings from a completed exercise. Due dates should be agreed when ownership and resources are confirmed.</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Reason</th>
+<th>Accountable role</th>
+<th>Evidence required to close</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Confirm business service and recovery priorities</td>
+<td>Technical recovery must follow business needs</td>
+<td>Business service owner</td>
+<td>Reviewed impact assessment and approved recovery objectives</td>
+<td>Proposed</td>
+</tr>
+<tr>
+<td>Establish the isolated four-VM environment</td>
+<td>Technical controls cannot be evaluated from documentation alone</td>
+<td>Lab administrator</td>
+<td>VM inventory, versions, network isolation and baseline snapshots</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>Execute paired allowed and denied network tests</td>
+<td>A blocked path alone does not identify the cause</td>
+<td>Network security owner</td>
+<td>Rule export, positive/negative results and correlated logs</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>Exercise the incident communication and recovery gates</td>
+<td>Demonstrate decisions under incomplete information</td>
+<td>Incident manager</td>
+<td>Facilitator notes, situation report, decision log and reviewed actions</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>Review the supplier evidence packet and decision</td>
+<td>Demonstrate third-party risk reasoning and accountability</td>
+<td>Supplier risk owner</td>
+<td>Scoped assessment, evidence limitations, recommendation and reviewer decision</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>Validate monitoring and backup retrieval</td>
+<td>Alerts and backups need retrievable, usable evidence</td>
+<td>Security operations and resilience owners</td>
+<td>Source-to-alert trace and isolated restore evidence</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-to-demonstrate-the-work">How to demonstrate the work<a class="headerlink" href="#how-to-demonstrate-the-work" title="Permanent link">&para;</a></h2>
+<p>A review can follow one complete thread: choose a business requirement, explain the associated risk, justify the control, show its proposed implementation, walk through a failure scenario and identify the evidence needed to accept or reject the control. Close with the business recommendation and its limitations. This demonstrates technical reasoning and risk communication without presenting a planned lab as deployed infrastructure.</p>
+<p>The full report contains the detailed policies, architecture and technical procedures. The <a href="../07-Policies-and-Standards/incident-response-plan.html">incident response plan</a> provides the operational decision process. The <a href="tabletop-exercise.html">tabletop exercise</a> defines how to test that process. The separate <a href="https://github.com/dedsec-terminal/Vendor-Assurance-Desk">Vendor Assurance Desk</a> implements a synthetic supplier evidence workflow; its automated fixture results do not validate the Apex VM controls.</p></article><nav class="navrow"><a href="tabletop-exercise.html">← Incident Response Tabletop Exercise</a><a href="../10-Evidence/evidence-summary.html">Evidence Register →</a></nav><p class="footer-note">Chapter 28 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

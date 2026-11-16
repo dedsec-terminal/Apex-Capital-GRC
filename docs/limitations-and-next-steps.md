@@ -2,7 +2,7 @@
 
 ## What this edition can support
 
-It can support a technical discussion of a segmented four-VM lab design, risk-based control planning, selected framework cross-references, and a structured validation approach. It demonstrates how design intent can be translated into risks, test objectives and evidence requests.
+It supports a technical discussion of a segmented four-VM lab design, risk-based control planning, selected framework cross-references, incident response decisions and structured validation. The complete incident response plan and proposed tabletop exercise connect design intent to containment, evidence preservation, communication, recovery and improvement tracking.
 
 ## What it cannot support yet
 
@@ -14,11 +14,11 @@ It can support a technical discussion of a segmented four-VM lab design, risk-ba
 
 ## Small, reviewable next steps
 
-1. Reconcile the firewall interfaces, rule order, NAT and management-source scope in one approved flow matrix.
+1. Review the proposed four-interface flow matrix, rule order, NAT and management-source scope, then provision the isolated lab.
 2. Execute T-01 in a private lab, capture sanitized configuration plus paired allowed/blocked path evidence, and record software versions.
 3. Execute T-05 with a synthetic event and verify host attribution, timestamp, alert mapping and retention.
 4. Complete T-07 with a fictional supplier packet: inventory entry, tiering rationale, evidence checklist, gap decision, remediation owner and reassessment date.
-5. Have a reviewer challenge the risk scores and mappings; record changes and unresolved assumptions.
+5. Have a reviewer challenge the risk scores and mappings, and conduct the proposed tabletop; record actual participant decisions, feedback, changes and unresolved assumptions.
 6. Publish only sanitized evidence artifacts with reproducible steps and explicit test status.
 
-For a focused TPRM extension, create a small supplier assessment register with fields for service, data/access, criticality, evidence received, control gap, decision, exception owner, contract action, review date and exit trigger. Populate it with clearly labeled synthetic vendors before discussing operational experience.
+The separate [Vendor Assurance Desk](https://github.com/dedsec-terminal/Vendor-Assurance-Desk) implements a synthetic supplier assessment and retest workflow with evidence checks and measured fixture results. Its software tests do not execute the Apex VM controls or establish real vendor assurance. A human review and onboarding decision remain separate requirements.

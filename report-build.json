@@ -1,0 +1,15 @@
+{
+  "built_at_utc": "2026-11-16T15:55:05.836688+00:00",
+  "manifest": "report-manifest.json",
+  "source_count": 29,
+  "rendered_chapters": 32,
+  "sections": 13,
+  "markdown_version": "3.11.2",
+  "search_entries": 32,
+  "generated_pages": 34,
+  "broken_html_links": 0,
+  "compiled_markdown_links_checked": 54,
+  "broken_markdown_links": 0,
+  "complete_markdown_sha256": "70f470c388e6147b60a4c4cccb469962ad2291bdfb30dd4276d9455a2015c788",
+  "validation_scope": "Manifest chapter count and generated local HTML href/src targets; no application or VM security tests."
+}

@@ -1,0 +1,2 @@
+# Static report reader build dependency.
+Markdown==3.11.2

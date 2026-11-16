@@ -1,0 +1,571 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Detailed Log Examples | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="../08-Technical-Controls/pfsense-network.html">pfSense Network Controls</a><a class="chapter-link" href="../08-Technical-Controls/ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="../08-Technical-Controls/wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="../08-Technical-Controls/windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="evidence-summary.html">Evidence Register</a><a class="chapter-link active" href="detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Evidence</div><article class="article"><h1>Detailed Log Examples</h1><p class="crumb">Evidence · <a class="raw-link" href="../../../10-Evidence/detailed-logs.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> illustrative placeholders; not observed logs</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#1-overview">1. Overview</a></li>
+<li><a href="#2-windows-event-logs-vm-1">2. Windows Event Logs (VM 1)</a><ul>
+<li><a href="#21-security-log-failed-logon-event-id-4625">2.1 Security Log - Failed Logon (Event ID 4625)</a></li>
+<li><a href="#22-security-log-successful-logon-event-id-4624">2.2 Security Log - Successful Logon (Event ID 4624)</a></li>
+<li><a href="#23-security-log-account-lockout-event-id-4740">2.3 Security Log - Account Lockout (Event ID 4740)</a></li>
+<li><a href="#24-account-lockout-timeline">2.4 Account Lockout Timeline</a></li>
+<li><a href="#25-defender-malware-detection-event-id-1116">2.5 Defender Malware Detection (Event ID 1116)</a></li>
+<li><a href="#26-controlled-folder-access-block-event-id-1123">2.6 Controlled Folder Access Block (Event ID 1123)</a></li>
+<li><a href="#27-audit-policy-change-event-id-4719">2.7 Audit Policy Change (Event ID 4719)</a></li>
+</ul>
+</li>
+<li><a href="#3-ubuntu-system-logs-vm-2">3. Ubuntu System Logs (VM 2)</a><ul>
+<li><a href="#31-ssh-failed-login-attempt-authlog">3.1 SSH Failed Login Attempt - auth.log</a></li>
+<li><a href="#32-ssh-successful-login-authlog">3.2 SSH Successful Login - auth.log</a></li>
+<li><a href="#33-ufw-firewall-blocks-ufwlog">3.3 UFW Firewall Blocks - ufw.log</a></li>
+<li><a href="#34-nginx-access-log-accesslog">3.4 Nginx Access Log - access.log</a></li>
+<li><a href="#35-nginx-error-log-errorlog">3.5 Nginx Error Log - error.log</a></li>
+<li><a href="#36-fail2ban-log-fail2banlog">3.6 fail2ban Log - fail2ban.log</a></li>
+<li><a href="#37-auditd-log-auditlog">3.7 Auditd Log - audit.log</a></li>
+</ul>
+</li>
+<li><a href="#4-pfsense-firewall-logs-vm-3">4. pfSense Firewall Logs (VM 3)</a><ul>
+<li><a href="#41-firewall-block-log-filterlog">4.1 Firewall Block Log - filter.log</a></li>
+<li><a href="#42-default-deny-log-filterlog">4.2 Default Deny Log - filter.log</a></li>
+<li><a href="#43-syslog-forwarding-status">4.3 Syslog Forwarding Status</a></li>
+</ul>
+</li>
+<li><a href="#5-wazuh-logs-vm-4">5. Wazuh Logs (VM 4)</a><ul>
+<li><a href="#51-wazuh-agent-connection-log-osseclog">5.1 Wazuh Agent Connection Log - ossec.log</a></li>
+<li><a href="#52-wazuh-alert-failed-login">5.2 Wazuh Alert - Failed Login</a></li>
+<li><a href="#53-wazuh-alert-eicar-malware">5.3 Wazuh Alert - EICAR Malware</a></li>
+<li><a href="#54-wazuh-alert-pfsense-block">5.4 Wazuh Alert - pfSense Block</a></li>
+<li><a href="#55-wazuh-alert-ssh-failed-login">5.5 Wazuh Alert - SSH Failed Login</a></li>
+<li><a href="#56-wazuh-alert-brute-force-detection">5.6 Wazuh Alert - Brute Force Detection</a></li>
+</ul>
+</li>
+<li><a href="#6-log-retention-summary">6. Log Retention Summary</a></li>
+<li><a href="#7-log-analysis-findings">7. Log Analysis Findings</a></li>
+<li><a href="#8-related-documents">8. Related Documents</a></li>
+<li><a href="#9-version-history">9. Version History</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Illustrative log examples:</strong> The following source log blocks are examples from the original write-up, not collected or validated telemetry. Usernames/emails are replaced with placeholders. Do not treat output as observed evidence.</p>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="detailed-logs">Detailed Logs<a class="headerlink" href="#detailed-logs" title="Permanent link">&para;</a></h1>
+<p><strong>Last Updated:</strong> May 2026
+<strong>Version:</strong> 1.0
+<strong>Classification:</strong> Internal
+<strong>Owner:</strong> GRC Lead</p>
+<hr />
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
+<p>This document contains detailed log excerpts from all four virtual machines, demonstrating security event capture, audit trail integrity, and compliance evidence. Logs are retained for 90 days minimum.</p>
+<p><strong>Log Retention Policy:</strong> 90 days for security logs, 365 days for archived logs</p>
+<p><strong>Time Synchronization:</strong> All VMs synchronized via NTP (pool.ntp.org)</p>
+<hr />
+<h2 id="2-windows-event-logs-vm-1">2. Windows Event Logs (VM 1)<a class="headerlink" href="#2-windows-event-logs-vm-1" title="Permanent link">&para;</a></h2>
+<h3 id="21-security-log-failed-logon-event-id-4625">2.1 Security Log - Failed Logon (Event ID 4625)<a class="headerlink" href="#21-security-log-failed-logon-event-id-4625" title="Permanent link">&para;</a></h3>
+<p>Event ID 4625 indicates a failed logon attempt. Multiple failures trigger account lockout and Wazuh alerts.</p>
+<p><strong>Log Details:</strong>
+- Log Name: Security
+- Source: Microsoft-Windows-Security-Auditing
+- Date: 2026-05-29 14:23:15
+- Event ID: 4625
+- Task Category: Logon
+- Level: Information
+- Keywords: Audit Failure
+- Computer: Windows-Enterprise-01</p>
+<p><strong>Description:</strong>
+Account failed to log on.</p>
+<p><strong>Subject:</strong>
+- Security ID: S-1-0-0
+- Account Name: -
+- Account Domain: -
+- Logon ID: 0x0</p>
+<p><strong>Logon Type:</strong> 3 (Network)</p>
+<p><strong>Account For Which Logon Failed:</strong>
+- Account Name: lab-user
+- Account Domain: APEX</p>
+<p><strong>Failure Information:</strong>
+- Failure Reason: Unknown user name or bad password
+- Status: 0xC000006D
+- Sub Status: 0xC000006A</p>
+<p><strong>Network Information:</strong>
+- Workstation Name: UBUNTU-WEB-01
+- Source Network Address: 10.0.1.10
+- Source Port: 54321</p>
+<h3 id="22-security-log-successful-logon-event-id-4624">2.2 Security Log - Successful Logon (Event ID 4624)<a class="headerlink" href="#22-security-log-successful-logon-event-id-4624" title="Permanent link">&para;</a></h3>
+<p>Event ID 4624 indicates a successful logon from authorized sources.</p>
+<p><strong>Log Details:</strong>
+- Log Name: Security
+- Source: Microsoft-Windows-Security-Auditing
+- Date: 2026-05-29 09:15:22
+- Event ID: 4624
+- Task Category: Logon
+- Level: Information
+- Keywords: Audit Success
+- Computer: Windows-Enterprise-01</p>
+<p><strong>Description:</strong>
+Account successfully logged on.</p>
+<p><strong>Subject:</strong>
+- Security ID: APEX\lab-admin
+- Account Name: lab-admin
+- Account Domain: APEX
+- Logon ID: 0x1A2B3C</p>
+<p><strong>Logon Type:</strong> 10 (RemoteInteractive)</p>
+<p><strong>Account For Which Logon Was Successful:</strong>
+- Account Name: lab-admin
+- Account Domain: APEX</p>
+<p><strong>Network Information:</strong>
+- Workstation Name: MGMT-WORKSTATION
+- Source Network Address: 10.0.3.50
+- Source Port: 49876</p>
+<h3 id="23-security-log-account-lockout-event-id-4740">2.3 Security Log - Account Lockout (Event ID 4740)<a class="headerlink" href="#23-security-log-account-lockout-event-id-4740" title="Permanent link">&para;</a></h3>
+<p>Event ID 4740 indicates a user account was locked out after multiple failed attempts.</p>
+<p><strong>Log Details:</strong>
+- Log Name: Security
+- Source: Microsoft-Windows-Security-Auditing
+- Date: 2026-05-29 14:28:30
+- Event ID: 4740
+- Task Category: User Account Management
+- Level: Information
+- Keywords: Audit Success
+- Computer: Windows-Enterprise-01</p>
+<p><strong>Description:</strong>
+A user account was locked out.</p>
+<p><strong>Subject:</strong>
+- Security ID: APEX\lab-admin
+- Account Name: lab-admin
+- Account Domain: APEX</p>
+<p><strong>Target Account:</strong>
+- Account Name: lab-user
+- Account Domain: APEX</p>
+<p><strong>Additional Information:</strong>
+- Caller Computer: 10.0.3.10</p>
+<h3 id="24-account-lockout-timeline">2.4 Account Lockout Timeline<a class="headerlink" href="#24-account-lockout-timeline" title="Permanent link">&para;</a></h3>
+<p>Multiple Event ID 4625 leading to 4740:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>14:23:15</td>
+<td>4625</td>
+<td>Failed logon for lab-user from 10.0.1.10</td>
+</tr>
+<tr>
+<td>14:23:45</td>
+<td>4625</td>
+<td>Failed logon for lab-user from 10.0.1.10</td>
+</tr>
+<tr>
+<td>14:24:10</td>
+<td>4625</td>
+<td>Failed logon for lab-user from 10.0.1.10</td>
+</tr>
+<tr>
+<td>14:24:35</td>
+<td>4625</td>
+<td>Failed logon for lab-user from 10.0.1.10</td>
+</tr>
+<tr>
+<td>14:25:00</td>
+<td>4625</td>
+<td>Failed logon for lab-user from 10.0.1.10</td>
+</tr>
+<tr>
+<td>14:25:05</td>
+<td>4740</td>
+<td>Account lab-user locked out</td>
+</tr>
+</tbody>
+</table>
+<h3 id="25-defender-malware-detection-event-id-1116">2.5 Defender Malware Detection (Event ID 1116)<a class="headerlink" href="#25-defender-malware-detection-event-id-1116" title="Permanent link">&para;</a></h3>
+<p>Event ID 1116 indicates malware detection (including EICAR test file).</p>
+<p><strong>Log Details:</strong>
+- Log Name: Microsoft-Windows-Windows Defender/Operational
+- Source: Windows Defender
+- Date: 2026-05-29 15:30:45
+- Event ID: 1116
+- Level: Warning
+- Keywords: Malware Detection
+- User: SYSTEM
+- Computer: Windows-Enterprise-01</p>
+<p><strong>Description:</strong>
+Windows Defender Antivirus has detected malware.</p>
+<ul>
+<li>Name: EICAR Test File</li>
+<li>ID: 2147519003</li>
+<li>Severity: Severe</li>
+<li>Category: Test</li>
+<li>Path: C:\Users\lab-user\Downloads\eicar.com</li>
+<li>Detection Time: 2026-05-29T15:30:45.123Z</li>
+<li>Status: Removed (Quarantined)</li>
+<li>Action: Block</li>
+<li>User: APEX\lab-user</li>
+<li>Process: C:\Windows\explorer.exe</li>
+</ul>
+<h3 id="26-controlled-folder-access-block-event-id-1123">2.6 Controlled Folder Access Block (Event ID 1123)<a class="headerlink" href="#26-controlled-folder-access-block-event-id-1123" title="Permanent link">&para;</a></h3>
+<p>Event ID 1123 indicates Controlled Folder Access blocked an unauthorized application.</p>
+<p><strong>Log Details:</strong>
+- Log Name: Microsoft-Windows-Windows Defender/Operational
+- Source: Windows Defender
+- Date: 2026-05-29 16:45:20
+- Event ID: 1123
+- Level: Warning
+- Keywords: Controlled Folder Access
+- User: SYSTEM
+- Computer: Windows-Enterprise-01</p>
+<p><strong>Description:</strong>
+Controlled Folder Access blocked an application from making changes.</p>
+<ul>
+<li>Application: C:\temp\test.exe</li>
+<li>Protected Folder: C:\Users\lab-user\Documents</li>
+<li>Process Name: test.exe</li>
+<li>Block Time: 2026-05-29T16:45:20.456Z</li>
+<li>User: APEX\lab-user</li>
+</ul>
+<h3 id="27-audit-policy-change-event-id-4719">2.7 Audit Policy Change (Event ID 4719)<a class="headerlink" href="#27-audit-policy-change-event-id-4719" title="Permanent link">&para;</a></h3>
+<p>Event ID 4719 logs changes to audit policy.</p>
+<p><strong>Log Details:</strong>
+- Log Name: Security
+- Source: Microsoft-Windows-Security-Auditing
+- Date: 2026-05-28 10:00:00
+- Event ID: 4719
+- Task Category: Policy Change
+- Level: Information
+- Keywords: Audit Success
+- Computer: Windows-Enterprise-01</p>
+<p><strong>Description:</strong>
+System audit policy was changed.</p>
+<p><strong>Subject:</strong>
+- Security ID: APEX\lab-admin
+- Account Name: lab-admin
+- Account Domain: APEX</p>
+<p><strong>Audit Policy Changes:</strong>
+- Subcategory: Logon/Logoff
+- Changes: Enabled Success and Failure</p>
+<hr />
+<h2 id="3-ubuntu-system-logs-vm-2">3. Ubuntu System Logs (VM 2)<a class="headerlink" href="#3-ubuntu-system-logs-vm-2" title="Permanent link">&para;</a></h2>
+<h3 id="31-ssh-failed-login-attempt-authlog">3.1 SSH Failed Login Attempt - auth.log<a class="headerlink" href="#31-ssh-failed-login-attempt-authlog" title="Permanent link">&para;</a></h3>
+<p>Failed SSH login attempts from unauthorized source.</p>
+<p><strong>Log Entry 1:</strong> May 29 14:30:22 ubuntu-web-01 sshd[2456]: Failed password for invalid user admin from 203.0.113.50 port 12345 ssh2</p>
+<p><strong>Log Entry 2:</strong> May 29 14:30:25 ubuntu-web-01 sshd[2456]: Failed password for invalid user admin from 203.0.113.50 port 12345 ssh2</p>
+<p><strong>Log Entry 3:</strong> May 29 14:30:28 ubuntu-web-01 sshd[2456]: Failed password for invalid user admin from 203.0.113.50 port 12345 ssh2</p>
+<p><strong>Log Entry 4:</strong> May 29 14:30:31 ubuntu-web-01 sshd[2458]: Connection closed by authenticating user admin 203.0.113.50 port 12345 preauth</p>
+<h3 id="32-ssh-successful-login-authlog">3.2 SSH Successful Login - auth.log<a class="headerlink" href="#32-ssh-successful-login-authlog" title="Permanent link">&para;</a></h3>
+<p>Successful SSH login using key authentication from management subnet.</p>
+<p><strong>Log Entry 1:</strong> May 29 09:15:30 ubuntu-web-01 sshd[1892]: Accepted publickey for lab-user from 10.0.3.50 port 49876 ssh2: RSA SHA256:abc123def456</p>
+<p><strong>Log Entry 2:</strong> May 29 09:15:30 ubuntu-web-01 sshd[1892]: pam_unix(sshd:session): session opened for user lab-user by (uid=0)</p>
+<p><strong>Log Entry 3:</strong> May 29 09:15:30 ubuntu-web-01 systemd-logind[1234]: New session 42 of user lab-user.</p>
+<h3 id="33-ufw-firewall-blocks-ufwlog">3.3 UFW Firewall Blocks - ufw.log<a class="headerlink" href="#33-ufw-firewall-blocks-ufwlog" title="Permanent link">&para;</a></h3>
+<p>UFW firewall blocking unauthorized access attempts.</p>
+<p><strong>Log Entry 1:</strong> May 29 14:35:10 ubuntu-web-01 kernel: [UFW BLOCK] IN=eth0 OUT= SRC=203.0.113.50 DST=10.0.1.10 PROTO=TCP SPT=12345 DPT=22</p>
+<p><strong>Log Entry 2:</strong> May 29 14:35:11 ubuntu-web-01 kernel: [UFW BLOCK] IN=eth0 OUT= SRC=203.0.113.51 DST=10.0.1.10 PROTO=TCP SPT=12346 DPT=80</p>
+<h3 id="34-nginx-access-log-accesslog">3.4 Nginx Access Log - access.log<a class="headerlink" href="#34-nginx-access-log-accesslog" title="Permanent link">&para;</a></h3>
+<p>Web server access logs showing HTTP/HTTPS requests.</p>
+<p><strong>Log Entry 1:</strong> 10.0.2.10 - - [29/May/2026:10:15:30 +0000] GET /index.html HTTP/1.1 200 2456</p>
+<p><strong>Log Entry 2:</strong> 203.0.113.50 - - [29/May/2026:14:30:22 +0000] GET /admin HTTP/1.1 404 153</p>
+<p><strong>Log Entry 3:</strong> 10.0.3.50 - - [29/May/2026:15:00:00 +0000] GET /api/health HTTP/1.1 200 45</p>
+<h3 id="35-nginx-error-log-errorlog">3.5 Nginx Error Log - error.log<a class="headerlink" href="#35-nginx-error-log-errorlog" title="Permanent link">&para;</a></h3>
+<p>Web server errors.</p>
+<p><strong>Log Entry:</strong> 2026/05/29 14:30:22 [error] 1893#1893: *12345 /var/www/html/admin/index.html is not found (2: No such file or directory), client: 203.0.113.50</p>
+<h3 id="36-fail2ban-log-fail2banlog">3.6 fail2ban Log - fail2ban.log<a class="headerlink" href="#36-fail2ban-log-fail2banlog" title="Permanent link">&para;</a></h3>
+<p>fail2ban banning IP addresses after multiple SSH failures.</p>
+<p><strong>Log Entry 1:</strong> 2026-05-29 14:30:35,123 fail2ban.filter [2459]: INFO [sshd] Found 203.0.113.50</p>
+<p><strong>Log Entry 2:</strong> 2026-05-29 14:30:35,124 fail2ban.filter [2459]: INFO [sshd] Found 203.0.113.50</p>
+<p><strong>Log Entry 3:</strong> 2026-05-29 14:30:35,124 fail2ban.filter [2459]: INFO [sshd] Found 203.0.113.50</p>
+<p><strong>Log Entry 4:</strong> 2026-05-29 14:30:36,456 fail2ban.actions [2459]: NOTICE [sshd] Ban 203.0.113.50</p>
+<h3 id="37-auditd-log-auditlog">3.7 Auditd Log - audit.log<a class="headerlink" href="#37-auditd-log-auditlog" title="Permanent link">&para;</a></h3>
+<p>Auditd monitoring SSH configuration changes.</p>
+<p><strong>Log Entry:</strong> type=SYSCALL msg=audit(1748548800.123:456): arch=c000003e syscall=257 success=yes exit=3 a0=ffffff9c items=1 ppid=1892 pid=2458 auid=1000 uid=0 gid=0 comm=nano exe=/usr/bin/nano key=ssh_changes</p>
+<hr />
+<h2 id="4-pfsense-firewall-logs-vm-3">4. pfSense Firewall Logs (VM 3)<a class="headerlink" href="#4-pfsense-firewall-logs-vm-3" title="Permanent link">&para;</a></h2>
+<h3 id="41-firewall-block-log-filterlog">4.1 Firewall Block Log - filter.log<a class="headerlink" href="#41-firewall-block-log-filterlog" title="Permanent link">&para;</a></h3>
+<p>pfSense blocking traffic from DMZ (Ubuntu) to Internal (Windows).</p>
+<p><strong>Log Entry 1:</strong> May 29 14:35:22 pfsense filterlog: 5,,,16777216,em1,match,block,in,4,0x0,,64,0,0,DF,6,tcp,60,10.0.1.10,10.0.2.10,54321,445,0,S</p>
+<p><strong>Log Entry 2:</strong> May 29 14:35:23 pfsense filterlog: 5,,,16777216,em1,match,block,in,4,0x0,,64,0,0,DF,6,tcp,60,10.0.1.10,10.0.2.10,54322,3389,0,S</p>
+<h3 id="42-default-deny-log-filterlog">4.2 Default Deny Log - filter.log<a class="headerlink" href="#42-default-deny-log-filterlog" title="Permanent link">&para;</a></h3>
+<p>pfSense default deny rule blocking unexpected traffic.</p>
+<p><strong>Log Entry:</strong> May 29 14:40:15 pfsense filterlog: 5,,,16777216,em0,match,block,in,4,0x0,,64,0,0,DF,6,tcp,60,203.0.113.50,10.0.1.10,54345,443,0,S</p>
+<h3 id="43-syslog-forwarding-status">4.3 Syslog Forwarding Status<a class="headerlink" href="#43-syslog-forwarding-status" title="Permanent link">&para;</a></h3>
+<p>pfSense syslog forwarding configuration to Wazuh.</p>
+<ul>
+<li>Remote syslog server: 10.0.3.10</li>
+<li>Port: 514</li>
+<li>Protocol: UDP</li>
+<li>Facilities: All except VPN</li>
+</ul>
+<hr />
+<h2 id="5-wazuh-logs-vm-4">5. Wazuh Logs (VM 4)<a class="headerlink" href="#5-wazuh-logs-vm-4" title="Permanent link">&para;</a></h2>
+<h3 id="51-wazuh-agent-connection-log-osseclog">5.1 Wazuh Agent Connection Log - ossec.log<a class="headerlink" href="#51-wazuh-agent-connection-log-osseclog" title="Permanent link">&para;</a></h3>
+<p>Wazuh agent connection events.</p>
+<p><strong>Log Entry 1:</strong> 2026-05-29 09:00:00 wazuh-agent[1234]: INFO: Connected to server (10.0.3.10:1514)</p>
+<p><strong>Log Entry 2:</strong> 2026-05-29 09:00:01 wazuh-agent[1234]: INFO: Agent started successfully</p>
+<h3 id="52-wazuh-alert-failed-login">5.2 Wazuh Alert - Failed Login<a class="headerlink" href="#52-wazuh-alert-failed-login" title="Permanent link">&para;</a></h3>
+<p>Wazuh alert generated for Windows failed login (Event ID 4625).</p>
+<p><strong>Alert JSON:</strong>
+{
+  "rule": {
+    "id": 100001,
+    "level": 10,
+    "description": "Windows Failed Login Attempt"
+  },
+  "agent": {
+    "name": "windows-enterprise-01",
+    "ip": "10.0.2.10"
+  },
+  "data": {
+    "win": {
+      "eventID": 4625,
+      "account": "lab-user",
+      "sourceIp": "10.0.1.10"
+    }
+  },
+  "timestamp": "2026-05-29T14:23:15.123Z"
+}</p>
+<h3 id="53-wazuh-alert-eicar-malware">5.3 Wazuh Alert - EICAR Malware<a class="headerlink" href="#53-wazuh-alert-eicar-malware" title="Permanent link">&para;</a></h3>
+<p>Wazuh alert generated for EICAR test file detection.</p>
+<p><strong>Alert JSON:</strong>
+{
+  "rule": {
+    "id": 100010,
+    "level": 15,
+    "description": "EICAR Test File Detected - Malware Test"
+  },
+  "agent": {
+    "name": "windows-enterprise-01",
+    "ip": "10.0.2.10"
+  },
+  "data": {
+    "threat": "EICAR Test File",
+    "action": "blocked"
+  },
+  "timestamp": "2026-05-29T15:30:45.123Z"
+}</p>
+<h3 id="54-wazuh-alert-pfsense-block">5.4 Wazuh Alert - pfSense Block<a class="headerlink" href="#54-wazuh-alert-pfsense-block" title="Permanent link">&para;</a></h3>
+<p>Wazuh alert generated for pfSense firewall block.</p>
+<p><strong>Alert JSON:</strong>
+{
+  "rule": {
+    "id": 100030,
+    "level": 8,
+    "description": "pfSense Firewall Block Rule Matched"
+  },
+  "agent": {
+    "name": "pfsense-01",
+    "ip": "10.0.3.1"
+  },
+  "data": {
+    "source": "10.0.1.10",
+    "destination": "10.0.2.10",
+    "port": 445
+  },
+  "timestamp": "2026-05-29T14:35:22.456Z"
+}</p>
+<h3 id="55-wazuh-alert-ssh-failed-login">5.5 Wazuh Alert - SSH Failed Login<a class="headerlink" href="#55-wazuh-alert-ssh-failed-login" title="Permanent link">&para;</a></h3>
+<p>Wazuh alert generated for Ubuntu SSH failed login.</p>
+<p><strong>Alert JSON:</strong>
+{
+  "rule": {
+    "id": 100020,
+    "level": 10,
+    "description": "SSH Failed Login Attempt"
+  },
+  "agent": {
+    "name": "ubuntu-web-01",
+    "ip": "10.0.1.10"
+  },
+  "data": {
+    "user": "admin",
+    "sourceIp": "203.0.113.50"
+  },
+  "timestamp": "2026-05-29T14:30:22.789Z"
+}</p>
+<h3 id="56-wazuh-alert-brute-force-detection">5.6 Wazuh Alert - Brute Force Detection<a class="headerlink" href="#56-wazuh-alert-brute-force-detection" title="Permanent link">&para;</a></h3>
+<p>Wazuh alert generated for multiple SSH failures (brute force).</p>
+<p><strong>Alert JSON:</strong>
+{
+  "rule": {
+    "id": 100021,
+    "level": 12,
+    "description": "Multiple SSH Failed Logins - Brute Force"
+  },
+  "agent": {
+    "name": "ubuntu-web-01",
+    "ip": "10.0.1.10"
+  },
+  "data": {
+    "sourceIp": "203.0.113.50",
+    "failures": 5,
+    "timeframe": 300
+  },
+  "timestamp": "2026-05-29T14:30:35.456Z"
+}</p>
+<hr />
+<h2 id="6-log-retention-summary">6. Log Retention Summary<a class="headerlink" href="#6-log-retention-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>Log Type</th>
+<th>Retention Period</th>
+<th>Storage Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VM 1 (Windows)</td>
+<td>Security Event Log</td>
+<td>90 days</td>
+<td>C:\Windows\System32\winevt\Logs</td>
+</tr>
+<tr>
+<td>VM 1 (Windows)</td>
+<td>Defender Logs</td>
+<td>90 days</td>
+<td>C:\ProgramData\Microsoft\Windows Defender\Scans</td>
+</tr>
+<tr>
+<td>VM 2 (Ubuntu)</td>
+<td>Syslog / Auth.log</td>
+<td>90 days</td>
+<td>/var/log/</td>
+</tr>
+<tr>
+<td>VM 2 (Ubuntu)</td>
+<td>Nginx Logs</td>
+<td>90 days</td>
+<td>/var/log/nginx/</td>
+</tr>
+<tr>
+<td>VM 2 (Ubuntu)</td>
+<td>Auditd Logs</td>
+<td>90 days</td>
+<td>/var/log/audit/</td>
+</tr>
+<tr>
+<td>VM 3 (pfSense)</td>
+<td>Firewall Logs</td>
+<td>90 days</td>
+<td>/var/log/filter.log</td>
+</tr>
+<tr>
+<td>VM 4 (Wazuh)</td>
+<td>Alerts Index</td>
+<td>90 days</td>
+<td>/var/ossec/logs/alerts</td>
+</tr>
+<tr>
+<td>VM 4 (Wazuh)</td>
+<td>Archives Index</td>
+<td>365 days</td>
+<td>/var/ossec/logs/archives</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-log-analysis-findings">7. Log Analysis Findings<a class="headerlink" href="#7-log-analysis-findings" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Description</th>
+<th>Frequency</th>
+<th>Action Taken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Failed RDP logins from DMZ</td>
+<td>Multiple 4625 events from 10.0.1.10</td>
+<td>5 attempts</td>
+<td>Blocked by firewall; Wazuh alert generated</td>
+</tr>
+<tr>
+<td>EICAR detection</td>
+<td>Test malware blocked</td>
+<td>1 test</td>
+<td>Defender quarantined; Wazuh alert level 15</td>
+</tr>
+<tr>
+<td>SSH brute force attempt</td>
+<td>5+ failures from 203.0.113.50</td>
+<td>1 incident</td>
+<td>fail2ban banned IP; Wazuh alert generated</td>
+</tr>
+<tr>
+<td>Unauthorized web scan</td>
+<td>/admin path probe</td>
+<td>1 attempt</td>
+<td>Returned 404; no further action</td>
+</tr>
+<tr>
+<td>Unauthorized port scan</td>
+<td>22, 80, 443 probes</td>
+<td>1 attempt</td>
+<td>UFW blocked; pfSense logged</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-related-documents">8. Related Documents<a class="headerlink" href="#8-related-documents" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Testing Results</td>
+<td>09-Testing-and-Validation/results.md</td>
+</tr>
+<tr>
+<td>Test Scenarios</td>
+<td>09-Testing-and-Validation/test-scenarios.md</td>
+</tr>
+<tr>
+<td>Evidence Summary</td>
+<td>10-Evidence/evidence-summary.md</td>
+</tr>
+<tr>
+<td>Wazuh Monitoring</td>
+<td>08-Technical-Controls/wazuh-monitoring.md</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-version-history">9. Version History<a class="headerlink" href="#9-version-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>April 2026</td>
+<td>S. Singh</td>
+<td>Initial draft</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Added pfSense and Wazuh logs</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Draft learning edition</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Detailed Logs</strong></p></article><nav class="navrow"><a href="evidence-summary.html">← Evidence Register</a><a href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations →</a></nav><p class="footer-note">Chapter 30 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>

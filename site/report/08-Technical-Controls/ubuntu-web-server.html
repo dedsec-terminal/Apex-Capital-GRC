@@ -1,0 +1,1249 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Security design, risk assessment and incident response report for the fictional Apex Capital lab scenario."><title>Ubuntu Web Server Hardening | Apex Capital GRC</title><link rel="stylesheet" href="../styles.css"></head><body><header class="top"><a class="brand" href="../index.html">APEX CAPITAL · GRC REPORT</a><nav class="toplinks"><a href="../index.html">Reader</a><a href="../complete.html">Complete report</a><a href="../../../COMPLETE-REPORT.md">Download Markdown</a><button class="action" onclick="window.print()">Print</button></nav></header><div class="layout"><aside class="side"><label for="search"><strong>Search all chapters</strong></label><input class="search" id="search" type="search" placeholder="Search terms, controls, evidence…" autocomplete="off"><div id="results" class="result" aria-live="polite"></div><div class="group">Front Matter</div><a class="chapter-link" href="../00-Front-Matter/00-cover.html">Cover and Document Status</a><a class="chapter-link" href="../00-Front-Matter/02-table-of-contents.html">Table of Contents</a><a class="chapter-link" href="../00-Front-Matter/Index.html">Source Index</a><div class="group">Executive Summary</div><a class="chapter-link" href="../01-Executive-Summary/executive-summary.html">Executive Summary</a><div class="group">Company Profile</div><a class="chapter-link" href="../02-Company-Profile/company-profile.html">Scenario Profile</a><div class="group">Business Requirements</div><a class="chapter-link" href="../03-Business-Requirements/business-requirements.html">Business and Security Requirements</a><div class="group">Risk Assessment</div><a class="chapter-link" href="../04-Risk-Assessment/risk-assessment.html">Risk Assessment</a><a class="chapter-link" href="../04-Risk-Assessment/risk-heatmap.html">Risk Heatmap</a><a class="chapter-link" href="../04-Risk-Assessment/risk-register.html">Risk Register</a><div class="group">Security Architecture</div><a class="chapter-link" href="../05-Security-Architecture/architecture-overview.html">Security Architecture Overview</a><a class="chapter-link" href="../05-Security-Architecture/network-architecture.html">Network Architecture</a><div class="group">Framework Mapping</div><a class="chapter-link" href="../06-Framework-Mapping/iso27001-mapping.html">ISO/IEC 27001 Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/nist-csf-mapping.html">NIST CSF Mapping</a><a class="chapter-link" href="../06-Framework-Mapping/pci-inspired-mapping.html">Historical PCI DSS 3.2.1-Inspired Learning Appendix</a><div class="group">Policies and Standards</div><a class="chapter-link" href="../07-Policies-and-Standards/acceptable-use-policy.html">Acceptable Use Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/access-control-policy.html">Access Control Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/data-classification-policy.html">Data Classification Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-policy.html">Incident Response Policy</a><a class="chapter-link" href="../07-Policies-and-Standards/incident-response-plan.html">Cyber Incident Response Plan</a><a class="chapter-link" href="../07-Policies-and-Standards/password-policy.html">Authentication and Password Policy</a><div class="group">Technical Controls</div><a class="chapter-link" href="pfsense-network.html">pfSense Network Controls</a><a class="chapter-link active" href="ubuntu-web-server.html">Ubuntu Web Server Hardening</a><a class="chapter-link" href="wazuh-monitoring.html">Wazuh Monitoring</a><a class="chapter-link" href="windows-hardening.html">Windows Hardening</a><div class="group">Testing and Validation</div><a class="chapter-link" href="../09-Testing-and-Validation/results.html">Test Results Register</a><a class="chapter-link" href="../09-Testing-and-Validation/test-scenarios.html">Test Scenarios</a><a class="chapter-link" href="../09-Testing-and-Validation/tabletop-exercise.html">Incident Response Tabletop Exercise</a><a class="chapter-link" href="../09-Testing-and-Validation/capability-evaluation.html">Security Capability Evaluation</a><div class="group">Evidence</div><a class="chapter-link" href="../10-Evidence/evidence-summary.html">Evidence Register</a><a class="chapter-link" href="../10-Evidence/detailed-logs.html">Detailed Log Examples</a><div class="group">Residual Risk</div><a class="chapter-link" href="../11-Residual-Risk/residual-risk-recommendations.html">Proposed Risk Treatment and Recommendations</a><div class="group">Appendices</div><a class="chapter-link" href="../12-Appendices/references.html">References</a></aside><main class="main"><div class="status"><strong>Publication status:</strong> This is a designed assessment and synthetic evidence pack. VM validation scenarios are planned; no VM execution results are claimed.</div><div class="crumb"><a href="../index.html">Full report reader</a> / Technical Controls</div><article class="article"><h1>Ubuntu Web Server Hardening</h1><p class="crumb">Technical Controls · <a class="raw-link" href="../../../08-Technical-Controls/ubuntu-web-server.md">View source Markdown</a></p><p class="crumb"><strong>Chapter status:</strong> proposed configuration and tests</p><details class="toc" open><summary>On this page</summary><div class="toc">
+<ul>
+<li><a href="#1-framework-references">1. Framework References</a></li>
+<li><a href="#2-purpose">2. Purpose</a></li>
+<li><a href="#3-system-information">3. System Information</a></li>
+<li><a href="#4-os-hardening">4. OS Hardening</a><ul>
+<li><a href="#41-minimal-installation">4.1 Minimal Installation</a></li>
+<li><a href="#42-automatic-security-updates">4.2 Automatic Security Updates</a></li>
+<li><a href="#43-kernel-hardening-sysctl">4.3 Kernel Hardening (sysctl)</a></li>
+</ul>
+</li>
+<li><a href="#5-ssh-security-hardening">5. SSH Security Hardening</a><ul>
+<li><a href="#51-ssh-configuration-etcsshsshd_config">5.1 SSH Configuration (/etc/ssh/sshd_config)</a></li>
+<li><a href="#52-ssh-key-authentication-setup">5.2 SSH Key Authentication Setup</a></li>
+<li><a href="#53-fail2ban-installation">5.3 fail2ban Installation</a></li>
+</ul>
+</li>
+<li><a href="#6-firewall-configuration-ufw">6. Firewall Configuration (UFW)</a><ul>
+<li><a href="#61-ufw-rules">6.1 UFW Rules</a></li>
+</ul>
+</li>
+<li><a href="#7-web-server-nginx-hardening">7. Web Server (Nginx) Hardening</a><ul>
+<li><a href="#71-nginx-security-headers">7.1 Nginx Security Headers</a></li>
+<li><a href="#72-tlsssl-configuration">7.2 TLS/SSL Configuration</a></li>
+<li><a href="#73-nginx-hardening-settings">7.3 Nginx Hardening Settings</a></li>
+<li><a href="#74-verify-nginx-configuration">7.4 Verify Nginx Configuration</a></li>
+</ul>
+</li>
+<li><a href="#8-web-application-security">8. Web Application Security</a><ul>
+<li><a href="#81-directory-structure">8.1 Directory Structure</a></li>
+<li><a href="#82-disable-directory-listing">8.2 Disable Directory Listing</a></li>
+<li><a href="#83-rate-limiting">8.3 Rate Limiting</a></li>
+</ul>
+</li>
+<li><a href="#9-logging-and-monitoring">9. Logging and Monitoring</a><ul>
+<li><a href="#91-nginx-logging-configuration">9.1 Nginx Logging Configuration</a></li>
+<li><a href="#92-wazuh-agent-installation">9.2 Wazuh Agent Installation</a></li>
+<li><a href="#93-auditd-configuration">9.3 Auditd Configuration</a></li>
+</ul>
+</li>
+<li><a href="#10-system-monitoring-commands">10. System Monitoring Commands</a></li>
+<li><a href="#11-hardening-checklist">11. Hardening Checklist</a></li>
+<li><a href="#12-evidence-collection">12. Evidence Collection</a></li>
+<li><a href="#13-security-validation-tests">13. Security Validation Tests</a><ul>
+<li><a href="#131-ssh-security-test">13.1 SSH Security Test</a></li>
+<li><a href="#132-firewall-test">13.2 Firewall Test</a></li>
+<li><a href="#133-web-server-test">13.3 Web Server Test</a></li>
+</ul>
+</li>
+<li><a href="#14-troubleshooting-commands">14. Troubleshooting Commands</a></li>
+<li><a href="#15-maintenance-procedures">15. Maintenance Procedures</a><ul>
+<li><a href="#151-daily-tasks">15.1 Daily Tasks</a></li>
+<li><a href="#152-weekly-tasks">15.2 Weekly Tasks</a></li>
+<li><a href="#153-monthly-tasks">15.3 Monthly Tasks</a></li>
+</ul>
+</li>
+<li><a href="#16-related-documents">16. Related Documents</a></li>
+<li><a href="#17-version-history">17. Version History</a></li>
+</ul>
+</div>
+</details><blockquote>
+<p><strong>Publication status:</strong> Fictional public lab scenario. This chapter preserves source material for completeness. Configurations and test procedures are proposed; results are expected outcomes, not executed evidence. No real client, engagement, approval, compliance opinion or control effectiveness is asserted. Organization, workforce, data and regulatory details are hypothetical planning assumptions.</p>
+</blockquote>
+<h1 id="ubuntu-web-server-hardening">Ubuntu Web Server Hardening<a class="headerlink" href="#ubuntu-web-server-hardening" title="Permanent link">&para;</a></h1>
+<p><strong>Last Updated:</strong> May 2026
+<strong>Version:</strong> 1.0
+<strong>VM Role:</strong> Public-facing customer investment portal (DMZ Asset)
+<strong>Classification:</strong> Internal
+<strong>IP Address:</strong> 10.0.1.10
+<strong>Subnet:</strong> 10.0.1.0/24 (DMZ)</p>
+<hr />
+<h2 id="1-framework-references">1. Framework References<a class="headerlink" href="#1-framework-references" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Control Reference</th>
+<th>Control Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>PR.AA-03</td>
+<td>User, device, and other asset authentication</td>
+</tr>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>DE.CM-09</td>
+<td>Malware protection is Proposed</td>
+</tr>
+<tr>
+<td>NIST CSF 2.0</td>
+<td>PR.DS-2</td>
+<td>Data-in-transit is protected</td>
+</tr>
+<tr>
+<td>ISO 27001:2022</td>
+<td>A.8.8</td>
+<td>Management of technical vulnerabilities</td>
+</tr>
+<tr>
+<td>ISO 27001:2022</td>
+<td>A.8.20</td>
+<td>Networks security</td>
+</tr>
+<tr>
+<td>Historical PCI DSS 3.2.1-inspired reference (not current compliance)</td>
+<td>Requirement 2</td>
+<td>Do not use vendor-supplied defaults</td>
+</tr>
+<tr>
+<td>Historical PCI DSS 3.2.1-inspired reference (not current compliance)</td>
+<td>Requirement 4</td>
+<td>Encrypt transmission of cardholder data</td>
+</tr>
+</tbody>
+</table>
+<p><strong>External References:</strong>
+- CIS Ubuntu Linux 22.04 LTS Benchmark
+- Ubuntu Security Documentation: https://ubuntu.com/security
+- OWASP Web Security Guidelines</p>
+<hr />
+<h2 id="2-purpose">2. Purpose<a class="headerlink" href="#2-purpose" title="Permanent link">&para;</a></h2>
+<p>The Ubuntu web server hosts Apex Capital's customer investment portal, a public-facing asset accessible from the internet. Maximum hardening is applied to reduce attack surface, prevent unauthorized access, and protect client data.</p>
+<p><strong>Risk Addressed:</strong> R-005 (Web Server Breach), R-001 (Lateral Movement)</p>
+<p><strong>Threat Model:</strong> Public internet exposure — maximum hardening applied.</p>
+<hr />
+<h2 id="3-system-information">3. System Information<a class="headerlink" href="#3-system-information" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operating System</td>
+<td>Ubuntu 22.04.5 LTS (Jammy Jellyfish)</td>
+</tr>
+<tr>
+<td>Kernel Version</td>
+<td>5.15.0-91-generic</td>
+</tr>
+<tr>
+<td>Web Server</td>
+<td>Nginx 1.18.0</td>
+</tr>
+<tr>
+<td>SSH Version</td>
+<td>OpenSSH 8.9p1</td>
+</tr>
+<tr>
+<td>Firewall</td>
+<td>UFW (Uncomplicated Firewall)</td>
+</tr>
+<tr>
+<td>Monitoring</td>
+<td>Wazuh Agent 4.9.0</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-os-hardening">4. OS Hardening<a class="headerlink" href="#4-os-hardening" title="Permanent link">&para;</a></h2>
+<h3 id="41-minimal-installation">4.1 Minimal Installation<a class="headerlink" href="#41-minimal-installation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Command</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unnecessary packages removed</td>
+<td><code>dpkg -l telnet ftp sendmail rsh-server</code></td>
+<td>Each package shows <code>un</code> (not installed)</td>
+</tr>
+<tr>
+<td>Minimal package set</td>
+<td><code>apt list --installed</code></td>
+<td>Review inventory and record the installed-package count</td>
+</tr>
+<tr>
+<td>Remove compilers</td>
+<td><code>dpkg -l gcc g++</code></td>
+<td>Both packages show <code>un</code> (not installed)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Commands executed:</strong></p>
+<p>sudo apt remove --purge telnet ftp rsh-server sendmail
+sudo apt autoremove
+sudo apt remove --purge gcc g++</p>
+<h3 id="42-automatic-security-updates">4.2 Automatic Security Updates<a class="headerlink" href="#42-automatic-security-updates" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Configuration File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automatic updates</td>
+<td>Enabled</td>
+<td>/etc/apt/apt.conf.d/20auto-upgrades</td>
+</tr>
+<tr>
+<td>Security updates only</td>
+<td>Yes</td>
+<td>/etc/apt/apt.conf.d/50unattended-upgrades</td>
+</tr>
+<tr>
+<td>Update frequency</td>
+<td>Daily</td>
+<td>Same file</td>
+</tr>
+<tr>
+<td>Reboot after updates</td>
+<td>Never (manual)</td>
+<td>Same file</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configuration (/etc/apt/apt.conf.d/20auto-upgrades):</strong></p>
+<p>APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Download-Upgradeable-Packages "1";
+APT::Periodic::AutocleanInterval "7";
+APT::Periodic::Unattended-Upgrade "1";</p>
+<p><strong>Verification:</strong></p>
+<p>sudo systemctl status unattended-upgrades
+sudo cat /etc/apt/apt.conf.d/20auto-upgrades</p>
+<h3 id="43-kernel-hardening-sysctl">4.3 Kernel Hardening (sysctl)<a class="headerlink" href="#43-kernel-hardening-sysctl" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Purpose</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>net.ipv4.tcp_syncookies</td>
+<td>1</td>
+<td>Prevent SYN flood attacks</td>
+<td>/etc/sysctl.conf</td>
+</tr>
+<tr>
+<td>net.ipv4.conf.all.rp_filter</td>
+<td>1</td>
+<td>Source address validation</td>
+<td>/etc/sysctl.conf</td>
+</tr>
+<tr>
+<td>net.ipv4.conf.default.rp_filter</td>
+<td>1</td>
+<td>Source address validation</td>
+<td>/etc/sysctl.conf</td>
+</tr>
+<tr>
+<td>net.ipv4.tcp_timestamps</td>
+<td>0</td>
+<td>Reduce information disclosure</td>
+<td>/etc/sysctl.conf</td>
+</tr>
+<tr>
+<td>net.ipv6.conf.all.disable_ipv6</td>
+<td>1</td>
+<td>Disable IPv6 if not used</td>
+<td>/etc/sysctl.conf</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Apply settings:</strong></p>
+<p>sudo sysctl -p</p>
+<hr />
+<h2 id="5-ssh-security-hardening">5. SSH Security Hardening<a class="headerlink" href="#5-ssh-security-hardening" title="Permanent link">&para;</a></h2>
+<h3 id="51-ssh-configuration-etcsshsshd_config">5.1 SSH Configuration (/etc/ssh/sshd_config)<a class="headerlink" href="#51-ssh-configuration-etcsshsshd_config" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PermitRootLogin</td>
+<td>no</td>
+<td>Prevent root login</td>
+</tr>
+<tr>
+<td>PasswordAuthentication</td>
+<td>no</td>
+<td>Key-based authentication only</td>
+</tr>
+<tr>
+<td>PubkeyAuthentication</td>
+<td>yes</td>
+<td>Enable SSH keys</td>
+</tr>
+<tr>
+<td>ChallengeResponseAuthentication</td>
+<td>no</td>
+<td>Disable challenge-response</td>
+</tr>
+<tr>
+<td>UsePAM</td>
+<td>yes</td>
+<td>Pluggable Authentication Modules</td>
+</tr>
+<tr>
+<td>X11Forwarding</td>
+<td>no</td>
+<td>Disable X11 forwarding</td>
+</tr>
+<tr>
+<td>MaxAuthTries</td>
+<td>3</td>
+<td>Limit authentication attempts</td>
+</tr>
+<tr>
+<td>ClientAliveInterval</td>
+<td>300</td>
+<td>Disconnect idle sessions</td>
+</tr>
+<tr>
+<td>ClientAliveCountMax</td>
+<td>2</td>
+<td>Maximum keepalive messages</td>
+</tr>
+<tr>
+<td>AllowUsers</td>
+<td>lab-user</td>
+<td>Only allow specific user</td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>2</td>
+<td>Use SSH protocol 2 only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configuration file:</strong></p>
+<p>sudo nano /etc/ssh/sshd_config</p>
+<h1 id="add-or-modify-these-lines">Add or modify these lines:<a class="headerlink" href="#add-or-modify-these-lines" title="Permanent link">&para;</a></h1>
+<p>PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+ChallengeResponseAuthentication no
+MaxAuthTries 3
+ClientAliveInterval 300
+ClientAliveCountMax 2
+AllowUsers lab-user
+Protocol 2</p>
+<p><strong>Restart SSH service:</strong></p>
+<p>sudo systemctl restart sshd</p>
+<h3 id="52-ssh-key-authentication-setup">5.2 SSH Key Authentication Setup<a class="headerlink" href="#52-ssh-key-authentication-setup" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>ssh-keygen -t rsa -b 4096</td>
+<td>Generate SSH key pair (on client)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>ssh-copy-id lab-user@10.0.1.10</td>
+<td>Copy public key to server</td>
+</tr>
+<tr>
+<td>3</td>
+<td>ssh lab-user@10.0.1.10</td>
+<td>Test key-based login</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-fail2ban-installation">5.3 fail2ban Installation<a class="headerlink" href="#53-fail2ban-installation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>sudo apt install fail2ban -y</td>
+</tr>
+<tr>
+<td>2</td>
+<td>sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local</td>
+</tr>
+<tr>
+<td>3</td>
+<td>sudo systemctl enable fail2ban</td>
+</tr>
+<tr>
+<td>4</td>
+<td>sudo systemctl start fail2ban</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verification:</strong></p>
+<p>sudo fail2ban-client status sshd</p>
+<hr />
+<h2 id="6-firewall-configuration-ufw">6. Firewall Configuration (UFW)<a class="headerlink" href="#6-firewall-configuration-ufw" title="Permanent link">&para;</a></h2>
+<h3 id="61-ufw-rules">6.1 UFW Rules<a class="headerlink" href="#61-ufw-rules" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default deny incoming</td>
+<td>sudo ufw default deny incoming</td>
+<td>Block all by default</td>
+</tr>
+<tr>
+<td>Default allow outgoing</td>
+<td>sudo ufw default allow outgoing</td>
+<td>Allow outbound traffic</td>
+</tr>
+<tr>
+<td>Allow HTTP</td>
+<td>sudo ufw allow 80/tcp</td>
+<td>Web traffic</td>
+</tr>
+<tr>
+<td>Allow HTTPS</td>
+<td>sudo ufw allow 443/tcp</td>
+<td>Encrypted web traffic</td>
+</tr>
+<tr>
+<td>Allow SSH from management</td>
+<td>sudo ufw allow from 10.0.3.0/24 to any port 22</td>
+<td>Management only</td>
+</tr>
+<tr>
+<td>Deny all other</td>
+<td>Implicit</td>
+<td>Default deny</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Complete UFW setup:</strong></p>
+<p>sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow from 10.0.3.0/24 to any port 22
+sudo ufw enable</p>
+<p><strong>Verify UFW status:</strong></p>
+<p>sudo ufw status verbose</p>
+<p><strong>Expected output:</strong></p>
+<p>Status: active
+Default: deny (incoming), allow (outgoing), disabled (routed)
+To                         Action      From
+--                         ------      ----
+80/tcp                     ALLOW IN    Anywhere
+443/tcp                    ALLOW IN    Anywhere
+22/tcp                     ALLOW IN    10.0.3.0/24</p>
+<hr />
+<h2 id="7-web-server-nginx-hardening">7. Web Server (Nginx) Hardening<a class="headerlink" href="#7-web-server-nginx-hardening" title="Permanent link">&para;</a></h2>
+<h3 id="71-nginx-security-headers">7.1 Nginx Security Headers<a class="headerlink" href="#71-nginx-security-headers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Header</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X-Frame-Options</td>
+<td>DENY</td>
+<td>Prevent clickjacking</td>
+</tr>
+<tr>
+<td>X-Content-Type-Options</td>
+<td>nosniff</td>
+<td>Prevent MIME type sniffing</td>
+</tr>
+<tr>
+<td>X-XSS-Protection</td>
+<td>1; mode=block</td>
+<td>Cross-site scripting protection</td>
+</tr>
+<tr>
+<td>Strict-Transport-Security</td>
+<td>max-age=31536000; includeSubDomains</td>
+<td>Enforce HTTPS</td>
+</tr>
+<tr>
+<td>Content-Security-Policy</td>
+<td>default-src 'self'</td>
+<td>Restrict content sources</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configuration (/etc/nginx/sites-available/default):</strong></p>
+<p>add_header X-Frame-Options "DENY" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'" always;</p>
+<h3 id="72-tlsssl-configuration">7.2 TLS/SSL Configuration<a class="headerlink" href="#72-tlsssl-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TLS version</td>
+<td>TLS 1.2 and 1.3 only</td>
+<td>Deprecate older protocols</td>
+</tr>
+<tr>
+<td>Cipher suite</td>
+<td>Modern ciphers only</td>
+<td>Strong encryption</td>
+</tr>
+<tr>
+<td>Session tickets</td>
+<td>Disabled</td>
+<td>Prevent replay attacks</td>
+</tr>
+<tr>
+<td>OCSP stapling</td>
+<td>Enabled</td>
+<td>Certificate status checking</td>
+</tr>
+</tbody>
+</table>
+<p><strong>SSL configuration (/etc/nginx/sites-available/default):</strong></p>
+<p>ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
+ssl_prefer_server_ciphers off;
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout 1d;
+ssl_session_tickets off;
+ssl_stapling on;
+ssl_stapling_verify on;</p>
+<h3 id="73-nginx-hardening-settings">7.3 Nginx Hardening Settings<a class="headerlink" href="#73-nginx-hardening-settings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server tokens</td>
+<td>off</td>
+<td>Hide Nginx version</td>
+</tr>
+<tr>
+<td>Client max body size</td>
+<td>10M</td>
+<td>Limit upload size</td>
+</tr>
+<tr>
+<td>Disable directory listing</td>
+<td>off</td>
+<td>Prevent information disclosure</td>
+</tr>
+<tr>
+<td>Timeout values</td>
+<td>Reduced</td>
+<td>Prevent slowloris attacks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configuration (/etc/nginx/nginx.conf):</strong></p>
+<p>server_tokens off;
+client_max_body_size 10M;
+sendfile on;
+tcp_nopush on;
+tcp_nodelay on;
+keepalive_timeout 65;
+types_hash_max_size 2048;</p>
+<h3 id="74-verify-nginx-configuration">7.4 Verify Nginx Configuration<a class="headerlink" href="#74-verify-nginx-configuration" title="Permanent link">&para;</a></h3>
+<p>sudo nginx -t
+sudo systemctl restart nginx</p>
+<hr />
+<h2 id="8-web-application-security">8. Web Application Security<a class="headerlink" href="#8-web-application-security" title="Permanent link">&para;</a></h2>
+<h3 id="81-directory-structure">8.1 Directory Structure<a class="headerlink" href="#81-directory-structure" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Permissions</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/var/www/html</td>
+<td>755</td>
+<td>Web root</td>
+</tr>
+<tr>
+<td>/var/log/nginx</td>
+<td>640</td>
+<td>Log files</td>
+</tr>
+<tr>
+<td>/etc/nginx</td>
+<td>755</td>
+<td>Configuration files</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Apply permissions:</strong></p>
+<p>sudo chmod 755 /var/www/html
+sudo chown -R www-data:www-data /var/www/html</p>
+<h3 id="82-disable-directory-listing">8.2 Disable Directory Listing<a class="headerlink" href="#82-disable-directory-listing" title="Permanent link">&para;</a></h3>
+<p>Ensure directory listing is disabled:</p>
+<p>sudo sed -i 's/autoindex on/autoindex off/g' /etc/nginx/sites-available/default
+sudo nginx -t
+sudo systemctl reload nginx</p>
+<h3 id="83-rate-limiting">8.3 Rate Limiting<a class="headerlink" href="#83-rate-limiting" title="Permanent link">&para;</a></h3>
+<p><strong>Rate limiting configuration (/etc/nginx/nginx.conf):</strong></p>
+<p>limit_req_zone $binary_remote_addr zone=login:10m rate=5r/m;</p>
+<p><strong>Apply to location (/etc/nginx/sites-available/default):</strong></p>
+<p>location /login {
+    limit_req zone=login burst=10 nodelay;
+    proxy_pass http://localhost:8080;
+}</p>
+<hr />
+<h2 id="9-logging-and-monitoring">9. Logging and Monitoring<a class="headerlink" href="#9-logging-and-monitoring" title="Permanent link">&para;</a></h2>
+<h3 id="91-nginx-logging-configuration">9.1 Nginx Logging Configuration<a class="headerlink" href="#91-nginx-logging-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Log Type</th>
+<th>Location</th>
+<th>Retention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Access log</td>
+<td>/var/log/nginx/access.log</td>
+<td>90 days</td>
+</tr>
+<tr>
+<td>Error log</td>
+<td>/var/log/nginx/error.log</td>
+<td>90 days</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configure log rotation (/etc/logrotate.d/nginx):</strong></p>
+<p>/var/log/nginx/*.log {
+    daily
+    missingok
+    rotate 90
+    compress
+    delaycompress
+    notifempty
+    create 0640 www-data adm
+    sharedscripts
+    postrotate
+        systemctl reload nginx
+    endscript
+}</p>
+<h3 id="92-wazuh-agent-installation">9.2 Wazuh Agent Installation<a class="headerlink" href="#92-wazuh-agent-installation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>curl -sSfo /tmp/WAZUH-GPG-KEY https://packages.wazuh.com/key/GPG-KEY-WAZUH &amp;&amp; sudo apt-key add /tmp/WAZUH-GPG-KEY</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>sudo sh -c 'printf "%s\n" "deb https://packages.wazuh.com/4.x/apt/ stable main" &gt; /etc/apt/sources.list.d/wazuh.list'</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>sudo apt update</td>
+</tr>
+<tr>
+<td>4</td>
+<td>sudo apt install wazuh-agent -y</td>
+</tr>
+<tr>
+<td>5</td>
+<td>sudo systemctl enable wazuh-agent</td>
+</tr>
+<tr>
+<td>6</td>
+<td>sudo systemctl start wazuh-agent</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Wazuh agent configuration (/var/ossec/etc/ossec.conf):</strong></p>
+<p><client>
+    <server>
+        <address>10.0.3.10</address>
+        <port>1514</port>
+        <protocol>tcp</protocol>
+    </server>
+</client></p>
+<h3 id="93-auditd-configuration">9.3 Auditd Configuration<a class="headerlink" href="#93-auditd-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monitor SSH config</td>
+<td>-w /etc/ssh/sshd_config -p wa -k ssh_changes</td>
+<td>Detect SSH config changes</td>
+</tr>
+<tr>
+<td>Monitor web config</td>
+<td>-w /etc/nginx -p wa -k nginx_changes</td>
+<td>Detect web config changes</td>
+</tr>
+<tr>
+<td>Monitor binaries</td>
+<td>-w /usr/sbin/nginx -p x -k nginx_exec</td>
+<td>Detect nginx execution</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configure auditd:</strong></p>
+<p>sudo auditctl -w /etc/ssh/sshd_config -p wa -k ssh_changes
+sudo auditctl -w /etc/nginx -p wa -k nginx_changes
+sudo auditctl -w /usr/sbin/nginx -p x -k nginx_exec</p>
+<hr />
+<h2 id="10-system-monitoring-commands">10. System Monitoring Commands<a class="headerlink" href="#10-system-monitoring-commands" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sudo ufw status</td>
+<td>Check firewall rules</td>
+<td>Weekly</td>
+</tr>
+<tr>
+<td>sudo fail2ban-client status sshd</td>
+<td>Check fail2ban status</td>
+<td>Weekly</td>
+</tr>
+<tr>
+<td>sudo systemctl status nginx</td>
+<td>Check web server status</td>
+<td>Daily</td>
+</tr>
+<tr>
+<td>sudo tail -f /var/log/nginx/access.log</td>
+<td>Monitor access logs</td>
+<td>Real-time</td>
+</tr>
+<tr>
+<td>sudo tail -f /var/log/nginx/error.log</td>
+<td>Monitor error logs</td>
+<td>Real-time</td>
+</tr>
+<tr>
+<td>sudo journalctl -u sshd</td>
+<td>Check SSH logs</td>
+<td>As needed</td>
+</tr>
+<tr>
+<td>sudo wazuh-agent -f</td>
+<td>Test Wazuh connectivity</td>
+<td>As needed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-hardening-checklist">11. Hardening Checklist<a class="headerlink" href="#11-hardening-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Verification command</th>
+<th>Execution status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No unnecessary packages</td>
+<td><code>dpkg -l telnet ftp</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>Automatic updates enabled</td>
+<td><code>systemctl status unattended-upgrades</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>SSH password auth disabled</td>
+<td><code>grep PasswordAuthentication /etc/ssh/sshd_config</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>SSH root login disabled</td>
+<td><code>grep PermitRootLogin /etc/ssh/sshd_config</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>fail2ban installed</td>
+<td><code>systemctl status fail2ban</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>UFW configured</td>
+<td><code>ufw status verbose</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>Nginx security headers</td>
+<td><code>curl -I https://10.0.1.10</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>TLS 1.2 or 1.3 only</td>
+<td><code>nmap --script ssl-enum-ciphers -p 443 10.0.1.10</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>Server tokens off</td>
+<td><code>grep -n '^server_tokens off;' /etc/nginx/nginx.conf</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>Directory listing disabled</td>
+<td><code>curl https://10.0.1.10/images/</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>Wazuh agent installed</td>
+<td><code>systemctl status wazuh-agent</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+<tr>
+<td>Auditd configured</td>
+<td><code>auditctl -l</code></td>
+<td>Not run</td>
+<td>Not collected</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-evidence-collection">12. Evidence Collection<a class="headerlink" href="#12-evidence-collection" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Evidence ID</th>
+<th>Description</th>
+<th>Command / Location</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EV-001</td>
+<td>OS version and kernel</td>
+<td>cat /etc/os-release</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-002</td>
+<td>UFW status</td>
+<td>sudo ufw status verbose</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-003</td>
+<td>SSH configuration</td>
+<td>cat /etc/ssh/sshd_config</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-004</td>
+<td>Nginx security headers</td>
+<td>curl -I https://10.0.1.10</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-005</td>
+<td>TLS configuration</td>
+<td>nmap --script ssl-enum-ciphers -p 443 10.0.1.10</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-006</td>
+<td>fail2ban status</td>
+<td>sudo fail2ban-client status sshd</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-007</td>
+<td>Wazuh agent status</td>
+<td>sudo systemctl status wazuh-agent</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-008</td>
+<td>Automatic updates status</td>
+<td>sudo systemctl status unattended-upgrades</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-009</td>
+<td>Auditd rules</td>
+<td>sudo auditctl -l</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>EV-010</td>
+<td>Nginx error log</td>
+<td>sudo tail -20 /var/log/nginx/error.log</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-security-validation-tests">13. Security Validation Tests<a class="headerlink" href="#13-security-validation-tests" title="Permanent link">&para;</a></h2>
+<h3 id="131-ssh-security-test">13.1 SSH Security Test<a class="headerlink" href="#131-ssh-security-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Command</th>
+<th>Expected Result</th>
+<th>Execution status / evidence (not run)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Password auth attempt</td>
+<td>ssh lab-user@10.0.1.10</td>
+<td>Permission denied (publickey)</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>Root login attempt</td>
+<td>ssh root@10.0.1.10</td>
+<td>Permission denied</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>fail2ban test</td>
+<td>Try 3 wrong passwords</td>
+<td>IP banned after 3 attempts</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<h3 id="132-firewall-test">13.2 Firewall Test<a class="headerlink" href="#132-firewall-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Command</th>
+<th>Expected Result</th>
+<th>Execution status / evidence (not run)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTTPS access</td>
+<td>curl -I https://10.0.1.10</td>
+<td>HTTP 200 OK</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>HTTP access</td>
+<td>curl -I http://10.0.1.10</td>
+<td>HTTP 200 OK (redirects to HTTPS)</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>SSH from non-management</td>
+<td>ssh lab-user@10.0.1.10 from 10.0.2.0/24</td>
+<td>Timeout or refused</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<h3 id="133-web-server-test">13.3 Web Server Test<a class="headerlink" href="#133-web-server-test" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Command</th>
+<th>Expected Result</th>
+<th>Execution status / evidence (not run)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TLS version check</td>
+<td>nmap --script ssl-enum-ciphers -p 443 10.0.1.10</td>
+<td>TLS 1.2 and 1.3 only</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>Server header</td>
+<td>curl -I https://10.0.1.10</td>
+<td>No Nginx version</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>X-Frame-Options</td>
+<td>curl -I https://10.0.1.10</td>
+<td>DENY</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-troubleshooting-commands">14. Troubleshooting Commands<a class="headerlink" href="#14-troubleshooting-commands" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Command</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UFW blocking everything</td>
+<td>sudo ufw status verbose</td>
+<td>Check rules, ensure SSH allowed</td>
+</tr>
+<tr>
+<td>Nginx won't start</td>
+<td>sudo nginx -t</td>
+<td>Fix syntax errors, check logs</td>
+</tr>
+<tr>
+<td>SSH key auth failing</td>
+<td>ssh -vvv lab-user@10.0.1.10</td>
+<td>Check permissions, config</td>
+</tr>
+<tr>
+<td>fail2ban not banning</td>
+<td>sudo fail2ban-client status sshd</td>
+<td>Check jail config</td>
+</tr>
+<tr>
+<td>Wazuh agent not connecting</td>
+<td>sudo tail -f /var/ossec/logs/ossec.log</td>
+<td>Check server IP, firewall</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="15-maintenance-procedures">15. Maintenance Procedures<a class="headerlink" href="#15-maintenance-procedures" title="Permanent link">&para;</a></h2>
+<h3 id="151-daily-tasks">15.1 Daily Tasks<a class="headerlink" href="#151-daily-tasks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Check Nginx status</td>
+<td>systemctl status nginx</td>
+</tr>
+<tr>
+<td>Review failed SSH attempts</td>
+<td><code>sudo grep -m 20 "Failed password" /var/log/auth.log</code></td>
+</tr>
+<tr>
+<td>Check disk space</td>
+<td>df -h</td>
+</tr>
+</tbody>
+</table>
+<h3 id="152-weekly-tasks">15.2 Weekly Tasks<a class="headerlink" href="#152-weekly-tasks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Check UFW status</td>
+<td>ufw status verbose</td>
+</tr>
+<tr>
+<td>Review fail2ban bans</td>
+<td>sudo fail2ban-client status sshd</td>
+</tr>
+<tr>
+<td>Check for updates</td>
+<td>sudo apt update &amp;&amp; sudo apt list --upgradable</td>
+</tr>
+<tr>
+<td>Review Nginx error logs</td>
+<td>sudo tail -100 /var/log/nginx/error.log</td>
+</tr>
+</tbody>
+</table>
+<h3 id="153-monthly-tasks">15.3 Monthly Tasks<a class="headerlink" href="#153-monthly-tasks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apply security updates</td>
+<td>sudo apt upgrade -s</td>
+</tr>
+<tr>
+<td>Review auditd logs</td>
+<td>sudo ausearch -k ssh_changes</td>
+</tr>
+<tr>
+<td>Validate TLS configuration</td>
+<td>testssl.sh https://10.0.1.10</td>
+</tr>
+<tr>
+<td>Review Wazuh alerts</td>
+<td>Wazuh dashboard</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="16-related-documents">16. Related Documents<a class="headerlink" href="#16-related-documents" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pfSense Network Security</td>
+<td>08-Technical-Controls/pfsense-network.md</td>
+</tr>
+<tr>
+<td>Windows Hardening Guide</td>
+<td>08-Technical-Controls/windows-hardening.md</td>
+</tr>
+<tr>
+<td>Wazuh Monitoring Guide</td>
+<td>08-Technical-Controls/wazuh-monitoring.md</td>
+</tr>
+<tr>
+<td>Network Architecture Diagram</td>
+<td>05-Security-Architecture/diagrams/network-architecture.md</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="17-version-history">17. Version History<a class="headerlink" href="#17-version-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>April 2026</td>
+<td>S. Singh</td>
+<td>Initial draft</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Added SSL/TLS configuration</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>May 2026</td>
+<td>S. Singh</td>
+<td>Draft learning edition</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Ubuntu Web Server Hardening</strong></p></article><nav class="navrow"><a href="pfsense-network.html">← pfSense Network Controls</a><a href="wazuh-monitoring.html">Wazuh Monitoring →</a></nav><p class="footer-note">Chapter 22 of 32. Content is provided in full from its Markdown source.</p></main></div><script>window.REPORT_BASE="../";</script><script src="../search-index.js"></script><script src="../search.js"></script></body></html>
