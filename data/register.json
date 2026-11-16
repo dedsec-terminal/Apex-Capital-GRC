@@ -1,0 +1,25 @@
+{
+  "scenario": "fictional-financial-services-four-vm-lab",
+  "riskMethod": "likelihood(1-5) * impact(1-5)",
+  "executionStatus": "planned_not_executed",
+  "risks": [
+    {"id":"R-001","title":"DMZ host reaches internal systems","likelihood":3,"impact":5,"inherentScore":15,"rating":"High","ownerRole":"Network security owner"},
+    {"id":"R-002","title":"Credential compromise exposes access","likelihood":4,"impact":5,"inherentScore":20,"rating":"Critical","ownerRole":"IAM owner"},
+    {"id":"R-003","title":"Ransomware disrupts services or data","likelihood":4,"impact":5,"inherentScore":20,"rating":"Critical","ownerRole":"Endpoint and resilience owner"},
+    {"id":"R-004","title":"Missing logs weaken investigation","likelihood":3,"impact":4,"inherentScore":12,"rating":"Medium","ownerRole":"Security operations owner"},
+    {"id":"R-005","title":"Public service compromise","likelihood":3,"impact":5,"inherentScore":15,"rating":"High","ownerRole":"Application / infrastructure owner"},
+    {"id":"R-006","title":"Insider misuse of authorized access","likelihood":2,"impact":5,"inherentScore":10,"rating":"Medium","ownerRole":"Data owner and IAM owner"},
+    {"id":"R-007","title":"Supplier weakness affects the business","likelihood":3,"impact":5,"inherentScore":15,"rating":"High","ownerRole":"Procurement / third-party risk owner"},
+    {"id":"R-008","title":"Firewall drift exposes a protected path","likelihood":3,"impact":4,"inherentScore":12,"rating":"Medium","ownerRole":"Network security owner"}
+  ],
+  "tests": [
+    {"id":"T-01","title":"Network segmentation","status":"planned_not_executed","evidence":"sanitized connectivity output, pfSense rules and logs"},
+    {"id":"T-02","title":"Management access restrictions","status":"planned_not_executed","evidence":"connectivity results and effective firewall rules"},
+    {"id":"T-03","title":"Windows access policy","status":"planned_not_executed","evidence":"policy export, test matrix and cleanup record"},
+    {"id":"T-04","title":"Endpoint protection status","status":"planned_not_executed","evidence":"status output and safe test event"},
+    {"id":"T-05","title":"Central logging and alert path","status":"planned_not_executed","evidence":"redacted source event, Wazuh record and timestamps"},
+    {"id":"T-06","title":"Backup restore readiness","status":"planned_not_executed","evidence":"restore log, integrity check and measured duration"},
+    {"id":"T-07","title":"Supplier evidence review tabletop","status":"planned_not_executed","evidence":"synthetic packet, completed scorecard and decision log"},
+    {"id":"T-08","title":"Firewall change regression","status":"planned_not_executed","evidence":"approved config diff and regression output"}
+  ]
+}

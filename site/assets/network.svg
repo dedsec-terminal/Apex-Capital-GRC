@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 330" role="img" aria-labelledby="title desc">
+<title id="title">Apex Capital fictional security lab network zones</title><desc id="desc">Internet connects to a firewall that separates DMZ, internal and management subnets. DMZ-to-internal is denied by design; management routes are restricted.</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#47745c" stroke-width="1.5"/></marker><marker id="stop" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#bd5148" stroke-width="1.5"/></marker></defs>
+<rect width="1000" height="330" rx="7" fill="#fbfcf9"/>
+<g font-family="Arial,sans-serif" text-anchor="middle">
+<circle cx="98" cy="165" r="42" fill="#f0f3ee" stroke="#dce4dc"/><text x="98" y="161" font-size="11" fill="#283a30" font-weight="700">INTERNET</text><text x="98" y="179" font-size="9" fill="#748078">LAB EDGE</text>
+<rect x="258" y="111" width="164" height="108" rx="8" fill="#214d3c"/><text x="340" y="153" font-size="12" fill="#fff" font-weight="700">pfSense</text><text x="340" y="173" font-size="10" fill="#d5e5d8">Policy boundary</text><text x="340" y="196" font-size="9" fill="#b8d0bd">4 interfaces - WAN + 3 zones</text>
+<rect x="598" y="28" width="330" height="76" rx="6" fill="#fff" stroke="#dce2db"/><rect x="598" y="28" width="5" height="76" rx="2" fill="#8eaa76"/><text x="763" y="56" font-size="10" fill="#70806f" letter-spacing="1">DMZ · 10.0.1.0/24</text><text x="763" y="77" font-size="12" fill="#263a2e" font-weight="700">Ubuntu web host · 10.0.1.10</text>
+<rect x="598" y="127" width="330" height="76" rx="6" fill="#fff" stroke="#dce2db"/><rect x="598" y="127" width="5" height="76" rx="2" fill="#596e8a"/><text x="763" y="155" font-size="10" fill="#70809a" letter-spacing="1">INTERNAL · 10.0.2.0/24</text><text x="763" y="176" font-size="12" fill="#263647" font-weight="700">Windows host · 10.0.2.10</text>
+<rect x="598" y="226" width="330" height="76" rx="6" fill="#fff" stroke="#dce2db"/><rect x="598" y="226" width="5" height="76" rx="2" fill="#b68b43"/><text x="763" y="254" font-size="10" fill="#987b4a" letter-spacing="1">MANAGEMENT · 10.0.3.0/24</text><text x="763" y="275" font-size="12" fill="#473a27" font-weight="700">Wazuh SIEM · 10.0.3.10</text>
+<text x="500" y="15" font-size="8" fill="#758078">PROPOSED LOGICAL TOPOLOGY · NOT A CAPTURED RUNNING CONFIGURATION</text>
+</g>
+<path d="M140 165H249" fill="none" stroke="#47745c" stroke-width="2" marker-end="url(#arr)"/><text x="194" y="151" text-anchor="middle" font-size="8" fill="#61776a" font-family="Arial">Approved web traffic</text>
+<path d="M422 133C490 133 510 66 590 66M422 165H590M422 197C490 197 510 264 590 264" fill="none" stroke="#47745c" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M630 104L630 127" fill="none" stroke="#bd5148" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#stop)"/><rect x="641" y="105" width="102" height="19" rx="3" fill="#faecea"/><text x="692" y="118" font-size="8" fill="#a2453e" font-family="Arial" text-anchor="middle">DENY BY DESIGN</text>
+</svg>

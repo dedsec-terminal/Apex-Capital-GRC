@@ -1,0 +1,22 @@
+const assert = require('node:assert/strict');
+const path = require('node:path');
+const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+(async () => {
+  const browser = await chromium.launch({headless:true});
+  const page = await browser.newPage({viewport:{width:1440,height:1000}});
+  const errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  page.setDefaultTimeout(60000);
+  await page.goto(process.env.LAB_URL || 'http://127.0.0.1:8766/site/', {waitUntil:'domcontentloaded',timeout:60000});
+  await page.locator('.risk-card').last().waitFor();
+  assert.equal(await page.locator('.risk-card').count(), 8);
+  assert.equal(await page.locator('.test-row').count(), 8);
+  assert.equal(await page.locator('.test-state').filter({hasText:'PLANNED'}).count(), 8);
+  await page.screenshot({path:path.resolve(__dirname,'../site/assets/desktop-preview.png'),fullPage:true});
+  await page.setViewportSize({width:390,height:844});
+  await page.screenshot({path:path.resolve(__dirname,'../site/assets/mobile-preview.png'),fullPage:true});
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),true);
+  assert.deepEqual(errors,[]);
+  await browser.close();
+  console.log('Publication browser check passed: 8 risks, 8 planned scenarios, responsive layout.');
+})().catch(error=>{console.error(error);process.exit(1);});
